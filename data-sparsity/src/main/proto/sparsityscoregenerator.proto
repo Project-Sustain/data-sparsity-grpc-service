@@ -1,0 +1,55 @@
+// Copyright 2015 The gRPC Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.datasparsity.sparsityscoregenerator";
+option java_outer_classname = "SparsityScoreGeneratorProto";
+option objc_class_prefix = "SSG";
+
+package sparsityscoregenerator;
+
+service FindSparsityScores {
+  rpc CalculateSparsityScores (SSGRequest) returns (SSGReply) {}
+}
+
+message SSGRequest {
+  string collectionName = 1;
+  string spatialScope = 2;
+  string spatialIdentifier = 3;
+  int64 startTime = 4;
+  int64 endTime = 5;
+  // repeated string measurementTypes = 6;
+}
+
+message SSGReply {
+  // repeated SiteSparsityData sparsityScores = 1;
+  string monitorId = 1;
+  double sparsityScore = 2;
+  double longitude = 3;
+  double latitude = 4;
+  int32 numberOfMeasurements = 5;
+}
+
+message SiteSparsityData {
+  string monitorId = 1;
+  double sparsityScore = 2;
+  coordinates coordinates = 3;
+  int32 numberOfMeasurements = 4;
+}
+
+message coordinates {
+    double longitude = 1;
+    double latitude = 2;
+}
