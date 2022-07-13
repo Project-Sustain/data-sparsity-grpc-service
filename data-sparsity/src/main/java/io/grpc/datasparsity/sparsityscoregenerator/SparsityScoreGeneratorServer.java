@@ -107,9 +107,20 @@ public class SparsityScoreGeneratorServer {
       // SSGReply reply = SSGReply.newBuilder().setSparsityScores(testReply).build();
       // End initial setup test section
 
-      SSGReply reply = SSGReply.newBuilder().setMonitorId("example_monitor_id").setSparsityScore(42.42).setLongitude(101.45).setLatitude(-140.21).setNumberOfMeasurements(15).build();
+      // double[] coordinates = {101.52, -57.86};
+      Coordinates coordinates = new Coordinates(101.52, -57.86);
+      SSGReply reply = SSGReply.newBuilder().setMonitorId("example_monitor_id").setSparsityScore(42.42).setCoordinates(101.42, 42.96).setNumberOfMeasurements(15).build();
       responseObserver.onNext(reply);
       responseObserver.onCompleted();
+    }
+
+    private class Coordinates {
+      double[] coordinates = new double[2];
+
+      public Coordinates(double lng, double lat) {
+        this.coordinates[0] = lng;
+        this.coordinates[1] = lat;
+      }
     }
 
     private class SiteSparsityData {

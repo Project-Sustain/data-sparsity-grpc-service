@@ -64,9 +64,9 @@ public class SparsityScoreGeneratorClient {
     // logger.info("Sparsity Scores: " + response.getSparsityScores());
     String outputString = 
       "Monitor ID: " + response.getMonitorId() +
-      " Sparsity Score: " + response.getSparsityScore() +
-      " Coordinates: [" + response.getLongitude() + ", " + response.getLatitude() + "]" +
-      " Number of Measurements: " + response.getNumberOfMeasurements();
+      "\nSparsity Score: " + response.getSparsityScore() +
+      "\nCoordinates: " + response.getCoordinates() +
+      "\nNumber of Measurements: " + response.getNumberOfMeasurements();
     logger.info("Response:\n" + outputString);
   }
 
