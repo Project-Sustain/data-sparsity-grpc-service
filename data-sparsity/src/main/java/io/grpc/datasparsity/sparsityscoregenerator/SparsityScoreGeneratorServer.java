@@ -102,8 +102,9 @@ public class SparsityScoreGeneratorServer {
         measurementTypes.add(measurementType.toString());
       }
 
-      SparsityScoreGenerator ssg = new SparsityScoreGenerator(collectionName, startTime, endTime, spatialScope, spatialIdentifier, measurementTypes, responseObserver);
-      ssg.streamSparsityData();
+      SparsityScoreGenerator ssg = new SparsityScoreGenerator(collectionName, startTime, endTime, spatialScope, spatialIdentifier, measurementTypes);
+      ssg.streamSparsityData(responseObserver);
+      
     }
 
   }
