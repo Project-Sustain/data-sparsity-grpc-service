@@ -20,11 +20,16 @@ import io.grpc.Channel;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
+import io.grpc.datasparsity.sparsityscoregenerator.SSGReply.SiteSparsityData;
+
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Arrays;
 import java.lang.Long;
+import java.util.Iterator;
 
 /**
  * A simple client that requests a greeting from the {@link HelloWorldServer}.
@@ -43,31 +48,30 @@ public class SparsityScoreGeneratorClient {
     blockingStub = FindSparsityScoresGrpc.newBlockingStub(channel);
   }
 
-  /** Say hello to server. */
+  /** Get data from the server. */
   public void sendClientData(String collectionName, String spatialScope, String spatialIdentifier, Long startTime, Long endTime, ArrayList<String> measurementTypes) {
     logger.info("Will try to get Sparsity Scores for " + collectionName + "...");
     SSGRequest request = SSGRequest.newBuilder()
         .setCollectionName(collectionName)
-        .setSpatialScope(spatialScope)
+        .setSpatialScope(SSGRequest.ScopeType.COUNTY)
         .setSpatialIdentifier(spatialIdentifier)
         .setStartTime(startTime)
         .setEndTime(endTime)
-        // .setMeasurementTypes(measurementTypes)
+        .addAllMeasurementTypes(measurementTypes)
         .build();
-    SSGReply response;
+
+    Iterator<SSGReply> response;
+
     try {
       response = blockingStub.calculateSparsityScores(request);
+      for (int i = 0; response.hasNext(); i++) {
+        SSGReply.SiteSparsityData data = response.next().getSiteSparsityData();
+        logger.info(data.toString());
+      }
     } catch (StatusRuntimeException e) {
       logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
       return;
     }
-    // logger.info("Sparsity Scores: " + response.getSparsityScores());
-    String outputString = 
-      "Monitor ID: " + response.getMonitorId() +
-      "\nSparsity Score: " + response.getSparsityScore() +
-      "\nCoordinates: " + response.getCoordinates() +
-      "\nNumber of Measurements: " + response.getNumberOfMeasurements();
-    logger.info("Response:\n" + outputString);
   }
 
   /**
