@@ -103,36 +103,7 @@ public class SparsityScoreGeneratorServer {
       }
 
       SparsityScoreGenerator ssg = new SparsityScoreGenerator(collectionName, startTime, endTime, spatialScope, spatialIdentifier, measurementTypes);
-
-
-      /*
-       * Temp Data
-       */
-      // SSGReply.SiteSparsityData ssd1 = SSGReply.SiteSparsityData.newBuilder()
-      //   .setMonitorId("FoCo")
-      //   .setSparsityScore(42)
-      //   .setCoordinates(SSGReply.Coordinates.newBuilder()
-      //     .setLongitude(-105.072)
-      //     .setLatitude(40.572))
-      //   .setNumberOfMeasurements(513)
-      //   .build();
-      
-      // SSGReply.SiteSparsityData ssd2 = SSGReply.SiteSparsityData.newBuilder()
-      //   .setMonitorId("Seattle")
-      //   .setSparsityScore(206)
-      //   .setCoordinates(SSGReply.Coordinates.newBuilder()
-      //     .setLongitude(47.644)
-      //     .setLatitude(-122.317))
-      //   .setNumberOfMeasurements(2617)
-      //   .build();
-      /*
-       * End Temp Data
-       */
-
-
       ArrayList<SSGReply.SiteSparsityData> sparsityData = ssg.getSparsityData();
-      // sparsityData.add(ssd1);
-      // sparsityData.add(ssd2);
 
       for (SSGReply.SiteSparsityData data : sparsityData) {
         SSGReply reply = SSGReply.newBuilder().setSiteSparsityData(data).build();
