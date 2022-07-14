@@ -30,6 +30,7 @@ import static com.mongodb.client.model.Updates.*;
 import static com.mongodb.client.model.Sorts.ascending;
 import javax.sql.rowset.spi.SyncResolver;
 
+import io.grpc.stub.StreamObserver;
 import java.util.logging.Logger;
 
 public class SparsityScoreGenerator {
@@ -41,20 +42,21 @@ public class SparsityScoreGenerator {
 
     private MongoCollection<Document> collection;
     private ArrayList<String> siteList;
-
+    private StreamObserver<SSGReply> responseObserver;
     private ArrayList<SSGReply.SiteSparsityData> sparsityData;
 
-    public SparsityScoreGenerator(String collectionName, Long startTime, Long endTime, SSGRequest.ScopeType spatialScope, String spatialIdentifier, ArrayList<String> measurementTypes) {
+    public SparsityScoreGenerator(String collectionName, Long startTime, Long endTime, SSGRequest.ScopeType spatialScope, String spatialIdentifier, ArrayList<String> measurementTypes, StreamObserver<SSGReply> responseObserver) {
 
         this.startTime = startTime;
         this.endTime = endTime;
         this.measurementTypes = measurementTypes;
+        this.responseObserver = responseObserver;
 
         MongoConnection mongoConnection = new MongoConnection();
         this.siteList = generateSiteList(mongoConnection, spatialScope, spatialIdentifier);
         this.collection = mongoConnection.getCollection(collectionName);
 
-        generateSparsityData();
+        // streamSparsityData();
     }
 
     private ArrayList<String> generateSiteList(MongoConnection mongoConnection, SSGRequest.ScopeType spatialScope, String spatialIdentifier) {
@@ -93,7 +95,7 @@ public class SparsityScoreGenerator {
         return siteList;
     }
 
-    private void generateSparsityData() {
+    public void streamSparsityData() {
 
         Bson sort = Aggregates.sort(ascending("epoch_time"));
         BsonField accumulator = new BsonField("epochTimes", new Document("$push", "$epoch_time"));
@@ -120,7 +122,6 @@ public class SparsityScoreGenerator {
         ArrayList<Document> results = this.collection.aggregate(Arrays.asList(
             match, sort, group)).into(new ArrayList<>());
 
-        this.sparsityData = new ArrayList<>();
 
         results.forEach(document -> {
             String monitorId = document.getString("_id");
@@ -138,8 +139,11 @@ public class SparsityScoreGenerator {
                 .setNumberOfMeasurements(numberOfMeasurements)
                 .build();
 
-            this.sparsityData.add(ssd);
-        });
+            SSGReply reply = SSGReply.newBuilder().setSiteSparsityData(ssd).build();
+            responseObserver.onNext(reply);
+
+        });            
+        responseObserver.onCompleted();
     }
 
     private Float getSparsityScore(List<Long> timeList) {
