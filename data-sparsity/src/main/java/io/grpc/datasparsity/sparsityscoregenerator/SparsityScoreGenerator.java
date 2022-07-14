@@ -42,15 +42,13 @@ public class SparsityScoreGenerator {
 
     private MongoCollection<Document> collection;
     private ArrayList<String> siteList;
-    private StreamObserver<SSGReply> responseObserver;
     private ArrayList<SSGReply.SiteSparsityData> sparsityData;
 
-    public SparsityScoreGenerator(String collectionName, Long startTime, Long endTime, SSGRequest.ScopeType spatialScope, String spatialIdentifier, ArrayList<String> measurementTypes, StreamObserver<SSGReply> responseObserver) {
+    public SparsityScoreGenerator(String collectionName, Long startTime, Long endTime, SSGRequest.ScopeType spatialScope, String spatialIdentifier, ArrayList<String> measurementTypes) {
 
         this.startTime = startTime;
         this.endTime = endTime;
         this.measurementTypes = measurementTypes;
-        this.responseObserver = responseObserver;
 
         MongoConnection mongoConnection = new MongoConnection();
         this.siteList = generateSiteList(mongoConnection, spatialScope, spatialIdentifier);
@@ -95,7 +93,7 @@ public class SparsityScoreGenerator {
         return siteList;
     }
 
-    public void streamSparsityData() {
+    public void streamSparsityData(StreamObserver<SSGReply> responseObserver) {
 
         Bson sort = Aggregates.sort(ascending("epoch_time"));
         BsonField accumulator = new BsonField("epochTimes", new Document("$push", "$epoch_time"));
