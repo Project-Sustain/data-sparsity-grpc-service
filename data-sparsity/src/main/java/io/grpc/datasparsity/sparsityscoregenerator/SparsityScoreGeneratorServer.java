@@ -42,7 +42,7 @@ public class SparsityScoreGeneratorServer {
 
   private void start() throws IOException {
     /* The port on which the server should run */
-    int port = 50051;
+    int port = grpcConstants.portNum;
     server = ServerBuilder.forPort(port)
         .addService(new FindSparsityScoresImpl())
         .build()
