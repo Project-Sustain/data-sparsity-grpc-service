@@ -27,6 +27,8 @@ import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.lang.Long;
 
@@ -94,7 +96,11 @@ public class SparsityScoreGeneratorServer {
       String spatialIdentifier = req.getSpatialIdentifier();
       Long startTime = req.getStartTime();
       Long endTime = req.getEndTime();
-      // ArrayList<String> measurementTypes = req.getAllMeasurementTypes();
+
+      ArrayList<String> measurementTypes = new ArrayList<>();
+      for(Object measurementType : Arrays.asList(req.getMeasurementTypesList().toArray())) {
+        measurementTypes.add(measurementType.toString());
+      }
 
 
       /*
