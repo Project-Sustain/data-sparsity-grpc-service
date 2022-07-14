@@ -48,7 +48,8 @@ public class SparsityScoreGeneratorClient {
     logger.info("Will try to get Sparsity Scores for " + collectionName + "...");
     SSGRequest request = SSGRequest.newBuilder()
         .setCollectionName(collectionName)
-        .setSpatialScope(spatialScope)
+        // .setSpatialScope(spatialScope)
+        .setSpatialScope(SSGRequest.ScopeType.COUNTY)
         .setSpatialIdentifier(spatialIdentifier)
         .setStartTime(startTime)
         .setEndTime(endTime)
@@ -62,11 +63,12 @@ public class SparsityScoreGeneratorClient {
       return;
     }
     // logger.info("Sparsity Scores: " + response.getSparsityScores());
-    String outputString = 
-      "Monitor ID: " + response.getMonitorId() +
-      "\nSparsity Score: " + response.getSparsityScore() +
-      "\nCoordinates: " + response.getCoordinates() +
-      "\nNumber of Measurements: " + response.getNumberOfMeasurements();
+    String outputString = "Data: " + response.getSiteSparsityData();
+    // String outputString = 
+    //   "Monitor ID: " + response.getMonitorId() +
+    //   "\nSparsity Score: " + response.getSparsityScore() +
+    //   "\nCoordinates: " + response.getCoordinates() +
+    //   "\nNumber of Measurements: " + response.getNumberOfMeasurements();
     logger.info("Response:\n" + outputString);
   }
 

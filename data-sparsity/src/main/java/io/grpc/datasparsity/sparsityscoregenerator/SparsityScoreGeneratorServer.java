@@ -90,7 +90,7 @@ public class SparsityScoreGeneratorServer {
     @Override
     public void calculateSparsityScores(SSGRequest req, StreamObserver<SSGReply> responseObserver) {
       String collectionName = req.getCollectionName();
-      String spatialScope = req.getSpatialScope();
+      SSGRequest.ScopeType spatialScope = req.getSpatialScope();
       String spatialIdentifier = req.getSpatialIdentifier();
       Long startTime = req.getStartTime();
       Long endTime = req.getEndTime();
@@ -110,13 +110,15 @@ public class SparsityScoreGeneratorServer {
       // double[] coordinates = {101.52, -57.86};
       Coordinates coordinates = new Coordinates(101.52, -57.86);
       SSGReply reply = SSGReply.newBuilder()
-        .setMonitorId("example_monitor_id")
-        .setSparsityScore(42.42)
-        .setCoordinates(SSGReply.Coordinates.newBuilder()
-          .setLongitude(101.52)
-          .setLatitude(-65.42))
-        .setNumberOfMeasurements(15)
-        .build();
+        .setSiteSparsityData(
+          SSGReply.SiteSparsityData.newBuilder()
+            .setMonitorId("example_monitor_id")
+            .setSparsityScore(42.42)
+            .setCoordinates(SSGReply.Coordinates.newBuilder()
+              .setLongitude(-105.072)
+              .setLatitude(40.572))
+            .setNumberOfMeasurements(16)
+        ).build();
       responseObserver.onNext(reply);
       responseObserver.onCompleted();
     }
