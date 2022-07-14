@@ -64,7 +64,6 @@ public class SparsityScoreGeneratorClient {
 
     try {
       response = blockingStub.calculateSparsityScores(request);
-      logger.info("---Server Response---");
       for (int i = 0; response.hasNext(); i++) {
         SSGReply.SiteSparsityData data = response.next().getSiteSparsityData();
         logger.info(data.toString());
