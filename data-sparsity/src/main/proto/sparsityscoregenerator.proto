@@ -27,28 +27,38 @@ service FindSparsityScores {
 message SSGRequest {
   string collectionName = 1;
   string spatialScope = 2;
+  // ScopeType spatialScope = 2 [default = SITE];
   string spatialIdentifier = 3;
   int64 startTime = 4;
   int64 endTime = 5;
   // repeated string measurementTypes = 6;
+
+    // enum ScopeType {
+    //   SITE = 0;
+    //   COUNTY = 1;
+    //   STATE = 2;
+    //   COUNTRY = 3;
+    // }
 }
 
 message SSGReply {
+
+  message Coordinates {
+      double longitude = 1;
+      double latitude = 2;
+  }
+
+  message SiteSparsityData {
+    string monitorId = 1;
+    double sparsityScore = 2;
+    Coordinates coordinates = 3;
+    int32 numberOfMeasurements = 4;
+  }
+
   // repeated SiteSparsityData sparsityScores = 1;
   string monitorId = 1;
   double sparsityScore = 2;
   Coordinates coordinates = 3;
   int32 numberOfMeasurements = 4;
-}
 
-message SiteSparsityData {
-  string monitorId = 1;
-  double sparsityScore = 2;
-  Coordinates coordinates = 3;
-  int32 numberOfMeasurements = 4;
-}
-
-message Coordinates {
-    double longitude = 1;
-    double latitude = 2;
 }

@@ -109,7 +109,14 @@ public class SparsityScoreGeneratorServer {
 
       // double[] coordinates = {101.52, -57.86};
       Coordinates coordinates = new Coordinates(101.52, -57.86);
-      SSGReply reply = SSGReply.newBuilder().setMonitorId("example_monitor_id").setSparsityScore(42.42).setCoordinates(101.42, 42.96).setNumberOfMeasurements(15).build();
+      SSGReply reply = SSGReply.newBuilder()
+        .setMonitorId("example_monitor_id")
+        .setSparsityScore(42.42)
+        .setCoordinates(SSGReply.Coordinates.newBuilder()
+          .setLongitude(101.52)
+          .setLatitude(-65.42))
+        .setNumberOfMeasurements(15)
+        .build();
       responseObserver.onNext(reply);
       responseObserver.onCompleted();
     }
