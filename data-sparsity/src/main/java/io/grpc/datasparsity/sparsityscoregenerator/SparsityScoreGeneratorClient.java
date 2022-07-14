@@ -64,7 +64,6 @@ public class SparsityScoreGeneratorClient {
 
     try {
       response = blockingStub.calculateSparsityScores(request);
-      logger.info("---Server Response---");
       for (int i = 0; response.hasNext(); i++) {
         SSGReply.SiteSparsityData data = response.next().getSiteSparsityData();
         logger.info(data.toString());
@@ -91,7 +90,7 @@ public class SparsityScoreGeneratorClient {
     measurementTypes.add("Sulphate");
     measurementTypes.add("Temperature, water");
     // Access a service running on the local machine on port 50051
-    String target = "localhost:50051";
+    String target = grpcConstants.ipAddress + ":" + grpcConstants.portNum;
     // Allow passing in the user and target strings as command line arguments
     if (args.length > 0) {
       if ("--help".equals(args[0])) {
