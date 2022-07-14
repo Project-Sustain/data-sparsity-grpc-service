@@ -94,57 +94,46 @@ public class SparsityScoreGeneratorServer {
       String spatialIdentifier = req.getSpatialIdentifier();
       Long startTime = req.getStartTime();
       Long endTime = req.getEndTime();
-      // ArrayList<String> measurementTypes = req.getMeasurementTypes();
+      // ArrayList<String> measurementTypes = req.getAllMeasurementTypes();
 
-      // For initial setup testing only!
-      // SiteSparsityData tss1 = new SiteSparsityData("test1", 1.12, 5, 50.41, -111.56);
-      // SiteSparsityData tss2 = new SiteSparsityData("test2", 5.81, 17, 85.87, 99.26);
-      // SiteSparsityData tss3 = new SiteSparsityData("test3", 0.57, 2, 42.75, -120.79);
-      // ArrayList<SiteSparsityData> testReply = new ArrayList<SiteSparsityData>();
-      // testReply.add(tss1);
-      // testReply.add(tss2);
-      // testReply.add(tss3);
-      // SSGReply reply = SSGReply.newBuilder().setSparsityScores(testReply).build();
-      // End initial setup test section
 
-      // double[] coordinates = {101.52, -57.86};
-      Coordinates coordinates = new Coordinates(101.52, -57.86);
-      SSGReply reply = SSGReply.newBuilder()
-        .setSiteSparsityData(
-          SSGReply.SiteSparsityData.newBuilder()
-            .setMonitorId("example_monitor_id")
-            .setSparsityScore(42.42)
-            .setCoordinates(SSGReply.Coordinates.newBuilder()
-              .setLongitude(-105.072)
-              .setLatitude(40.572))
-            .setNumberOfMeasurements(16)
-        ).build();
-      responseObserver.onNext(reply);
+      /*
+       * Temp Data
+       */
+      SSGReply.SiteSparsityData ssd1 = SSGReply.SiteSparsityData.newBuilder()
+        .setMonitorId("FoCo")
+        .setSparsityScore(42)
+        .setCoordinates(SSGReply.Coordinates.newBuilder()
+          .setLongitude(-105.072)
+          .setLatitude(40.572))
+        .setNumberOfMeasurements(513)
+        .build();
+      
+      SSGReply.SiteSparsityData ssd2 = SSGReply.SiteSparsityData.newBuilder()
+        .setMonitorId("Seattle")
+        .setSparsityScore(206)
+        .setCoordinates(SSGReply.Coordinates.newBuilder()
+          .setLongitude(47.644)
+          .setLatitude(-122.317))
+        .setNumberOfMeasurements(2617)
+        .build();
+      /*
+       * End Temp Data
+       */
+
+
+      ArrayList<SSGReply.SiteSparsityData> sparsityData = new ArrayList<>();
+      sparsityData.add(ssd1);
+      sparsityData.add(ssd2);
+
+      for (SSGReply.SiteSparsityData data : sparsityData) {
+        SSGReply reply = SSGReply.newBuilder().setSiteSparsityData(data).build();
+        responseObserver.onNext(reply);
+      }
       responseObserver.onCompleted();
+
     }
 
-    private class Coordinates {
-      double[] coordinates = new double[2];
-
-      public Coordinates(double lng, double lat) {
-        this.coordinates[0] = lng;
-        this.coordinates[1] = lat;
-      }
-    }
-
-    private class SiteSparsityData {
-      String monitorId;
-      double sparsityScore;
-      double[] coordinates = new double[2];
-      int numberOfMeasurements;
-
-      public SiteSparsityData(String monitorId, double sparsityScore, int numberOfMeasurements, double lng, double lat) {
-        this.monitorId = monitorId;
-        this.sparsityScore = sparsityScore;
-        this.coordinates[0] = lng;
-        this.coordinates[1] = lat;
-        this.numberOfMeasurements = numberOfMeasurements;
-      }
-    }
   }
+  
 }

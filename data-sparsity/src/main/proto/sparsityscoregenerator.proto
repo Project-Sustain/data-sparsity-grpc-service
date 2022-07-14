@@ -21,7 +21,7 @@ option objc_class_prefix = "SSG";
 package sparsityscoregenerator;
 
 service FindSparsityScores {
-  rpc CalculateSparsityScores (SSGRequest) returns (SSGReply) {}
+  rpc CalculateSparsityScores (SSGRequest) returns (stream SSGReply) {}
 }
 
 message SSGRequest {
@@ -34,12 +34,11 @@ message SSGRequest {
   }
 
   string collectionName = 1;
-  // string spatialScope = 2;
   ScopeType spatialScope = 2;
   string spatialIdentifier = 3;
   int64 startTime = 4;
   int64 endTime = 5;
-  // repeated string measurementTypes = 6;
+  repeated string measurementTypes = 6;
 
 }
 
@@ -58,6 +57,5 @@ message SSGReply {
   }
 
   SiteSparsityData siteSparsityData = 1;
-  // repeated SiteSparsityData sparsityScores = 1;
 
 }
