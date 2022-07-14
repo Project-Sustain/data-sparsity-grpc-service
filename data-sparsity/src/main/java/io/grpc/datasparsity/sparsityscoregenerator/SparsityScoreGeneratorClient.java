@@ -64,6 +64,7 @@ public class SparsityScoreGeneratorClient {
 
     try {
       response = blockingStub.calculateSparsityScores(request);
+      logger.info("---Server Response---");
       for (int i = 0; response.hasNext(); i++) {
         SSGReply.SiteSparsityData data = response.next().getSiteSparsityData();
         logger.info(data.toString());
@@ -79,7 +80,7 @@ public class SparsityScoreGeneratorClient {
    * greeting. The second argument is the target server.
    */
   public static void main(String[] args) throws Exception {
-    String collectionName = "water_quality_sites";
+    String collectionName = "water_quality_bodies_of_water";
     String spatialScope = "COUNTY";
     String spatialIdentifier = "G0800690";
     Long startTime = 946742626000L;
