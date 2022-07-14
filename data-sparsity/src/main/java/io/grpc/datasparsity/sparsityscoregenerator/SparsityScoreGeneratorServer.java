@@ -102,15 +102,8 @@ public class SparsityScoreGeneratorServer {
         measurementTypes.add(measurementType.toString());
       }
 
-      SparsityScoreGenerator ssg = new SparsityScoreGenerator(collectionName, startTime, endTime, spatialScope, spatialIdentifier, measurementTypes);
-      ArrayList<SSGReply.SiteSparsityData> sparsityData = ssg.getSparsityData();
-
-      for (SSGReply.SiteSparsityData data : sparsityData) {
-        SSGReply reply = SSGReply.newBuilder().setSiteSparsityData(data).build();
-        responseObserver.onNext(reply);
-      }
-      responseObserver.onCompleted();
-
+      SparsityScoreGenerator ssg = new SparsityScoreGenerator(collectionName, startTime, endTime, spatialScope, spatialIdentifier, measurementTypes, responseObserver);
+      ssg.streamSparsityData();
     }
 
   }
