@@ -90,6 +90,21 @@ public class SparsityScoreGeneratorServer {
   static class FindSparsityScoresImpl extends FindSparsityScoresGrpc.FindSparsityScoresImplBase {
 
     @Override
+    public void checkServerConnection(ServerConnectionRequest req, StreamObserver<ServerConnectionReply> responseObserver) {
+      String hash = req.getHash();
+      ServerConnectionReply.ConnectionStatus responseStatus;
+      if(hash.equals("test_hash")) {
+        responseStatus = ServerConnectionReply.ConnectionStatus.SUCCESS;
+      }
+      else {
+        responseStatus = ServerConnectionReply.ConnectionStatus.FAILURE;
+      }
+      ServerConnectionReply reply = ServerConnectionReply.newBuilder().setStatus(responseStatus).build();
+      responseObserver.onNext(reply);
+      responseObserver.onCompleted(); 
+    }
+
+    @Override
     public void calculateSparsityScores(SSGRequest req, StreamObserver<SSGReply> responseObserver) {
       String collectionName = req.getCollectionName();
       SSGRequest.ScopeType spatialScope = req.getSpatialScope();
