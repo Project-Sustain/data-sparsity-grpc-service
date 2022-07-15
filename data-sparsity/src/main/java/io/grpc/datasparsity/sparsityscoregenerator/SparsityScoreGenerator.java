@@ -12,6 +12,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.*;
+import com.mongodb.MongoTimeoutException;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -45,16 +46,12 @@ public class SparsityScoreGenerator {
     private ArrayList<SSGReply.SiteSparsityData> sparsityData;
 
     public SparsityScoreGenerator(String collectionName, Long startTime, Long endTime, SSGRequest.ScopeType spatialScope, String spatialIdentifier, ArrayList<String> measurementTypes) {
-
         this.startTime = startTime;
         this.endTime = endTime;
         this.measurementTypes = measurementTypes;
-
         MongoConnection mongoConnection = new MongoConnection();
         this.siteList = generateSiteList(mongoConnection, spatialScope, spatialIdentifier);
         this.collection = mongoConnection.getCollection(collectionName);
-
-        // streamSparsityData();
     }
 
     private ArrayList<String> generateSiteList(MongoConnection mongoConnection, SSGRequest.ScopeType spatialScope, String spatialIdentifier) {
@@ -120,28 +117,31 @@ public class SparsityScoreGenerator {
         ArrayList<Document> results = this.collection.aggregate(Arrays.asList(
             match, sort, group)).into(new ArrayList<>());
 
+        try {
+            results.forEach(document -> {
+                String monitorId = document.getString("_id");
+                List<Long> timeList = document.getList("epochTimes", Long.class);
+                int numberOfMeasurements = timeList.size();
+                double sparsityScore = getSparsityScore(timeList);
+                double[] coordinates = getCoordinates(monitorId);
 
-        results.forEach(document -> {
-            String monitorId = document.getString("_id");
-            List<Long> timeList = document.getList("epochTimes", Long.class);
-            int numberOfMeasurements = timeList.size();
-            double sparsityScore = getSparsityScore(timeList);
-            double[] coordinates = getCoordinates(monitorId);
+                SSGReply.SiteSparsityData ssd = SSGReply.SiteSparsityData.newBuilder()
+                    .setMonitorId(monitorId)
+                    .setSparsityScore(sparsityScore)
+                    .setCoordinates(SSGReply.Coordinates.newBuilder()
+                        .setLongitude(coordinates[0])
+                        .setLatitude(coordinates[1]))
+                    .setNumberOfMeasurements(numberOfMeasurements)
+                    .build();
 
-            SSGReply.SiteSparsityData ssd = SSGReply.SiteSparsityData.newBuilder()
-                .setMonitorId(monitorId)
-                .setSparsityScore(sparsityScore)
-                .setCoordinates(SSGReply.Coordinates.newBuilder()
-                    .setLongitude(coordinates[0])
-                    .setLatitude(coordinates[1]))
-                .setNumberOfMeasurements(numberOfMeasurements)
-                .build();
-
-            SSGReply reply = SSGReply.newBuilder().setSiteSparsityData(ssd).build();
-            responseObserver.onNext(reply);
-
-        });            
-        responseObserver.onCompleted();
+                SSGReply reply = SSGReply.newBuilder().setSiteSparsityData(ssd).build();
+                responseObserver.onNext(reply);
+            });
+        } catch(Exception e) {
+            logger.warning(e.toString());
+        } finally {
+            responseObserver.onCompleted();
+        }
     }
 
     private Float getSparsityScore(List<Long> timeList) {

@@ -49,11 +49,11 @@ public class SparsityScoreGeneratorClient {
   }
 
   /** Get data from the server. */
-  public void sendClientData(String collectionName, String spatialScope, String spatialIdentifier, Long startTime, Long endTime, ArrayList<String> measurementTypes) {
+  public void sendClientData(String collectionName, SSGRequest.ScopeType spatialScope, String spatialIdentifier, Long startTime, Long endTime, ArrayList<String> measurementTypes) {
     logger.info("Will try to get Sparsity Scores for " + collectionName + "...");
     SSGRequest request = SSGRequest.newBuilder()
         .setCollectionName(collectionName)
-        .setSpatialScope(SSGRequest.ScopeType.COUNTY)
+        .setSpatialScope(spatialScope)
         .setSpatialIdentifier(spatialIdentifier)
         .setStartTime(startTime)
         .setEndTime(endTime)
@@ -74,13 +74,26 @@ public class SparsityScoreGeneratorClient {
     }
   }
 
+  public void sendServerCheck() {
+    logger.info("Checking server connection");
+    ServerConnectionRequest request = ServerConnectionRequest.newBuilder().setHash("test_hash").build();
+    ServerConnectionReply response;
+    try {
+      response = blockingStub.checkServerConnection(request);
+      logger.info("Server Connection: " + response.getStatus());
+    } catch (StatusRuntimeException e) {
+      logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+      return;
+    }
+  }
+
   /**
    * Greet server. If provided, the first element of {@code args} is the name to use in the
    * greeting. The second argument is the target server.
    */
   public static void main(String[] args) throws Exception {
     String collectionName = "water_quality_bodies_of_water";
-    String spatialScope = "COUNTY";
+    SSGRequest.ScopeType spatialScope = SSGRequest.ScopeType.COUNTY;
     String spatialIdentifier = "G0800690";
     Long startTime = 946742626000L;
     Long endTime = 1577894626000L;
@@ -115,8 +128,9 @@ public class SparsityScoreGeneratorClient {
         .usePlaintext()
         .build();
     try {
-        SparsityScoreGeneratorClient client = new SparsityScoreGeneratorClient(channel);
-      client.sendClientData(collectionName, spatialScope, spatialIdentifier, startTime, endTime, measurementTypes);
+      SparsityScoreGeneratorClient client = new SparsityScoreGeneratorClient(channel);
+      // client.sendClientData(collectionName, spatialScope, spatialIdentifier, startTime, endTime, measurementTypes);
+      client.sendServerCheck();
     } finally {
       // ManagedChannels use resources like threads and TCP connections. To prevent leaking these
       // resources the channel should be shut down when it will no longer be used. If it may be used
