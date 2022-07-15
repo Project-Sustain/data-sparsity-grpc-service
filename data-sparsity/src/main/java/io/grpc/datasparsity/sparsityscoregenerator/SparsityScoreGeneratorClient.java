@@ -31,24 +31,16 @@ import java.util.Arrays;
 import java.lang.Long;
 import java.util.Iterator;
 
-/**
- * A simple client that requests a greeting from the {@link HelloWorldServer}.
- */
 public class SparsityScoreGeneratorClient {
   private static final Logger logger = Logger.getLogger(SparsityScoreGeneratorClient.class.getName());
 
   private final FindSparsityScoresGrpc.FindSparsityScoresBlockingStub blockingStub;
 
-  /** Construct client for accessing HelloWorld server using the existing channel. */
   public SparsityScoreGeneratorClient(Channel channel) {
-    // 'channel' here is a Channel, not a ManagedChannel, so it is not this code's responsibility to
-    // shut it down.
 
-    // Passing Channels to code makes code easier to test and makes it easier to reuse Channels.
     blockingStub = FindSparsityScoresGrpc.newBlockingStub(channel);
   }
 
-  /** Get data from the server. */
   public void sendClientData(String collectionName, SSGRequest.ScopeType spatialScope, String spatialIdentifier, Long startTime, Long endTime, ArrayList<String> measurementTypes) {
     logger.info("Will try to get Sparsity Scores for " + collectionName + "...");
     SSGRequest request = SSGRequest.newBuilder()
@@ -74,27 +66,32 @@ public class SparsityScoreGeneratorClient {
     }
   }
 
-  public void sendServerCheck() {
-    logger.info("Checking server connection");
-    ServerConnectionRequest request = ServerConnectionRequest.newBuilder().setHash("test_hash").build();
-    ServerConnectionReply response;
+  public boolean sendConnectionCheck(String type) {
+    logger.info("Checking " + type + " connection");
+    ConnectionRequest request = ConnectionRequest.newBuilder().setMessage(type).build();
+    ConnectionReply response;
+    ConnectionStatus connectionStatus;
     try {
-      response = blockingStub.checkServerConnection(request);
-      logger.info("Server Connection: " + response.getStatus());
+      if(type.equals("server")) {
+        response = blockingStub.checkServerConnection(request);
+      }
+      else {
+        response = blockingStub.checkServerConnection(request);
+      }
+      connectionStatus = response.getStatus();
+      logger.info(type + " connection: " + connectionStatus);
     } catch (StatusRuntimeException e) {
       logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-      return;
+      connectionStatus = ConnectionStatus.FAILURE;
     }
+    if(connectionStatus == ConnectionStatus.SUCCESS) return true;
+    else return false;
   }
 
-  /**
-   * Greet server. If provided, the first element of {@code args} is the name to use in the
-   * greeting. The second argument is the target server.
-   */
   public static void main(String[] args) throws Exception {
     String collectionName = "water_quality_bodies_of_water";
-    SSGRequest.ScopeType spatialScope = SSGRequest.ScopeType.COUNTY;
-    String spatialIdentifier = "G0800690";
+    SSGRequest.ScopeType spatialScope = SSGRequest.ScopeType.STATE;
+    String spatialIdentifier = "G080";
     Long startTime = 946742626000L;
     Long endTime = 1577894626000L;
     ArrayList<String> measurementTypes = new ArrayList<String>();
@@ -119,22 +116,21 @@ public class SparsityScoreGeneratorClient {
       target = args[1];
     }
 
-    // Create a communication channel to the server, known as a Channel. Channels are thread-safe
-    // and reusable. It is common to create channels at the beginning of your application and reuse
-    // them until the application shuts down.
     ManagedChannel channel = ManagedChannelBuilder.forTarget(target)
-        // Channels are secure by default (via SSL/TLS). For the example we disable TLS to avoid
-        // needing certificates.
         .usePlaintext()
         .build();
     try {
       SparsityScoreGeneratorClient client = new SparsityScoreGeneratorClient(channel);
-      // client.sendClientData(collectionName, spatialScope, spatialIdentifier, startTime, endTime, measurementTypes);
-      client.sendServerCheck();
+      if(client.sendConnectionCheck("server")) {
+        logger.info("Server is responsive, checking Database connection");
+        if(client.sendConnectionCheck("database")) {
+          logger.info("Database is responsive, sending Sparsity Query");
+          client.sendClientData(collectionName, spatialScope, spatialIdentifier, startTime, endTime, measurementTypes);
+        }
+        else logger.warning("***Database is NOT Responding***");
+      }
+      else logger.warning("***Server is NOT Responding***");
     } finally {
-      // ManagedChannels use resources like threads and TCP connections. To prevent leaking these
-      // resources the channel should be shut down when it will no longer be used. If it may be used
-      // again leave it running.
       channel.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
     }
   }
