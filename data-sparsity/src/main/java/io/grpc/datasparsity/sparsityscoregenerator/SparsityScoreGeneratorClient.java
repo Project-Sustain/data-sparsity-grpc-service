@@ -49,11 +49,11 @@ public class SparsityScoreGeneratorClient {
   }
 
   /** Get data from the server. */
-  public void sendClientData(String collectionName, String spatialScope, String spatialIdentifier, Long startTime, Long endTime, ArrayList<String> measurementTypes) {
+  public void sendClientData(String collectionName, SSGRequest.ScopeType spatialScope, String spatialIdentifier, Long startTime, Long endTime, ArrayList<String> measurementTypes) {
     logger.info("Will try to get Sparsity Scores for " + collectionName + "...");
     SSGRequest request = SSGRequest.newBuilder()
         .setCollectionName(collectionName)
-        .setSpatialScope(SSGRequest.ScopeType.COUNTY)
+        .setSpatialScope(spatialScope)
         .setSpatialIdentifier(spatialIdentifier)
         .setStartTime(startTime)
         .setEndTime(endTime)
@@ -80,7 +80,7 @@ public class SparsityScoreGeneratorClient {
    */
   public static void main(String[] args) throws Exception {
     String collectionName = "water_quality_bodies_of_water";
-    String spatialScope = "COUNTY";
+    SSGRequest.ScopeType spatialScope = SSGRequest.ScopeType.COUNTY;
     String spatialIdentifier = "G0800690";
     Long startTime = 946742626000L;
     Long endTime = 1577894626000L;
