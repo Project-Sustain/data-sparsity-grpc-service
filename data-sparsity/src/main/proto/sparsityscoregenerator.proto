@@ -22,27 +22,25 @@ package sparsityscoregenerator;
 
 service FindSparsityScores {
 
-  rpc CheckServerConnection (ServerConnectionRequest) returns (ServerConnectionReply) {}
+  rpc CheckServerConnection (ConnectionRequest) returns (ConnectionReply) {}
 
-  // rpc CheckDatabaseConnection (DbRequest) returns (DbReply) {}
+  rpc CheckDatabaseConnection (ConnectionRequest) returns (ConnectionReply) {}
 
   rpc CalculateSparsityScores (SSGRequest) returns (stream SSGReply) {}
 
 }
 
-message ServerConnectionRequest {
-  string hash = 1;
+enum ConnectionStatus {
+  FAILURE = 0;
+  SUCCESS = 1;
 }
 
-message ServerConnectionReply {
+message ConnectionRequest {
+  string message = 1;
+}
 
-  enum ConnectionStatus {
-    FAILURE = 0;
-    SUCCESS = 1;
-  }
-
+message ConnectionReply {
   ConnectionStatus status = 1;
-
 }
 
 message SSGRequest {

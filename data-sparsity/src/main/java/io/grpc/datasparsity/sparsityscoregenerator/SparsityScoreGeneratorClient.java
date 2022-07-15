@@ -74,17 +74,26 @@ public class SparsityScoreGeneratorClient {
     }
   }
 
-  public void sendServerCheck() {
-    logger.info("Checking server connection");
-    ServerConnectionRequest request = ServerConnectionRequest.newBuilder().setHash("test_hash").build();
-    ServerConnectionReply response;
+  public boolean sendConnectionCheck(String type) {
+    logger.info("Checking " + type + " connection");
+    ConnectionRequest request = ConnectionRequest.newBuilder().setMessage(type).build();
+    ConnectionReply response;
+    ConnectionStatus connectionStatus;
     try {
-      response = blockingStub.checkServerConnection(request);
-      logger.info("Server Connection: " + response.getStatus());
+      if(type.equals("server")) {
+        response = blockingStub.checkServerConnection(request);
+      }
+      else {
+        response = blockingStub.checkServerConnection(request);
+      }
+      connectionStatus = response.getStatus();
+      logger.info(type + " connection: " + connectionStatus);
     } catch (StatusRuntimeException e) {
       logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-      return;
+      connectionStatus = ConnectionStatus.FAILURE;
     }
+    if(connectionStatus == ConnectionStatus.SUCCESS) return true;
+    else return false;
   }
 
   /**
@@ -93,8 +102,8 @@ public class SparsityScoreGeneratorClient {
    */
   public static void main(String[] args) throws Exception {
     String collectionName = "water_quality_bodies_of_water";
-    SSGRequest.ScopeType spatialScope = SSGRequest.ScopeType.COUNTY;
-    String spatialIdentifier = "G0800690";
+    SSGRequest.ScopeType spatialScope = SSGRequest.ScopeType.STATE;
+    String spatialIdentifier = "G080";
     Long startTime = 946742626000L;
     Long endTime = 1577894626000L;
     ArrayList<String> measurementTypes = new ArrayList<String>();
@@ -129,8 +138,13 @@ public class SparsityScoreGeneratorClient {
         .build();
     try {
       SparsityScoreGeneratorClient client = new SparsityScoreGeneratorClient(channel);
-      // client.sendClientData(collectionName, spatialScope, spatialIdentifier, startTime, endTime, measurementTypes);
-      client.sendServerCheck();
+      if(client.sendConnectionCheck("server")) {
+        if(client.sendConnectionCheck("database")) {
+          client.sendClientData(collectionName, spatialScope, spatialIdentifier, startTime, endTime, measurementTypes);
+        }
+        else logger.warning("Database is down.");
+      }
+      else logger.warning("Server is not responding.");
     } finally {
       // ManagedChannels use resources like threads and TCP connections. To prevent leaking these
       // resources the channel should be shut down when it will no longer be used. If it may be used

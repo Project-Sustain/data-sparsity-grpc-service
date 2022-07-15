@@ -90,16 +90,32 @@ public class SparsityScoreGeneratorServer {
   static class FindSparsityScoresImpl extends FindSparsityScoresGrpc.FindSparsityScoresImplBase {
 
     @Override
-    public void checkServerConnection(ServerConnectionRequest req, StreamObserver<ServerConnectionReply> responseObserver) {
-      String hash = req.getHash();
-      ServerConnectionReply.ConnectionStatus responseStatus;
-      if(hash.equals("test_hash")) {
-        responseStatus = ServerConnectionReply.ConnectionStatus.SUCCESS;
+    public void checkServerConnection(ConnectionRequest req, StreamObserver<ConnectionReply> responseObserver) {
+      String hash = req.getMessage();
+      ConnectionStatus responseStatus;
+      if(hash.equals("server")) {
+        responseStatus = ConnectionStatus.SUCCESS;
       }
       else {
-        responseStatus = ServerConnectionReply.ConnectionStatus.FAILURE;
+        responseStatus = ConnectionStatus.FAILURE;
       }
-      ServerConnectionReply reply = ServerConnectionReply.newBuilder().setStatus(responseStatus).build();
+      ConnectionReply reply = ConnectionReply.newBuilder().setStatus(responseStatus).build();
+      responseObserver.onNext(reply);
+      responseObserver.onCompleted(); 
+    }
+
+    @Override
+    public void checkDatabaseConnection(ConnectionRequest req, StreamObserver<ConnectionReply> responseObserver) {
+      String hash = req.getMessage();
+      ConnectionStatus responseStatus;
+      MongoConnection mongoConnection = new MongoConnection();
+      if(mongoConnection.getMongoConnection() == null) {
+        responseStatus = ConnectionStatus.FAILURE;
+      }
+      else {
+        responseStatus = ConnectionStatus.SUCCESS;
+      }
+      ConnectionReply reply = ConnectionReply.newBuilder().setStatus(responseStatus).build();
       responseObserver.onNext(reply);
       responseObserver.onCompleted(); 
     }
