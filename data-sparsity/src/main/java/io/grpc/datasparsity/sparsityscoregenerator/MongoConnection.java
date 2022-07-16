@@ -14,7 +14,7 @@ public class MongoConnection {
     private String address = "lattice-100";
     private String port = "27018";
     private String mongoUri = "mongodb://" + username + ":" + password + "@" + address + ":" + port + "/";
-    
+
     private MongoDatabase mongoConnection;
     private MongoClient client;
 
@@ -27,6 +27,9 @@ public class MongoConnection {
         connect();
     }
 
+    /*
+     * Connect to the database
+     */
     private void connect() {
         try {
             this.client = MongoClients.create(mongoUri);
