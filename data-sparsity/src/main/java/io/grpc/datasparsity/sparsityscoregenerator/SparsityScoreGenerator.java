@@ -36,18 +36,8 @@ import java.util.logging.Logger;
 
 public class SparsityScoreGenerator {
 
-    // Logger
     private static final Logger logger = Logger.getLogger(SparsityScoreGenerator.class.getName());
-
-    // Query Params
-    // private Long startTime;
-    // private Long endTime;
-    // private ArrayList<String> measurementTypes;
-    // private ArrayList<String> siteList;
-
-    // Useful References
-    // private MongoConnection mongoConnection; // So we can explicitly close the db connection
-    private ArrayList<Document> results; // So we can stream results in a separate function
+    private ArrayList<Document> results; 
 
     public SparsityScoreGenerator() {}
 
