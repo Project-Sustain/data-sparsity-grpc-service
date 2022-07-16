@@ -9,18 +9,22 @@ import com.mongodb.MongoException;
 
 public class MongoConnection {
 
-    private MongoDatabase mongoConnection;
-    private MongoClient client;
     private String username = System.getenv("ROOT_MONGO_USER");
     private String password = System.getenv("ROOT_MONGO_PASS");
     private String address = "lattice-100";
     private String port = "27018";
     private String mongoUri = "mongodb://" + username + ":" + password + "@" + address + ":" + port + "/";
+    
+    private MongoDatabase mongoConnection;
+    private MongoClient client;
 
-    public MongoConnection() {}
+    public MongoConnection() {
+        connect();
+    }
 
     public MongoConnection(boolean test) {
         mongoUri += "?serverSelectionTimeoutMS=10&connectTimeoutMS=20000";
+        connect();
     }
 
     private void connect() {
