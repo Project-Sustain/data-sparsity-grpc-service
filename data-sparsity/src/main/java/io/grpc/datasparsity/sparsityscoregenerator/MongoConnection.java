@@ -17,11 +17,11 @@ public class MongoConnection {
     private String port = "27018";
     private String mongoUri = "mongodb://" + username + ":" + password + "@" + address + ":" + port + "/";
 
+    public MongoConnection() {}
+
     public MongoConnection(boolean test) {
         mongoUri += "?serverSelectionTimeoutMS=10&connectTimeoutMS=20000";
     }
-
-    public MongoConnection() {}
 
     private void connect() {
         try {
