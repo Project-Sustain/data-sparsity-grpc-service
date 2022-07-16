@@ -96,8 +96,8 @@ public class SparsityScoreGeneratorClient {
 
     // Temporary, hard-coded values
     String collectionName = "water_quality_bodies_of_water";
-    SSGRequest.ScopeType spatialScope = SSGRequest.ScopeType.STATE;
-    String spatialIdentifier = "G080";
+    SSGRequest.ScopeType spatialScope = SSGRequest.ScopeType.COUNTY;
+    String spatialIdentifier = "G0800690";
     Long startTime = 946742626000L;
     Long endTime = 1577894626000L;
     ArrayList<String> measurementTypes = new ArrayList<String>();

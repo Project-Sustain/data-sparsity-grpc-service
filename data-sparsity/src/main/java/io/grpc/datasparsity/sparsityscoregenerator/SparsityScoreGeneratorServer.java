@@ -117,6 +117,8 @@ public class SparsityScoreGeneratorServer {
         responseStatus = ConnectionStatus.SUCCESS;
       } catch(Exception e) {
         responseStatus = ConnectionStatus.FAILURE;
+      } finally {
+        mongoConnection.closeConnection();
       }
       ConnectionReply reply = ConnectionReply.newBuilder().setStatus(responseStatus).build();
       responseObserver.onNext(reply);

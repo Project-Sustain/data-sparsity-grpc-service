@@ -23,7 +23,7 @@ public class MongoConnection {
     }
 
     public MongoConnection(boolean test) {
-        mongoUri += "?serverSelectionTimeoutMS=10&connectTimeoutMS=20000";
+        mongoUri += "?serverSelectionTimeoutMS=100&connectTimeoutMS=20000";
         connect();
     }
 
