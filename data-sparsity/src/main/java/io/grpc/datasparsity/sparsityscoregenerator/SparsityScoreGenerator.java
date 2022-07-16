@@ -49,9 +49,7 @@ public class SparsityScoreGenerator {
     // private MongoConnection mongoConnection; // So we can explicitly close the db connection
     private ArrayList<Document> results; // So we can stream results in a separate function
 
-    public SparsityScoreGenerator() {
-        // this.mongoConnection = new MongoConnection();
-    }
+    public SparsityScoreGenerator() {}
 
     public void makeSparsityQuery(AggregateQuery aggregateQuery, String collectionName) {
         MongoConnection mongoConnection = new MongoConnection();

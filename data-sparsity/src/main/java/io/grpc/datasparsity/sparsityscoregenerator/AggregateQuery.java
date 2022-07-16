@@ -36,18 +36,18 @@ import java.util.logging.Logger;
 
 public class AggregateQuery {
     private static final Logger logger = Logger.getLogger(AggregateQuery.class.getName());
-    Bson sort;
-    Bson group;
-    Bson match;
+    private List<Bson> query;
 
     public AggregateQuery(Long startTime, Long endTime, ArrayList<String> measurementTypes, SSGRequest.ScopeType spatialScope, String spatialIdentifier) {
-        this.sort = Aggregates.sort(ascending("epoch_time"));
+        Bson sort = Aggregates.sort(ascending("epoch_time"));
 
         BsonField accumulator = new BsonField("epochTimes", new Document("$push", "$epoch_time"));
-        this.group = Aggregates.group("$MonitoringLocationIdentifier", accumulator);
+        Bson group = Aggregates.group("$MonitoringLocationIdentifier", accumulator);
 
         ArrayList<String> siteList = generateSiteList(spatialScope, spatialIdentifier);
-        this.match = buildMatchFilters(startTime, endTime, measurementTypes, siteList);
+        Bson match = buildMatchFilters(startTime, endTime, measurementTypes, siteList);
+
+        this.query = Arrays.asList(sort, group, match);
     }
 
     /*
@@ -94,7 +94,6 @@ public class AggregateQuery {
 
         return siteList;
     }
-
 
     /*
      * Helper for makeSparsityQuery()
@@ -143,7 +142,7 @@ public class AggregateQuery {
     }
 
     public List<Bson> getQuery() {
-        return Arrays.asList(sort, group, match);
+        return this.query;
     }
     
 }
