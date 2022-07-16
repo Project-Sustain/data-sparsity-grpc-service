@@ -50,7 +50,9 @@ public class AggregateQuery {
         BsonField accumulator = new BsonField("epochTimes", new Document("$push", "$epoch_time"));
         Bson group = Aggregates.group("$MonitoringLocationIdentifier", accumulator);
 
-        ArrayList<String> siteList = generateSiteList(spatialScope, spatialIdentifier);
+        MongoConnection mongoConnection = new MongoConnection();
+        ArrayList<String> siteList = generateSiteList(spatialScope, spatialIdentifier, mongoConnection);
+        mongoConnection.closeConnection();
         Bson match = buildMatchFilters(startTime, endTime, measurementTypes, siteList);
 
         this.query = Arrays.asList(match, sort, group);
@@ -64,8 +66,7 @@ public class AggregateQuery {
      *      2: spatialIdentifier is a GISJOIN `if` spatialScope is STATE or COUNTY, `else an empty string`
      * @Returns List of observation site ID's
      */
-    private ArrayList<String> generateSiteList(SSGRequest.ScopeType spatialScope, String spatialIdentifier) {
-        MongoConnection mongoConnection = new MongoConnection();
+    private ArrayList<String> generateSiteList(SSGRequest.ScopeType spatialScope, String spatialIdentifier, MongoConnection mongoConnection) {
         switch(spatialScope) {
             case STATE: return getSiteListFromGeoWitin(mongoConnection, "state_geo", spatialIdentifier);
             case COUNTY: return getSiteListFromGeoWitin(mongoConnection, "county_geo", spatialIdentifier);
