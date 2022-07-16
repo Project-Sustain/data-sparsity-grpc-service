@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
+import static com.mongodb.client.model.Filters.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,11 +99,11 @@ public class SparsityScoreGeneratorServer {
       String hash = req.getMessage();
       ConnectionStatus responseStatus;
       MongoConnection mongoConnection = new MongoConnection();
-      if(mongoConnection.getMongoConnection() == null) {
-        responseStatus = ConnectionStatus.FAILURE;
+      if(mongoConnection.getMongoConnection() != null) {
+        responseStatus = ConnectionStatus.SUCCESS;
       }
       else {
-        responseStatus = ConnectionStatus.SUCCESS;
+        responseStatus = ConnectionStatus.FAILURE;
       }
       ConnectionReply reply = ConnectionReply.newBuilder().setStatus(responseStatus).build();
       responseObserver.onNext(reply);
@@ -122,7 +123,8 @@ public class SparsityScoreGeneratorServer {
         measurementTypes.add(measurementType.toString());
       }
 
-      SparsityScoreGenerator ssg = new SparsityScoreGenerator(collectionName, startTime, endTime, spatialScope, spatialIdentifier, measurementTypes);
+      SparsityScoreGenerator ssg = new SparsityScoreGenerator(startTime, endTime, spatialScope, spatialIdentifier, measurementTypes);
+      ssg.makeSparsityQuery(collectionName);
       ssg.streamSparsityData(responseObserver);
       
     }

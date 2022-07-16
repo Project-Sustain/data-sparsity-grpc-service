@@ -10,6 +10,7 @@ import com.mongodb.MongoException;
 public class MongoConnection {
 
     private MongoDatabase mongoConnection;
+    private MongoClient client;
 
     public MongoConnection() {
 
@@ -20,12 +21,16 @@ public class MongoConnection {
         String mongoUri = "mongodb://" + username + ":" + password + "@" + address + ":" + port + "/";
 
         try {
-            MongoClient client = MongoClients.create(mongoUri);
-            this.mongoConnection = client.getDatabase("sustaindb");
+            this.client = MongoClients.create(mongoUri);
+            this.mongoConnection = this.client.getDatabase("sustaindb");
         } catch (MongoException me) {
             System.err.println("An error occurred: " + me);
             this.mongoConnection = null;
         }
+    }
+
+    public void closeConnection() {
+        this.client.close();
     }
 
     public MongoDatabase getMongoConnection() {

@@ -90,8 +90,8 @@ public class SparsityScoreGeneratorClient {
 
   public static void main(String[] args) throws Exception {
     String collectionName = "water_quality_bodies_of_water";
-    SSGRequest.ScopeType spatialScope = SSGRequest.ScopeType.STATE;
-    String spatialIdentifier = "G080";
+    SSGRequest.ScopeType spatialScope = SSGRequest.ScopeType.COUNTY;
+    String spatialIdentifier = "G0800690";
     Long startTime = 946742626000L;
     Long endTime = 1577894626000L;
     ArrayList<String> measurementTypes = new ArrayList<String>();
@@ -99,7 +99,6 @@ public class SparsityScoreGeneratorClient {
     measurementTypes.add("Phosphate");
     measurementTypes.add("Sulphate");
     measurementTypes.add("Temperature, water");
-    // Access a service running on the local machine on port 50051
     String target = grpcConstants.ipAddress + ":" + grpcConstants.portNum;
     // Allow passing in the user and target strings as command line arguments
     if (args.length > 0) {

@@ -35,88 +35,52 @@ import io.grpc.stub.StreamObserver;
 import java.util.logging.Logger;
 
 public class SparsityScoreGenerator {
+
+    // Logger
     private static final Logger logger = Logger.getLogger(SparsityScoreGenerator.class.getName());
 
+    // Query Params
     private Long startTime;
     private Long endTime;
     private ArrayList<String> measurementTypes;
-
-    private MongoCollection<Document> collection;
     private ArrayList<String> siteList;
-    private ArrayList<SSGReply.SiteSparsityData> sparsityData;
 
-    public SparsityScoreGenerator(String collectionName, Long startTime, Long endTime, SSGRequest.ScopeType spatialScope, String spatialIdentifier, ArrayList<String> measurementTypes) {
+    // Useful References
+    private MongoConnection mongoConnection; // So we can explicitly close the db connection
+    private ArrayList<Document> results; // So we can stream results in a separate function
+
+    /*
+     * Builds & stores data for the Query
+     * Creates useful references
+     */
+    public SparsityScoreGenerator(Long startTime, Long endTime, SSGRequest.ScopeType spatialScope, String spatialIdentifier, ArrayList<String> measurementTypes) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.measurementTypes = measurementTypes;
-        MongoConnection mongoConnection = new MongoConnection();
-        this.siteList = generateSiteList(mongoConnection, spatialScope, spatialIdentifier);
-        this.collection = mongoConnection.getCollection(collectionName);
+        this.mongoConnection = new MongoConnection();
+        this.siteList = generateSiteList(this.mongoConnection, spatialScope, spatialIdentifier);
     }
 
-    private ArrayList<String> generateSiteList(MongoConnection mongoConnection, SSGRequest.ScopeType spatialScope, String spatialIdentifier) {
-        switch(spatialScope) {
-            case COUNTRY: return null;
-            case STATE: return getSiteListFromGeoWitin(mongoConnection, "state_geo", spatialIdentifier);
-            case COUNTY: return getSiteListFromGeoWitin(mongoConnection, "county_geo", spatialIdentifier);
-            case SITE: return new ArrayList<String>(Arrays.asList(spatialIdentifier));
-            default: 
-                logger.info("Bad spatialScope type.");
-                System.exit(1);
-                return null;
-        }
-    }
-
-    private ArrayList<String> getSiteListFromGeoWitin(MongoConnection mongoConnection, String collection, String spatialIdentifier) {
-        Document shapefile = mongoConnection.getCollection(collection).find(eq("GISJOIN", spatialIdentifier)).first();
-        Document geoDoc = shapefile.get("geometry", Document.class);
-        String geoType = geoDoc.getString("type");
-        List geoCoord = geoDoc.get("coordinates", List.class);
-        BasicDBObject geometry = new BasicDBObject("type", geoType).append("coordinates", geoCoord);
-        Bson match =  Aggregates.match(geoWithin("geometry.coordinates", geometry));
-
-        Bson project = Aggregates.project(fields(excludeId(), include("MonitoringLocationIdentifier")));
-
-        // REFACTOR: in the aggregation pipeline, change {"MonitoringLocationIdentifier": "21FLBFA_WQX-33010005"} 
-        //      to "21FLBFA_WQX-33010005" to avoid creating another ArrayList
-
-        // FIXME: `water_quality_sites` is hard-coded here
-        ArrayList<Document> results = mongoConnection.getCollection("water_quality_sites").aggregate(
-            Arrays.asList(match, project)).into(new ArrayList<>());
-
-        ArrayList<String> siteList = new ArrayList<>();
-        results.forEach(item -> siteList.add(item.getString("MonitoringLocationIdentifier")));
-
-        return siteList;
-    }
-
-    public void streamSparsityData(StreamObserver<SSGReply> responseObserver) {
-
+    /*
+     * Queries MongoDB & stores the result of the query in @this.result
+     * @Params: String collectionName representing the collection specified by the Client
+     */
+    public void makeSparsityQuery(String collectionName) {
         Bson sort = Aggregates.sort(ascending("epoch_time"));
         BsonField accumulator = new BsonField("epochTimes", new Document("$push", "$epoch_time"));
         Bson group = Aggregates.group("$MonitoringLocationIdentifier", accumulator);
-
-        List<Bson> matchFilters = new ArrayList<>();
-        matchFilters.add(gte("epoch_time", this.startTime));
-        matchFilters.add(lte("epoch_time", this.endTime));
-
-        if(this.measurementTypes.size() != 0) {
-            List<Bson> dataConstraints = new ArrayList<>();
-            this.measurementTypes.forEach(measurementType -> {
-                dataConstraints.add(exists(measurementType));
-            });
-            matchFilters.add(or(dataConstraints));
-        }
-
-        if(this.siteList != null) {
-            matchFilters.add(in("MonitoringLocationIdentifier", this.siteList));
-        }
-
-        Bson match = Aggregates.match(and(matchFilters));
-
-        ArrayList<Document> results = this.collection.aggregate(Arrays.asList(
+        Bson match = buildMatchFilters();
+        ArrayList<Document> queryResults = this.mongoConnection.getCollection(collectionName).aggregate(Arrays.asList(
             match, sort, group)).into(new ArrayList<>());
+        this.results = queryResults;
+        this.mongoConnection.closeConnection();
+    }
 
+    /*
+     * Streams query results back to the Client
+     * @Params: Reference to a StreamObserver
+     */
+    public void streamSparsityData(StreamObserver<SSGReply> responseObserver) {
         try {
             results.forEach(document -> {
                 String monitorId = document.getString("_id");
@@ -144,6 +108,102 @@ public class SparsityScoreGenerator {
         }
     }
 
+    /*
+     * Helper for the Constructor
+     * Generates the list of sites representing the Spatial Scope of the query
+     */
+    private ArrayList<String> generateSiteList(MongoConnection mongoConnection, SSGRequest.ScopeType spatialScope, String spatialIdentifier) {
+        switch(spatialScope) {
+            case COUNTRY: return null;
+            case STATE: return getSiteListFromGeoWitin(mongoConnection, "state_geo", spatialIdentifier);
+            case COUNTY: return getSiteListFromGeoWitin(mongoConnection, "county_geo", spatialIdentifier);
+            case SITE: return new ArrayList<String>(Arrays.asList(spatialIdentifier));
+            default: 
+                logger.info("Bad spatialScope type.");
+                System.exit(1);
+                return null;
+        }
+    }
+
+    /*
+     * Helper for generateSiteList
+     * Builds & submits the $geoWithin query to MongoDB
+     */
+    private ArrayList<String> getSiteListFromGeoWitin(MongoConnection mongoConnection, String collection, String spatialIdentifier) {
+        Document shapefile = mongoConnection.getCollection(collection).find(eq("GISJOIN", spatialIdentifier)).first();
+        Document geoDoc = shapefile.get("geometry", Document.class);
+        String geoType = geoDoc.getString("type");
+        List geoCoord = geoDoc.get("coordinates", List.class);
+        BasicDBObject geometry = new BasicDBObject("type", geoType).append("coordinates", geoCoord);
+        Bson match =  Aggregates.match(geoWithin("geometry.coordinates", geometry));
+
+        Bson project = Aggregates.project(fields(excludeId(), include("MonitoringLocationIdentifier")));
+
+        // REFACTOR: in the aggregation pipeline, change {"MonitoringLocationIdentifier": "21FLBFA_WQX-33010005"} 
+        //      to "21FLBFA_WQX-33010005" to avoid creating another ArrayList
+
+        // FIXME: `water_quality_sites` is hard-coded here
+        ArrayList<Document> results = mongoConnection.getCollection("water_quality_sites").aggregate(
+            Arrays.asList(match, project)).into(new ArrayList<>());
+
+        ArrayList<String> siteList = new ArrayList<>();
+        results.forEach(item -> siteList.add(item.getString("MonitoringLocationIdentifier")));
+
+        return siteList;
+    }
+
+    /*
+     * Helper for makeSparsityQuery()
+     * Builds the match filters based off of client input
+     */
+    private Bson buildMatchFilters() {
+        List<Bson> matchFilters = new ArrayList<>();
+        buildTemporalFilter(matchFilters);
+        buildDataFilter(matchFilters);
+        buildSpatialFilter(matchFilters);
+        Bson match = Aggregates.match(and(matchFilters));
+        return match;
+    }
+
+    /*
+     * Helper for buildMatchFilters()
+     * Builds the temporal filter
+     */
+    private void buildTemporalFilter(List<Bson> matchFilters) {
+        matchFilters.add(gte("epoch_time", this.startTime));
+        matchFilters.add(lte("epoch_time", this.endTime));
+    }
+
+    /*
+     * Helper for buildMatchFilters()
+     * Builds the data filter
+     */
+    private void buildDataFilter(List<Bson> matchFilters) {
+        if(this.measurementTypes.size() != 0) {
+            List<Bson> dataConstraints = new ArrayList<>();
+            this.measurementTypes.forEach(measurementType -> {
+                dataConstraints.add(exists(measurementType));
+            });
+            matchFilters.add(or(dataConstraints));
+        }
+    }
+
+    /*
+     * Helper for buildMatchFilters()
+     * Builds the spatial filter
+     */
+    private void buildSpatialFilter(List<Bson> matchFilters) {
+        if(this.siteList != null) {
+            matchFilters.add(in("MonitoringLocationIdentifier", this.siteList));
+        }
+    }
+
+    /*
+     * Helper for streamSparsityData()
+     * Calculates the sparsity score
+     * @Params: List containing the sorted epoch_times for a given observation site
+     * @Returns: Float representing the Sparsity Score for a given observation site
+     */
     private Float getSparsityScore(List<Long> timeList) {
         try {  
             Long sumOfDifferences = new Long(0);
@@ -165,6 +225,12 @@ public class SparsityScoreGenerator {
         }
     }
     
+    /*
+     * Helper for streamSparsityData()
+     * Queries MongoDB for the location of the observation site represented by the monitorId passed in
+     * @Params: String representing a monitorId
+     * @Returns: double[] containing [longitude, latitude] for a observation site
+     */
     private double[] getCoordinates(String monitorId) {
         MongoConnection mongoConnection = new MongoConnection();
         Document siteDocument = mongoConnection.getCollection("water_quality_sites").find(eq("MonitoringLocationIdentifier", monitorId)).first();
@@ -174,10 +240,6 @@ public class SparsityScoreGenerator {
         double latitude = Double.parseDouble(geoCoord.get(1).toString());
         double[] coordinates = {longitude, latitude};
         return coordinates;
-    }
-
-    public ArrayList<SSGReply.SiteSparsityData> getSparsityData() {
-        return this.sparsityData;
     }
 
 }
