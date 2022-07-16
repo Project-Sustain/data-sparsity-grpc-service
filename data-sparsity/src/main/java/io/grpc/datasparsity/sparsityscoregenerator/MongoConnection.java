@@ -11,17 +11,19 @@ public class MongoConnection {
 
     private MongoDatabase mongoConnection;
     private MongoClient client;
+    private String username = System.getenv("ROOT_MONGO_USER");
+    private String password = System.getenv("ROOT_MONGO_PASS");
+    private String address = "lattice-100";
+    private String port = "27018";
+    private String mongoUri = "mongodb://" + username + ":" + password + "@" + address + ":" + port + "/";
 
-    public MongoConnection() {
+    public MongoConnection(boolean test) {
+        mongoUri += "?serverSelectionTimeoutMS=10&connectTimeoutMS=20000";
+    }
 
-        // Connection URI Data
-        String username = System.getenv("ROOT_MONGO_USER");
-        String password = System.getenv("ROOT_MONGO_PASS");
-        String address = "lattice-100";
-        String port = "27018";
-        String mongoUri = "mongodb://" + username + ":" + password + "@" + address + ":" + port + "/";
+    public MongoConnection() {}
 
-        // Connect, handle exceptions
+    private void connect() {
         try {
             this.client = MongoClients.create(mongoUri);
             this.mongoConnection = this.client.getDatabase("sustaindb");

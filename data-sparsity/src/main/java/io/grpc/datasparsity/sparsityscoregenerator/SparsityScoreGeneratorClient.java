@@ -96,8 +96,8 @@ public class SparsityScoreGeneratorClient {
 
     // Temporary, hard-coded values
     String collectionName = "water_quality_bodies_of_water";
-    SSGRequest.ScopeType spatialScope = SSGRequest.ScopeType.COUNTY;
-    String spatialIdentifier = "G0800690";
+    SSGRequest.ScopeType spatialScope = SSGRequest.ScopeType.STATE;
+    String spatialIdentifier = "G080";
     Long startTime = 946742626000L;
     Long endTime = 1577894626000L;
     ArrayList<String> measurementTypes = new ArrayList<String>();
@@ -114,8 +114,6 @@ public class SparsityScoreGeneratorClient {
         .build();
     try {
       SparsityScoreGeneratorClient client = new SparsityScoreGeneratorClient(channel);
-
-      // client.sendSparsityScoreRequest(collectionName, spatialScope, spatialIdentifier, startTime, endTime, measurementTypes);
 
       // Check if Server is responding
       if(client.sendConnectionCheck("server")) {

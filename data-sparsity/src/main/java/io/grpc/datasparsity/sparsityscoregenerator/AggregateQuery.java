@@ -50,7 +50,7 @@ public class AggregateQuery {
         BsonField accumulator = new BsonField("epochTimes", new Document("$push", "$epoch_time"));
         Bson group = Aggregates.group("$MonitoringLocationIdentifier", accumulator);
 
-        MongoConnection mongoConnection = new MongoConnection();
+        MongoConnection mongoConnection = new MongoConnection(false);
         ArrayList<String> siteList = generateSiteList(spatialScope, spatialIdentifier, mongoConnection);
         mongoConnection.closeConnection();
         Bson match = buildMatchFilters(startTime, endTime, measurementTypes, siteList);

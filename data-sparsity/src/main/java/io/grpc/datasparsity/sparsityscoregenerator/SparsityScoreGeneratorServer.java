@@ -111,14 +111,13 @@ public class SparsityScoreGeneratorServer {
     @Override
     public void checkDatabaseConnection(ConnectionRequest req, StreamObserver<ConnectionReply> responseObserver) {
       ConnectionStatus responseStatus;
-      MongoConnection mongoConnection = new MongoConnection();
-      if(mongoConnection.getMongoConnection() != null) {
+      MongoConnection mongoConnection = new MongoConnection(true);
+      try {
+        Document document = mongoConnection.getCollection("state_geo").find().first();
         responseStatus = ConnectionStatus.SUCCESS;
-      }
-      else {
+      } catch(Exception e) {
         responseStatus = ConnectionStatus.FAILURE;
       }
-      logger.info(responseStatus.toString());
       ConnectionReply reply = ConnectionReply.newBuilder().setStatus(responseStatus).build();
       responseObserver.onNext(reply);
       responseObserver.onCompleted(); 
