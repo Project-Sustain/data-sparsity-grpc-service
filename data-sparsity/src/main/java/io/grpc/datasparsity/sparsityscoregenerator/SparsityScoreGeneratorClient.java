@@ -37,11 +37,13 @@ public class SparsityScoreGeneratorClient {
   private final FindSparsityScoresGrpc.FindSparsityScoresBlockingStub blockingStub;
 
   public SparsityScoreGeneratorClient(Channel channel) {
-
     blockingStub = FindSparsityScoresGrpc.newBlockingStub(channel);
   }
 
-  public void sendClientData(String collectionName, SSGRequest.ScopeType spatialScope, String spatialIdentifier, Long startTime, Long endTime, ArrayList<String> measurementTypes) {
+  /*
+   * Sends client-defined data to the server for Sparsity data calculation
+   */
+  public void sendSparsityScoreRequest(String collectionName, SSGRequest.ScopeType spatialScope, String spatialIdentifier, Long startTime, Long endTime, ArrayList<String> measurementTypes) {
     logger.info("Will try to get Sparsity Scores for " + collectionName + "...");
     SSGRequest request = SSGRequest.newBuilder()
         .setCollectionName(collectionName)
@@ -66,6 +68,9 @@ public class SparsityScoreGeneratorClient {
     }
   }
 
+  /*
+   * Checks to see if their the server or database are responding
+   */
   public boolean sendConnectionCheck(String type) {
     logger.info("Checking " + type + " connection");
     ConnectionRequest request = ConnectionRequest.newBuilder().setMessage(type).build();
@@ -89,9 +94,11 @@ public class SparsityScoreGeneratorClient {
   }
 
   public static void main(String[] args) throws Exception {
+
+    // Temporary, hard-coded values
     String collectionName = "water_quality_bodies_of_water";
-    SSGRequest.ScopeType spatialScope = SSGRequest.ScopeType.STATE;
-    String spatialIdentifier = "G080";
+    SSGRequest.ScopeType spatialScope = SSGRequest.ScopeType.COUNTY;
+    String spatialIdentifier = "G0800690";
     Long startTime = 946742626000L;
     Long endTime = 1577894626000L;
     ArrayList<String> measurementTypes = new ArrayList<String>();
@@ -99,37 +106,35 @@ public class SparsityScoreGeneratorClient {
     measurementTypes.add("Phosphate");
     measurementTypes.add("Sulphate");
     measurementTypes.add("Temperature, water");
-    // Access a service running on the local machine on port 50051
-    String target = grpcConstants.ipAddress + ":" + grpcConstants.portNum;
-    // Allow passing in the user and target strings as command line arguments
-    if (args.length > 0) {
-      if ("--help".equals(args[0])) {
-        System.err.println("Usage: [name [target]]");
-        System.err.println("");
-        System.err.println("  name    The collection you want a Monitor ID for. Defaults to " + collectionName);
-        System.err.println("  target  The server to connect to. Defaults to " + target);
-        System.exit(1);
-      }
-      collectionName = args[0];
-    }
-    if (args.length > 1) {
-      target = args[1];
-    }
+    // END Temporary, hard-coded values
 
+    // Boiler-plate Client setup
+    String target = grpcConstants.ipAddress + ":" + grpcConstants.portNum;
     ManagedChannel channel = ManagedChannelBuilder.forTarget(target)
         .usePlaintext()
         .build();
     try {
       SparsityScoreGeneratorClient client = new SparsityScoreGeneratorClient(channel);
-      if(client.sendConnectionCheck("server")) {
-        logger.info("Server is responsive, checking Database connection");
-        if(client.sendConnectionCheck("database")) {
-          logger.info("Database is responsive, sending Sparsity Query");
-          client.sendClientData(collectionName, spatialScope, spatialIdentifier, startTime, endTime, measurementTypes);
-        }
-        else logger.warning("***Database is NOT Responding***");
-      }
-      else logger.warning("***Server is NOT Responding***");
+
+      client.sendSparsityScoreRequest(collectionName, spatialScope, spatialIdentifier, startTime, endTime, measurementTypes);
+
+      // // Check if Server is responding
+      // if(client.sendConnectionCheck("server")) {
+      //   logger.info("Server is responsive, checking Database connection");
+
+      //   // Check if Database is responding
+      //   if(client.sendConnectionCheck("database")) {
+      //     logger.info("Database is responsive, sending Sparsity Query");
+
+      //     // Send Sparsity Score Request
+      //     client.sendSparsityScoreRequest(collectionName, spatialScope, spatialIdentifier, startTime, endTime, measurementTypes);
+      //   }
+
+      //   else logger.warning("***Database is NOT Responding***");
+      // }
+
+      // else logger.warning("***Server is NOT Responding***");
+
     } finally {
       channel.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
     }
