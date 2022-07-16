@@ -38,6 +38,8 @@ public class SparsityScoreGeneratorServer {
 
   private Server server;
 
+
+  // Boiler-plate helper for server setup & maintenance
   private void start() throws IOException {
     int port = grpcConstants.portNum;
     server = ServerBuilder.forPort(port)
@@ -59,12 +61,14 @@ public class SparsityScoreGeneratorServer {
     });
   }
 
+  // Boiler-plate helper for server setup & maintenance
   private void stop() throws InterruptedException {
     if (server != null) {
       server.shutdown().awaitTermination(30, TimeUnit.SECONDS);
     }
   }
 
+  // Boiler-plate helper for server setup & maintenance
   private void blockUntilShutdown() throws InterruptedException {
     if (server != null) {
       server.awaitTermination();
@@ -72,6 +76,8 @@ public class SparsityScoreGeneratorServer {
   }
 
   public static void main(String[] args) throws IOException, InterruptedException {
+
+     // Boiler-plate server setup & maintenance
     final SparsityScoreGeneratorServer server = new SparsityScoreGeneratorServer();
     server.start();
     server.blockUntilShutdown();
@@ -79,6 +85,10 @@ public class SparsityScoreGeneratorServer {
 
   static class FindSparsityScoresImpl extends FindSparsityScoresGrpc.FindSparsityScoresImplBase {
 
+    /*
+     * Overrides the CheckServerConnection rpc specified in the sparsityscoregenerator.proto file
+     * Checks to see if there is a connection to the server before attempting to connection to MongoDB
+     */
     @Override
     public void checkServerConnection(ConnectionRequest req, StreamObserver<ConnectionReply> responseObserver) {
       String hash = req.getMessage();
@@ -94,6 +104,10 @@ public class SparsityScoreGeneratorServer {
       responseObserver.onCompleted(); 
     }
 
+    /*
+     * Overrides the CheckDatabaseConnection rpc specified in the sparsityscoregenerator.proto file
+     * Checks to see if there is a connection to MongoDB before attempting to query
+     */
     @Override
     public void checkDatabaseConnection(ConnectionRequest req, StreamObserver<ConnectionReply> responseObserver) {
       String hash = req.getMessage();
@@ -110,8 +124,14 @@ public class SparsityScoreGeneratorServer {
       responseObserver.onCompleted(); 
     }
 
+    /*
+     * Overrides the CalculateSparsityScores rpc specified in the sparsityscoregenerator.proto file
+     * This is where sparsity score calculation begins
+     */
     @Override
     public void calculateSparsityScores(SSGRequest req, StreamObserver<SSGReply> responseObserver) {
+
+      // Extract client-defined params
       String collectionName = req.getCollectionName();
       SSGRequest.ScopeType spatialScope = req.getSpatialScope();
       String spatialIdentifier = req.getSpatialIdentifier();
@@ -123,6 +143,7 @@ public class SparsityScoreGeneratorServer {
         measurementTypes.add(measurementType.toString());
       }
 
+      // Generate sparsity data
       SparsityScoreGenerator ssg = new SparsityScoreGenerator(startTime, endTime, spatialScope, spatialIdentifier, measurementTypes);
       ssg.makeSparsityQuery(collectionName);
       ssg.streamSparsityData(responseObserver);
