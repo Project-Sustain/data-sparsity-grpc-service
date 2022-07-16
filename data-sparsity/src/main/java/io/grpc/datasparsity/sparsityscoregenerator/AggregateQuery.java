@@ -53,7 +53,7 @@ public class AggregateQuery {
         ArrayList<String> siteList = generateSiteList(spatialScope, spatialIdentifier);
         Bson match = buildMatchFilters(startTime, endTime, measurementTypes, siteList);
 
-        this.query = Arrays.asList(sort, group, match);
+        this.query = Arrays.asList(match, sort, group);
     }
 
     /*
@@ -66,15 +66,12 @@ public class AggregateQuery {
      */
     private ArrayList<String> generateSiteList(SSGRequest.ScopeType spatialScope, String spatialIdentifier) {
         MongoConnection mongoConnection = new MongoConnection();
-        ArrayList<String> siteList;
         switch(spatialScope) {
-            case STATE: siteList = getSiteListFromGeoWitin(mongoConnection, "state_geo", spatialIdentifier);
-            case COUNTY: siteList = getSiteListFromGeoWitin(mongoConnection, "county_geo", spatialIdentifier);
-            case SITE: siteList = new ArrayList<String>(Arrays.asList(spatialIdentifier));
-            default: siteList = null;
+            case STATE: return getSiteListFromGeoWitin(mongoConnection, "state_geo", spatialIdentifier);
+            case COUNTY: return getSiteListFromGeoWitin(mongoConnection, "county_geo", spatialIdentifier);
+            case SITE: return new ArrayList<String>(Arrays.asList(spatialIdentifier));
+            default: return null;
         }
-        mongoConnection.closeConnection();
-        return siteList;
     }
 
     /*
