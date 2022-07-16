@@ -54,7 +54,7 @@ public class SparsityScoreGenerator {
     public void makeSparsityQuery(AggregateQuery aggregateQuery, String collectionName) {
         MongoConnection mongoConnection = new MongoConnection();
         MongoCollection<Document> collection = mongoConnection.getCollection(collectionName);
-        ArrayList<Document> queryResults = collection.aggregate(aggregateQuery.getQuery(), allowDiskUse=True).into(new ArrayList<>());
+        ArrayList<Document> queryResults = collection.aggregate(aggregateQuery.getQuery()).allowDiskUse(true).into(new ArrayList<>());
         this.results = queryResults;
         mongoConnection.closeConnection();
     }
