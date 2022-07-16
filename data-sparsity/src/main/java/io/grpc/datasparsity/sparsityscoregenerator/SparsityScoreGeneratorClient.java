@@ -116,22 +116,24 @@ public class SparsityScoreGeneratorClient {
     try {
       SparsityScoreGeneratorClient client = new SparsityScoreGeneratorClient(channel);
 
-      // Check if Server is responding
-      if(client.sendConnectionCheck("server")) {
-        logger.info("Server is responsive, checking Database connection");
+      client.sendSparsityScoreRequest(collectionName, spatialScope, spatialIdentifier, startTime, endTime, measurementTypes);
 
-        // Check if Database is responding
-        if(client.sendConnectionCheck("database")) {
-          logger.info("Database is responsive, sending Sparsity Query");
+      // // Check if Server is responding
+      // if(client.sendConnectionCheck("server")) {
+      //   logger.info("Server is responsive, checking Database connection");
 
-          // Send Sparsity Score Request
-          client.sendSparsityScoreRequest(collectionName, spatialScope, spatialIdentifier, startTime, endTime, measurementTypes);
-        }
+      //   // Check if Database is responding
+      //   if(client.sendConnectionCheck("database")) {
+      //     logger.info("Database is responsive, sending Sparsity Query");
 
-        else logger.warning("***Database is NOT Responding***");
-      }
+      //     // Send Sparsity Score Request
+      //     client.sendSparsityScoreRequest(collectionName, spatialScope, spatialIdentifier, startTime, endTime, measurementTypes);
+      //   }
 
-      else logger.warning("***Server is NOT Responding***");
+      //   else logger.warning("***Database is NOT Responding***");
+      // }
+
+      // else logger.warning("***Server is NOT Responding***");
 
     } finally {
       channel.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
