@@ -110,7 +110,6 @@ public class SparsityScoreGeneratorServer {
      */
     @Override
     public void checkDatabaseConnection(ConnectionRequest req, StreamObserver<ConnectionReply> responseObserver) {
-      String hash = req.getMessage();
       ConnectionStatus responseStatus;
       MongoConnection mongoConnection = new MongoConnection();
       if(mongoConnection.getMongoConnection() != null) {
@@ -119,6 +118,7 @@ public class SparsityScoreGeneratorServer {
       else {
         responseStatus = ConnectionStatus.FAILURE;
       }
+      logger.info(responseStatus.toString());
       ConnectionReply reply = ConnectionReply.newBuilder().setStatus(responseStatus).build();
       responseObserver.onNext(reply);
       responseObserver.onCompleted(); 
