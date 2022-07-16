@@ -143,9 +143,14 @@ public class SparsityScoreGeneratorServer {
         measurementTypes.add(measurementType.toString());
       }
 
+      AggregateQuery aggregateQuery = new AggregateQuery(startTime, endTime, measurementTypes, spatialScope, spatialIdentifier);
+
       // Generate sparsity data
-      SparsityScoreGenerator ssg = new SparsityScoreGenerator(startTime, endTime, spatialScope, spatialIdentifier, measurementTypes);
-      ssg.makeSparsityQuery(collectionName);
+      
+      // SparsityScoreGenerator ssg = new SparsityScoreGenerator(startTime, endTime, spatialScope, spatialIdentifier, measurementTypes);
+      SparsityScoreGenerator ssg = new SparsityScoreGenerator();
+      // ssg.makeSparsityQuery(collectionName);
+      ssg.makeSparsityQuery(aggregateQuery, collectionName);
       ssg.streamSparsityData(responseObserver);
       
     }
