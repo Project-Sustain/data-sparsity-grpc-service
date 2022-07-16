@@ -40,23 +40,25 @@ public class SparsityScoreGenerator {
     private static final Logger logger = Logger.getLogger(SparsityScoreGenerator.class.getName());
 
     // Query Params
-    private Long startTime;
-    private Long endTime;
-    private ArrayList<String> measurementTypes;
-    private ArrayList<String> siteList;
+    // private Long startTime;
+    // private Long endTime;
+    // private ArrayList<String> measurementTypes;
+    // private ArrayList<String> siteList;
 
     // Useful References
-    private MongoConnection mongoConnection; // So we can explicitly close the db connection
+    // private MongoConnection mongoConnection; // So we can explicitly close the db connection
     private ArrayList<Document> results; // So we can stream results in a separate function
 
     public SparsityScoreGenerator() {
-        this.mongoConnection = new MongoConnection();
+        // this.mongoConnection = new MongoConnection();
     }
 
     public void makeSparsityQuery(AggregateQuery aggregateQuery, String collectionName) {
-        ArrayList<Document> queryResults = this.mongoConnection.getCollection(collectionName).aggregate(aggregateQuery.getQuery()).into(new ArrayList<>());
+        MongoConnection mongoConnection = new MongoConnection();
+        MongoCollection<Document> collection = mongoConnection.getCollection(collectionName);
+        ArrayList<Document> queryResults = collection.aggregate(aggregateQuery.getQuery()).into(new ArrayList<>());
         this.results = queryResults;
-        this.mongoConnection.closeConnection();
+        mongoConnection.closeConnection();
     }
 
     /*
