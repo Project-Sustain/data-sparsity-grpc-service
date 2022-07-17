@@ -115,8 +115,6 @@ public class SparsityScoreGeneratorClient {
     try {
       SparsityScoreGeneratorClient client = new SparsityScoreGeneratorClient(channel);
 
-      // client.sendSparsityScoreRequest(collectionName, spatialScope, spatialIdentifier, startTime, endTime, measurementTypes);
-
       // Check if Server is responding
       if(client.sendConnectionCheck("server")) {
         logger.info("Server is responsive, checking Database connection");
