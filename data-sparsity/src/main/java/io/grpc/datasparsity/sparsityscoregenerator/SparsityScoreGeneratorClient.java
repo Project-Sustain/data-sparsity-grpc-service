@@ -39,7 +39,7 @@ public class SparsityScoreGeneratorClient {
    * Sends client-defined data to the server for Sparsity data calculation
    */
   public void sendSparsityScoreRequest(String collectionName, SSGRequest.ScopeType spatialScope, String spatialIdentifier, Long startTime, Long endTime, ArrayList<String> measurementTypes) {
-    logger.info("Will try to get Sparsity Scores for " + collectionName + "...");
+    logger.info("Will try to get Sparsity Scores\nCollection: " + collectionName + "\nScope: " + spatialScope.toString());
     SSGRequest request = SSGRequest.newBuilder()
         .setCollectionName(collectionName)
         .setSpatialScope(spatialScope)
