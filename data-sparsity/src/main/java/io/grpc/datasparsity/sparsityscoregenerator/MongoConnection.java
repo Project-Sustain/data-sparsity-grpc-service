@@ -30,7 +30,7 @@ public class MongoConnection {
     /*
      * Connect to the database
      */
-    private void connect() {
+    public void connect() {
         try {
             this.client = MongoClients.create(mongoUri);
             this.mongoConnection = this.client.getDatabase("sustaindb");

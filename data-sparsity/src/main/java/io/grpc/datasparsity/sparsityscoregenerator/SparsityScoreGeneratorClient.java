@@ -20,15 +20,10 @@ import io.grpc.Channel;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
-import io.grpc.datasparsity.sparsityscoregenerator.SSGReply.SiteSparsityData;
-
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Arrays;
-import java.lang.Long;
 import java.util.Iterator;
 
 public class SparsityScoreGeneratorClient {
@@ -96,8 +91,8 @@ public class SparsityScoreGeneratorClient {
 
     // Temporary, hard-coded values
     String collectionName = "water_quality_bodies_of_water";
-    SSGRequest.ScopeType spatialScope = SSGRequest.ScopeType.COUNTY;
-    String spatialIdentifier = "G0800690";
+    SSGRequest.ScopeType spatialScope = SSGRequest.ScopeType.STATE;
+    String spatialIdentifier = "G080";
     Long startTime = 946742626000L;
     Long endTime = 1577894626000L;
     ArrayList<String> measurementTypes = new ArrayList<String>();

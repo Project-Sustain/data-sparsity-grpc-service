@@ -22,16 +22,9 @@ import io.grpc.stub.StreamObserver;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
-
-import com.mongodb.client.MongoCollection;
 import org.bson.Document;
-import static com.mongodb.client.model.Filters.*;
-
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Arrays;
-import java.util.Iterator;
-import java.lang.Long;
 
 public class SparsityScoreGeneratorServer {
   private static final Logger logger = Logger.getLogger(SparsityScoreGeneratorServer.class.getName());
