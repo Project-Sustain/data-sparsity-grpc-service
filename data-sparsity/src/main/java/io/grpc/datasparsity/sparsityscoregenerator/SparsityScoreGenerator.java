@@ -1,36 +1,11 @@
 package io.grpc.datasparsity.sparsityscoregenerator;
 
-import java.util.*;
-
-import java.io.FileWriter;
-import java.io.IOException;
-
+import java.util.ArrayList;
+import java.util.List;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Aggregates;
-import com.mongodb.client.model.BsonField;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Projections;
-import com.mongodb.client.model.UpdateOptions;
-import com.mongodb.client.result.*;
-import com.mongodb.MongoTimeoutException;
 import org.bson.Document;
-import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
-import org.xml.sax.SAXParseException;
-
-import com.mongodb.client.MongoCursor;
-import com.mongodb.BasicDBObject;
-import com.mongodb.client.AggregateIterable;
-import com.mongodb.client.FindIterable;
-
-import static com.mongodb.client.model.Filters.*;
-import static com.mongodb.client.model.Projections.*;
-import static com.mongodb.client.model.Accumulators.*;
-import static com.mongodb.client.model.Aggregates.*;
-import static com.mongodb.client.model.Updates.*;
-import static com.mongodb.client.model.Sorts.ascending;
-import javax.sql.rowset.spi.SyncResolver;
-
+import static com.mongodb.client.model.Filters.eq;
 import io.grpc.stub.StreamObserver;
 import java.util.logging.Logger;
 
@@ -54,13 +29,14 @@ public class SparsityScoreGenerator {
      * @Params: Reference to a StreamObserver
      */
     public void streamSparsityData(StreamObserver<SSGReply> responseObserver) {
+        MongoConnection mongoConnection = new MongoConnection();
         try {
             results.forEach(document -> {
                 String monitorId = document.getString("_id");
                 List<Long> timeList = document.getList("epochTimes", Long.class);
                 int numberOfMeasurements = timeList.size();
                 double sparsityScore = getSparsityScore(timeList);
-                double[] coordinates = getCoordinates(monitorId);
+                double[] coordinates = getCoordinates(monitorId, mongoConnection);
 
                 SSGReply.SiteSparsityData ssd = SSGReply.SiteSparsityData.newBuilder()
                     .setMonitorId(monitorId)
@@ -77,6 +53,7 @@ public class SparsityScoreGenerator {
         } catch(Exception e) {
             logger.warning(e.toString());
         } finally {
+            mongoConnection.closeConnection();
             responseObserver.onCompleted();
         }
     }
@@ -114,8 +91,7 @@ public class SparsityScoreGenerator {
      * @Params: String representing a monitorId
      * @Returns: double[] containing [longitude, latitude] for a observation site
      */
-    private double[] getCoordinates(String monitorId) {
-        MongoConnection mongoConnection = new MongoConnection();
+    private double[] getCoordinates(String monitorId, MongoConnection mongoConnection) {
         Document siteDocument = mongoConnection.getCollection("water_quality_sites").find(eq("MonitoringLocationIdentifier", monitorId)).first();
         Document geoDoc = siteDocument.get("geometry", Document.class);
         List geoCoord = geoDoc.get("coordinates", List.class);

@@ -31,9 +31,10 @@ dependencies {
     implementation "io.grpc:grpc-stub:${grpcVersion}"
     compileOnly "org.apache.tomcat:annotations-api:6.0.53"
 
-    // mongodb driver
-    // implementation "ch.qos.logback:logback-classic:1.2.3"
+    // mongodb driver & mongo logger
     implementation "org.mongodb:mongodb-driver-sync:4.0.5"
+    implementation "org.slf4j:slf4j-reload4j:2.0.0-alpha7"
+    // compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.29'
 
     // examples/advanced need this for JsonFormat
     implementation "com.google.protobuf:protobuf-java-util:${protobufVersion}"

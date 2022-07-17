@@ -1,37 +1,16 @@
 package io.grpc.datasparsity.sparsityscoregenerator;
 
-import java.util.*;
-
-import java.io.FileWriter;
-import java.io.IOException;
-
-import com.mongodb.client.MongoCollection;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Arrays;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.BsonField;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Projections;
-import com.mongodb.client.model.UpdateOptions;
-import com.mongodb.client.result.*;
-import com.mongodb.MongoTimeoutException;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
-import org.xml.sax.SAXParseException;
-
-import com.mongodb.client.MongoCursor;
 import com.mongodb.BasicDBObject;
-import com.mongodb.client.AggregateIterable;
-import com.mongodb.client.FindIterable;
-
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Projections.*;
-import static com.mongodb.client.model.Accumulators.*;
-import static com.mongodb.client.model.Aggregates.*;
-import static com.mongodb.client.model.Updates.*;
 import static com.mongodb.client.model.Sorts.ascending;
-import javax.sql.rowset.spi.SyncResolver;
-
-import io.grpc.stub.StreamObserver;
 import java.util.logging.Logger;
 
 
