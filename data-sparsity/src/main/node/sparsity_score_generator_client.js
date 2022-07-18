@@ -50,17 +50,36 @@ async function checkConnection(client, type) {
   }
 }
 
-async function sendSparsityScoreRequest(client, collectionName, spatialScope, spatialIdentifier, startTime, endTime, measurementTypes) {
-  await client.calculateSparsityScores({
-      collectionName: collectionName, 
-      spatialScope: spatialScope, 
-      spatialIdentifier: spatialIdentifier, 
-      startTime: startTime, 
-      endTime: endTime, 
-      measurementTypes: measurementTypes
-    }, function(err, response) {
-    console.log({response});
+async function sendSparsityScoreRequest(client, requestObj) {
+  var call = await client.calculateSparsityScores({
+    collectionName: requestObj.collectionName, 
+    spatialScope: requestObj.spatialScope, 
+    spatialIdentifier: requestObj.spatialIdentifier, 
+    startTime: requestObj.startTime, 
+    endTime: requestObj.endTime, 
+    measurementTypes: requestObj.measurementTypes
   });
+    call.on('data', function(data) {
+      sparsityData = data.siteSparsityData;
+      var monitorId = sparsityData.monitorId;
+      var sparsityScore = sparsityData.sparsityScore;
+      var longitude = sparsityData.coordinates.longitude;
+      var latitude = sparsityData.coordinates.latitude;
+      var numberOfMeasurements = sparsityData.numberOfMeasurements;
+      console.log();
+      console.log({monitorId});
+      console.log({sparsityScore});
+      console.log({longitude});
+      console.log({latitude});
+      console.log({numberOfMeasurements});
+      console.log();
+    });
+    call.on('end', function() {
+      console.log("End of Server Stream");
+    });
+    call.on('error', function(e) {
+      console.log({e});
+    });
 }
 
 function main() {
@@ -72,7 +91,9 @@ function main() {
   var spatialIdentifier = "G080";
   var startTime = 946742626000;
   var endTime = 1577894626000;
-  var measurementTypes = ["Ammonia", "Phosphate", "Sulphate", "Temperature, water"]
+  var measurementTypes = ["Ammonia", "Phosphate", "Sulphate", "Temperature, water"];
+
+  var sparsityRequest = {collectionName, spatialScope, spatialIdentifier, startTime, endTime, measurementTypes};
 
   var client = new datasparsity_proto.FindSparsityScores(target, grpc.credentials.createInsecure());
 
@@ -83,7 +104,7 @@ function main() {
     console.log("Server Connected");
     if(databaseConnection) {
       console.log("Database Connected");
-      // sendSparsityScoreRequest(collectionName, spatialScope, spatialIdentifier, startTime, endTime, measurementTypes);
+      sendSparsityScoreRequest(client, sparsityRequest);
     }
     else {
       console.log("Database Connection ERROR");
