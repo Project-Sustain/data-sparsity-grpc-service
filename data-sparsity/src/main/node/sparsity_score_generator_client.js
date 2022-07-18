@@ -61,18 +61,7 @@ async function sendSparsityScoreRequest(client, requestObj) {
   });
     call.on('data', function(data) {
       sparsityData = data.siteSparsityData;
-      var monitorId = sparsityData.monitorId;
-      var sparsityScore = sparsityData.sparsityScore;
-      var longitude = sparsityData.coordinates.longitude;
-      var latitude = sparsityData.coordinates.latitude;
-      var numberOfMeasurements = sparsityData.numberOfMeasurements;
-      console.log();
-      console.log({monitorId});
-      console.log({sparsityScore});
-      console.log({longitude});
-      console.log({latitude});
-      console.log({numberOfMeasurements});
-      console.log();
+      console.log({sparsityData});
     });
     call.on('end', function() {
       console.log("End of Server Stream");
