@@ -30,16 +30,13 @@ service FindSparsityScores {
 
 }
 
-enum ConnectionStatus {
-  FAILURE = 0;
-  SUCCESS = 1;
-}
-
-message ConnectionRequest {
-  string message = 1;
-}
+message ConnectionRequest {}
 
 message ConnectionReply {
+  enum ConnectionStatus {
+    FAILURE = 0;
+    SUCCESS = 1;
+  }
   ConnectionStatus status = 1;
 }
 
