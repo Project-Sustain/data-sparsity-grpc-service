@@ -18,7 +18,7 @@
 
 var PROTO_PATH = __dirname + '/../proto/sparsityscoregenerator.proto';
 
-var parseArgs = require('minimist');
+// var parseArgs = require('minimist');
 var grpc = require('@grpc/grpc-js');
 var protoLoader = require('@grpc/proto-loader');
 var packageDefinition = protoLoader.loadSync(
@@ -31,21 +31,67 @@ var packageDefinition = protoLoader.loadSync(
     });
 var datasparsity_proto = grpc.loadPackageDefinition(packageDefinition).sparsityscoregenerator;
 
-function main() {
-  var argv = parseArgs(process.argv.slice(2), {
-    string: 'target'
-  });
-  var target;
-  if (argv.target) {
-    target = argv.target;
-  } else {
-    target = 'localhost:50042';
+async function checkConnection(client, type) {
+  if(type === "server") {
+    await client.checkServerConnection({message: "server"}, function(err, response) {
+      if(response.status === "SUCCESS") {
+        return true;
+      }
+      else return false;
+    });
   }
+  else {
+    await client.checkDatabaseConnection({message: "database"}, function(err, response) {
+      if(response.status === "SUCCESS") {
+        return true;
+      }
+      else return false;
+    });
+  }
+}
+
+async function sendSparsityScoreRequest(client, collectionName, spatialScope, spatialIdentifier, startTime, endTime, measurementTypes) {
+  await client.calculateSparsityScores({
+      collectionName: collectionName, 
+      spatialScope: spatialScope, 
+      spatialIdentifier: spatialIdentifier, 
+      startTime: startTime, 
+      endTime: endTime, 
+      measurementTypes: measurementTypes
+    }, function(err, response) {
+    console.log({response});
+  });
+}
+
+function main() {
+
+  target = 'localhost:50042';
+
+  var collectionName = "water_quality_bodies_of_water";
+  var spatialScope = "STATE";
+  var spatialIdentifier = "G080";
+  var startTime = 946742626000;
+  var endTime = 1577894626000;
+  var measurementTypes = ["Ammonia", "Phosphate", "Sulphate", "Temperature, water"]
+
   var client = new datasparsity_proto.FindSparsityScores(target, grpc.credentials.createInsecure());
 
-  client.checkServerConnection({name: "server"}, function(err, response) {
-    console.log('Server Connection:', response.status);
-  });
+  var serverConnection = checkConnection(client, "server");
+  var databaseConnection = checkConnection(client, "database");
+
+  if(serverConnection) {
+    console.log("Server Connected");
+    if(databaseConnection) {
+      console.log("Database Connected");
+      // sendSparsityScoreRequest(collectionName, spatialScope, spatialIdentifier, startTime, endTime, measurementTypes);
+    }
+    else {
+      console.log("Database Connection ERROR");
+    }
+  }
+  else {
+    console.log("Server Connection ERROR");
+  }
 }
 
 main();

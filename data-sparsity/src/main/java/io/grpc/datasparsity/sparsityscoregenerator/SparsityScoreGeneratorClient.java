@@ -68,9 +68,9 @@ public class SparsityScoreGeneratorClient {
    */
   public boolean sendConnectionCheck(String type) {
     logger.info("Checking " + type + " connection");
-    ConnectionRequest request = ConnectionRequest.newBuilder().setMessage(type).build();
+    ConnectionRequest request = ConnectionRequest.newBuilder().build();
     ConnectionReply response;
-    ConnectionStatus connectionStatus;
+    ConnectionReply.ConnectionStatus connectionStatus;
     try {
       if(type.equals("server")) {
         response = blockingStub.checkServerConnection(request);
@@ -81,9 +81,9 @@ public class SparsityScoreGeneratorClient {
       connectionStatus = response.getStatus();
     } catch (StatusRuntimeException e) {
       logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-      connectionStatus = ConnectionStatus.FAILURE;
+      connectionStatus = ConnectionReply.ConnectionStatus.FAILURE;
     }
-    if(connectionStatus == ConnectionStatus.SUCCESS) return true;
+    if(connectionStatus == ConnectionReply.ConnectionStatus.SUCCESS) return true;
     else return false;
   }
 
