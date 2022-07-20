@@ -1,3 +1,4 @@
 build/
 .gradle/
 bin/
+src/main/flask/__pychache__/
