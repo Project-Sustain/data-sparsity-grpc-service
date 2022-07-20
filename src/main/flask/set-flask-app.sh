@@ -1,1 +1,1 @@
-export FLASK_APP=flask-server
+export FLASK_APP=flask-server.py
