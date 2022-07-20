@@ -36,7 +36,7 @@ def checkDatabaseConnection():
     print(f"Database Connection: {statusEnum[response.status]}")
 
 
-async def sendSparsityScoreRequest(request) -> None:
+async def sendSparsityScoreRequest(request):
     async with grpc.aio.insecure_channel('localhost:50042') as channel:
         stub = sparsityscoregenerator_pb2_grpc.FindSparsityScoresStub(channel)
         response_stream = stub.CalculateSparsityScores(sparsityscoregenerator_pb2.SSGRequest(
@@ -68,5 +68,4 @@ if __name__ == '__main__':
         "endTime": 1577894626000,
         "measurementTypes": ["Ammonia", "Phosphate", "Sulphate", "Temperature, water"]
     }
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(sendSparsityScoreRequest(tempData))
+    asyncio.run(sendSparsityScoreRequest(tempData))
