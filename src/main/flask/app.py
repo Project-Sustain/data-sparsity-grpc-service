@@ -12,25 +12,20 @@ from enums import statusEnum, scopeTypeEnum
 app = Flask(__name__)
 
 
-@app.route("/serverConnection")
-def checkServerConnection():
+@app.route("/")
+@app.route("/connections")
+def checkConnections():
     with grpc.insecure_channel('localhost:50042') as channel:
         stub = sparsityscoregenerator_pb2_grpc.FindSparsityScoresStub(channel)
-        response = stub.CheckServerConnection(sparsityscoregenerator_pb2.ConnectionRequest())
-    print(f"Server Connection: {statusEnum[response.status]}")
-    return statusEnum[response.status]
-
-@app.route("/databaseConnection")
-def checkDatabaseConnection():
+        serverResponse = stub.CheckServerConnection(sparsityscoregenerator_pb2.ConnectionRequest())
     with grpc.insecure_channel('localhost:50042') as channel:
         stub = sparsityscoregenerator_pb2_grpc.FindSparsityScoresStub(channel)
-        response = stub.CheckDatabaseConnection(sparsityscoregenerator_pb2.ConnectionRequest())
-    print(f"Database Connection: {statusEnum[response.status]}")
-    return statusEnum[response.status]
+        databaseResponse = stub.CheckDatabaseConnection(sparsityscoregenerator_pb2.ConnectionRequest())
+    return f"Server Connection: {statusEnum[serverResponse.status]}\nDatabase Connection: {statusEnum[databaseResponse.status]}"
 
 
 @app.route("/sparsityScoreRequest")
-async def sendSparsityScoreRequest(request) -> None:
+async def sendSparsityScoreRequest(request):
     async with grpc.aio.insecure_channel('localhost:50042') as channel:
         stub = sparsityscoregenerator_pb2_grpc.FindSparsityScoresStub(channel)
         results = []
