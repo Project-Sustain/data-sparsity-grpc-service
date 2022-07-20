@@ -68,5 +68,4 @@ if __name__ == '__main__':
         "endTime": 1577894626000,
         "measurementTypes": ["Ammonia", "Phosphate", "Sulphate", "Temperature, water"]
     }
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(sendSparsityScoreRequest(tempData))
+    asyncio.run(sendSparsityScoreRequest(tempData))
