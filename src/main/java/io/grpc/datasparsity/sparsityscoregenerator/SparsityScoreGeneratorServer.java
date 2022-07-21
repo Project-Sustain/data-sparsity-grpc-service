@@ -84,11 +84,11 @@ public class SparsityScoreGeneratorServer {
      */
     @Override
     public void checkServerConnection(ConnectionRequest req, StreamObserver<ConnectionReply> responseObserver) {
-      ConnectionReply.ConnectionStatus responseStatus;
+      boolean responseStatus;
       try {
-        responseStatus = ConnectionReply.ConnectionStatus.SUCCESS;
+        responseStatus = true;
       } catch(Exception e) {
-        responseStatus = ConnectionReply.ConnectionStatus.FAILURE;
+        responseStatus = false;
       }
       ConnectionReply reply = ConnectionReply.newBuilder().setStatus(responseStatus).build();
       responseObserver.onNext(reply);
@@ -101,13 +101,13 @@ public class SparsityScoreGeneratorServer {
      */
     @Override
     public void checkDatabaseConnection(ConnectionRequest req, StreamObserver<ConnectionReply> responseObserver) {
-      ConnectionReply.ConnectionStatus responseStatus;
+      boolean responseStatus;
       MongoConnection mongoConnection = new MongoConnection(true);
       try {
         Document document = mongoConnection.getCollection("state_geo").find().first();
-        responseStatus = ConnectionReply.ConnectionStatus.SUCCESS;
+        responseStatus = true;
       } catch(Exception e) {
-        responseStatus = ConnectionReply.ConnectionStatus.FAILURE;
+        responseStatus = false;
       } finally {
         mongoConnection.closeConnection();
       }
