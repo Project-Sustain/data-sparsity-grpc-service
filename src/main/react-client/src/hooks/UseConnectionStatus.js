@@ -1,37 +1,29 @@
-import {useState, useEffect} from 'react'
+import { useState, useEffect } from 'react';
+import { sendRequest } from '../helpers/api';
 
 export default function UseConnectionStatus() {
     const [serverConnection, setServerConnection] = useState(false);
     const [DbConnection, setDbConnection] = useState(false);
 
-    async function sendConnectionRequest(endpoint) {
-        const url = "http://127.0.0.1:5000/"
-        const promise = await fetch(url + endpoint);
-        if(promise) {
-            return promise.json();
-        }
-        else return null;
-    }
-
     useEffect(() => {
         (async () => {
-            const response = await sendConnectionRequest("serverConnection");
+            const response = await sendRequest("serverConnection");
             if(response) {
                 setServerConnection(response);
             }
-            else console.log("ERROR")
+            else console.log("ERROR sending serverConnection request");
         })();
     }, []);
 
     useEffect(() => {
         (async () => {
-            const response = await sendConnectionRequest("dbConnection");
+            const response = await sendRequest("dbConnection");
             if(response) {
                 setDbConnection(response);
             }
-            else console.log("ERROR")
+            else console.log("ERROR sending dbConnection request");
         })();
     }, []);
 
-    return {serverConnection, DbConnection}
+    return { serverConnection, DbConnection };
 }

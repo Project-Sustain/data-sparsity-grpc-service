@@ -1,4 +1,5 @@
 from flask import Flask, make_response, stream_with_context
+from flask_cors import CORS
 
 import json
 from http import HTTPStatus
@@ -7,12 +8,12 @@ import grpc
 import sparsityscoregenerator_pb2
 import sparsityscoregenerator_pb2_grpc
 
-from google.protobuf.json_format import MessageToDict
+from google.protobuf.json_format import MessageToDict, MessageToJson
 
-from enums import statusEnum, scopeTypeEnum
+from enums import scopeTypeEnum
 
 app = Flask(__name__)
-
+CORS(app)
 
 @app.route("/")
 def checkConnections():
@@ -24,10 +25,8 @@ def checkServerConnection():
     with grpc.insecure_channel('localhost:50042') as channel:
         stub = sparsityscoregenerator_pb2_grpc.FindSparsityScoresStub(channel)
         serverResponse = stub.CheckServerConnection(sparsityscoregenerator_pb2.ConnectionRequest())
-    server_response = serverResponse.status
-    response = make_response(json.dumps(server_response))
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    return response
+    response = serverResponse.status
+    return json.dumps(response)
 
 
 @app.route("/dbConnection")
@@ -35,13 +34,11 @@ def checkDbConnection():
     with grpc.insecure_channel('localhost:50042') as channel:
         stub = sparsityscoregenerator_pb2_grpc.FindSparsityScoresStub(channel)
         databaseResponse = stub.CheckDatabaseConnection(sparsityscoregenerator_pb2.ConnectionRequest())
-    server_response = databaseResponse.status
-    response = make_response(json.dumps(server_response))
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    return response
+    response = databaseResponse.status
+    return json.dumps(response)
 
 
-@app.route("/sparsityScoreRequest", methods=['GET'])
+@app.route("/sparsityScores") # Is this the right method??
 def sendSparsityScoreRequest():
 
     def generate():
@@ -56,13 +53,10 @@ def sendSparsityScoreRequest():
                 measurementTypes = ["Ammonia", "Phosphate", "Sulphate", "Temperature, water"]
                 )
 
-            for response in stub.CalculateSparsityScores(request):
-                dict_response = MessageToDict(response, preserving_proto_field_name=True)
-                yield json.dumps(dict_response, indent=4) + "\n"
+            for stream_response in stub.CalculateSparsityScores(request):
+                yield MessageToJson(stream_response, preserving_proto_field_name=True)
 
-            # response = make_response(json.dumps({"ok": True}, indent=None), HTTPStatus.OK)
-            # response.headers["Access-Control-Allow-Origin"] = "*"
-            # return response
-            return json.dumps({"ok": True}, indent=None), HTTPStatus.OK
+            response = json.dumps({"ok": True}, indent=None), HTTPStatus.OK
+            return response
     
     return app.response_class(stream_with_context(generate()))
