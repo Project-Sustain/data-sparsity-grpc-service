@@ -5,7 +5,8 @@ export default function UseConnectionStatus() {
     const [DbConnection, setDbConnection] = useState(false);
 
     async function sendConnectionRequest(endpoint) {
-        const promise = await fetch("http://127.0.0.1:5000/" + endpoint);
+        const url = "http://127.0.0.1:5000/"
+        const promise = await fetch(url + endpoint);
         if(promise) {
             return promise.json();
         }
