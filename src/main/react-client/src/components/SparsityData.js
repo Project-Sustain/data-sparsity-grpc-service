@@ -1,5 +1,5 @@
 
-import { React, useCallback, useState, useEffect } from 'react'
+import { React, useCallback, useState } from 'react'
 import { useTheme } from '@mui/material/styles';
 import { makeStyles } from "@material-ui/core";
 import { Paper, Typography } from '@mui/material';
@@ -29,20 +29,20 @@ export default function SparsityData(props) {
         </>
       );
     }
-
     const onNext = useCallback(async res => {
-      const streamedResult = await res.json();
-      const siteData = streamedResult.siteSparsityData;
-      setSparsityScores(streamedResult.siteSparsityData);
-      return formatSiteData(siteData);
+      try{
+        const streamedResult = await res.json();
+        const siteData = streamedResult.siteSparsityData;
+        setSparsityScores(siteData);
+      } catch (error) {}
     }, []);
     useStream('http://127.0.0.1:5000/sparsityScores', { onNext });
 
     if(sparsityScores) {
       return (
         <Paper className={classes.paper} elevation={2}>
-        {formatSiteData(sparsityScores)}
-      </Paper>
+          {formatSiteData(sparsityScores)}
+        </Paper>
       )
     }
 

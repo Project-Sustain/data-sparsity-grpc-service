@@ -1,18 +1,17 @@
 import { useCallback, useState, useEffect } from 'react';
-import { sendJsonRequest } from '../helpers/api';
 import  { useStream } from 'react-fetch-streams';
 
 export default function UseSparsityScoreGenerator() {
-    const [sparsityScores, setSparsityScores] = useState({});
+    const [sparsityScores, setSparsityScores] = useState([]);
 
-    // let streamedResults = [];
-    const onNext = useCallback(async res => {
-        const data = await res.json();
-        // streamedResults.push(data['siteSparsityScores']);
+    const onNext = useCallback(async stream => {
+        try {
+            const streamedResult = await stream.json();
+            const siteData = streamedResult.siteSparsityData;
+        } catch(error) {}
     }, []);
-    useStream('http://127.0.0.1:5000//sparsityScores', { onNext });
-    // console.log({streamedResults})
-    // setSparsityScores(streamedResults);
+
+    useStream('http://127.0.0.1:5000/sparsityScores', { onNext });
 
     return { sparsityScores };
 }
