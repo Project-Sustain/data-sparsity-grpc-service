@@ -1,0 +1,32 @@
+
+import { React } from 'react'
+import { useTheme } from '@mui/material/styles';
+import { makeStyles } from "@material-ui/core";
+import { FormControlLabel, Paper, Stack, Typography, Checkbox } from '@mui/material';
+
+const useStyles = makeStyles({
+  paper: {
+    margin: "10px",
+    padding: "10px"
+  }
+});
+
+export default function ConnectionStatus(props) {
+  const theme = useTheme();
+  const classes = useStyles(theme);
+  return (
+    <Paper className={classes.paper} elevation={2}>
+      <Typography align="center">gRPC Status</Typography>
+      <Stack>
+        <FormControlLabel
+          label="Server Connected"
+          control={<Checkbox checked={props.serverConnection}/>}
+        />
+        <FormControlLabel
+          label="Database Connected"
+          control={<Checkbox checked={props.DbConnection}/>}
+        />
+      </Stack>
+    </Paper>
+  );
+}
