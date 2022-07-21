@@ -8,7 +8,9 @@ import  { useStream } from 'react-fetch-streams';
 const useStyles = makeStyles({
   paper: {
     margin: "10px",
-    padding: "10px"
+    padding: "10px",
+    minWidth: "25vw",
+    minHeight: "12vh"
   }
 });
 
