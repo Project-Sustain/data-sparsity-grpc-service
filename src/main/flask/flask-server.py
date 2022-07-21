@@ -15,15 +15,27 @@ app = Flask(__name__)
 
 
 @app.route("/")
-@app.route("/connections")
 def checkConnections():
+    return "Flask Server Home"
+
+
+@app.route("/serverConnection")
+def checkServerConnection():
     with grpc.insecure_channel('localhost:50042') as channel:
         stub = sparsityscoregenerator_pb2_grpc.FindSparsityScoresStub(channel)
         serverResponse = stub.CheckServerConnection(sparsityscoregenerator_pb2.ConnectionRequest())
+    server_response = serverResponse.status
+    response = make_response(json.dumps(server_response))
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    return response
+
+
+@app.route("/dbConnection")
+def checkDbConnection():
     with grpc.insecure_channel('localhost:50042') as channel:
         stub = sparsityscoregenerator_pb2_grpc.FindSparsityScoresStub(channel)
         databaseResponse = stub.CheckDatabaseConnection(sparsityscoregenerator_pb2.ConnectionRequest())
-    server_response = [serverResponse.status, databaseResponse.status]
+    server_response = databaseResponse.status
     response = make_response(json.dumps(server_response))
     response.headers["Access-Control-Allow-Origin"] = "*"
     return response
