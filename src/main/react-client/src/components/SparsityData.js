@@ -31,11 +31,10 @@ export default function SparsityData(props) {
     const onNext = useCallback(async res => {
       const streamedResult = await res.json();
       const siteData = streamedResult.siteSparsityData;
-      console.log({siteData})
       setSparsityScores(streamedResult.siteSparsityData);
       return formatSiteData(siteData);
     }, []);
-    useStream('http://127.0.0.1:5000//sparsityScores', { onNext });
+    useStream('http://127.0.0.1:5000/sparsityScores', { onNext });
 
     if(sparsityScores) {
       return (
