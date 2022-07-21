@@ -1,4 +1,4 @@
-from flask import Flask, stream_with_context
+from flask import Flask, make_response, stream_with_context
 
 import json
 from http import HTTPStatus
@@ -23,7 +23,10 @@ def checkConnections():
     with grpc.insecure_channel('localhost:50042') as channel:
         stub = sparsityscoregenerator_pb2_grpc.FindSparsityScoresStub(channel)
         databaseResponse = stub.CheckDatabaseConnection(sparsityscoregenerator_pb2.ConnectionRequest())
-    return f"Server Connection: {statusEnum[serverResponse.status]}\nDatabase Connection: {statusEnum[databaseResponse.status]}"
+    server_response = [serverResponse.status, databaseResponse.status]
+    response = make_response(json.dumps(server_response))
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    return response
 
 
 @app.route("/sparsityScoreRequest", methods=['GET'])
@@ -45,6 +48,9 @@ def sendSparsityScoreRequest():
                 dict_response = MessageToDict(response, preserving_proto_field_name=True)
                 yield json.dumps(dict_response, indent=4) + "\n"
 
+            # response = make_response(json.dumps({"ok": True}, indent=None), HTTPStatus.OK)
+            # response.headers["Access-Control-Allow-Origin"] = "*"
+            # return response
             return json.dumps({"ok": True}, indent=None), HTTPStatus.OK
     
     return app.response_class(stream_with_context(generate()))

@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1csparsityscoregenerator.proto\x12\x16sparsityscoregenerator\"\x13\n\x11\x43onnectionRequest\"\x89\x01\n\x0f\x43onnectionReply\x12H\n\x06status\x18\x01 \x01(\x0e\x32\x38.sparsityscoregenerator.ConnectionReply.ConnectionStatus\",\n\x10\x43onnectionStatus\x12\x0b\n\x07\x46\x41ILURE\x10\x00\x12\x0b\n\x07SUCCESS\x10\x01\"\xfc\x01\n\nSSGRequest\x12\x16\n\x0e\x63ollectionName\x18\x01 \x01(\t\x12\x42\n\x0cspatialScope\x18\x02 \x01(\x0e\x32,.sparsityscoregenerator.SSGRequest.ScopeType\x12\x19\n\x11spatialIdentifier\x18\x03 \x01(\t\x12\x11\n\tstartTime\x18\x04 \x01(\x03\x12\x0f\n\x07\x65ndTime\x18\x05 \x01(\x03\x12\x18\n\x10measurementTypes\x18\x06 \x03(\t\"9\n\tScopeType\x12\x08\n\x04SITE\x10\x00\x12\n\n\x06\x43OUNTY\x10\x01\x12\t\n\x05STATE\x10\x02\x12\x0b\n\x07\x43OUNTRY\x10\x03\"\xab\x02\n\x08SSGReply\x12K\n\x10siteSparsityData\x18\x01 \x01(\x0b\x32\x31.sparsityscoregenerator.SSGReply.SiteSparsityData\x1a\x32\n\x0b\x43oordinates\x12\x11\n\tlongitude\x18\x01 \x01(\x01\x12\x10\n\x08latitude\x18\x02 \x01(\x01\x1a\x9d\x01\n\x10SiteSparsityData\x12\x11\n\tmonitorId\x18\x01 \x01(\t\x12\x15\n\rsparsityScore\x18\x02 \x01(\x01\x12\x41\n\x0b\x63oordinates\x18\x03 \x01(\x0b\x32,.sparsityscoregenerator.SSGReply.Coordinates\x12\x1c\n\x14numberOfMeasurements\x18\x04 \x01(\x05\x32\xd9\x02\n\x12\x46indSparsityScores\x12m\n\x15\x43heckServerConnection\x12).sparsityscoregenerator.ConnectionRequest\x1a\'.sparsityscoregenerator.ConnectionReply\"\x00\x12o\n\x17\x43heckDatabaseConnection\x12).sparsityscoregenerator.ConnectionRequest\x1a\'.sparsityscoregenerator.ConnectionReply\"\x00\x12\x63\n\x17\x43\x61lculateSparsityScores\x12\".sparsityscoregenerator.SSGRequest\x1a .sparsityscoregenerator.SSGReply\"\x00\x30\x01\x42R\n+io.grpc.datasparsity.sparsityscoregeneratorB\x1bSparsityScoreGeneratorProtoP\x01\xa2\x02\x03SSGb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1csparsityscoregenerator.proto\x12\x16sparsityscoregenerator\"\x13\n\x11\x43onnectionRequest\"!\n\x0f\x43onnectionReply\x12\x0e\n\x06status\x18\x01 \x01(\x08\"\xfc\x01\n\nSSGRequest\x12\x16\n\x0e\x63ollectionName\x18\x01 \x01(\t\x12\x42\n\x0cspatialScope\x18\x02 \x01(\x0e\x32,.sparsityscoregenerator.SSGRequest.ScopeType\x12\x19\n\x11spatialIdentifier\x18\x03 \x01(\t\x12\x11\n\tstartTime\x18\x04 \x01(\x03\x12\x0f\n\x07\x65ndTime\x18\x05 \x01(\x03\x12\x18\n\x10measurementTypes\x18\x06 \x03(\t\"9\n\tScopeType\x12\x08\n\x04SITE\x10\x00\x12\n\n\x06\x43OUNTY\x10\x01\x12\t\n\x05STATE\x10\x02\x12\x0b\n\x07\x43OUNTRY\x10\x03\"\xab\x02\n\x08SSGReply\x12K\n\x10siteSparsityData\x18\x01 \x01(\x0b\x32\x31.sparsityscoregenerator.SSGReply.SiteSparsityData\x1a\x32\n\x0b\x43oordinates\x12\x11\n\tlongitude\x18\x01 \x01(\x01\x12\x10\n\x08latitude\x18\x02 \x01(\x01\x1a\x9d\x01\n\x10SiteSparsityData\x12\x11\n\tmonitorId\x18\x01 \x01(\t\x12\x15\n\rsparsityScore\x18\x02 \x01(\x01\x12\x41\n\x0b\x63oordinates\x18\x03 \x01(\x0b\x32,.sparsityscoregenerator.SSGReply.Coordinates\x12\x1c\n\x14numberOfMeasurements\x18\x04 \x01(\x05\x32\xd9\x02\n\x12\x46indSparsityScores\x12m\n\x15\x43heckServerConnection\x12).sparsityscoregenerator.ConnectionRequest\x1a\'.sparsityscoregenerator.ConnectionReply\"\x00\x12o\n\x17\x43heckDatabaseConnection\x12).sparsityscoregenerator.ConnectionRequest\x1a\'.sparsityscoregenerator.ConnectionReply\"\x00\x12\x63\n\x17\x43\x61lculateSparsityScores\x12\".sparsityscoregenerator.SSGRequest\x1a .sparsityscoregenerator.SSGReply\"\x00\x30\x01\x42R\n+io.grpc.datasparsity.sparsityscoregeneratorB\x1bSparsityScoreGeneratorProtoP\x01\xa2\x02\x03SSGb\x06proto3')
 
 
 
@@ -24,7 +24,6 @@ _SSGREQUEST = DESCRIPTOR.message_types_by_name['SSGRequest']
 _SSGREPLY = DESCRIPTOR.message_types_by_name['SSGReply']
 _SSGREPLY_COORDINATES = _SSGREPLY.nested_types_by_name['Coordinates']
 _SSGREPLY_SITESPARSITYDATA = _SSGREPLY.nested_types_by_name['SiteSparsityData']
-_CONNECTIONREPLY_CONNECTIONSTATUS = _CONNECTIONREPLY.enum_types_by_name['ConnectionStatus']
 _SSGREQUEST_SCOPETYPE = _SSGREQUEST.enum_types_by_name['ScopeType']
 ConnectionRequest = _reflection.GeneratedProtocolMessageType('ConnectionRequest', (_message.Message,), {
   'DESCRIPTOR' : _CONNECTIONREQUEST,
@@ -77,20 +76,18 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   DESCRIPTOR._serialized_options = b'\n+io.grpc.datasparsity.sparsityscoregeneratorB\033SparsityScoreGeneratorProtoP\001\242\002\003SSG'
   _CONNECTIONREQUEST._serialized_start=56
   _CONNECTIONREQUEST._serialized_end=75
-  _CONNECTIONREPLY._serialized_start=78
-  _CONNECTIONREPLY._serialized_end=215
-  _CONNECTIONREPLY_CONNECTIONSTATUS._serialized_start=171
-  _CONNECTIONREPLY_CONNECTIONSTATUS._serialized_end=215
-  _SSGREQUEST._serialized_start=218
-  _SSGREQUEST._serialized_end=470
-  _SSGREQUEST_SCOPETYPE._serialized_start=413
-  _SSGREQUEST_SCOPETYPE._serialized_end=470
-  _SSGREPLY._serialized_start=473
-  _SSGREPLY._serialized_end=772
-  _SSGREPLY_COORDINATES._serialized_start=562
-  _SSGREPLY_COORDINATES._serialized_end=612
-  _SSGREPLY_SITESPARSITYDATA._serialized_start=615
-  _SSGREPLY_SITESPARSITYDATA._serialized_end=772
-  _FINDSPARSITYSCORES._serialized_start=775
-  _FINDSPARSITYSCORES._serialized_end=1120
+  _CONNECTIONREPLY._serialized_start=77
+  _CONNECTIONREPLY._serialized_end=110
+  _SSGREQUEST._serialized_start=113
+  _SSGREQUEST._serialized_end=365
+  _SSGREQUEST_SCOPETYPE._serialized_start=308
+  _SSGREQUEST_SCOPETYPE._serialized_end=365
+  _SSGREPLY._serialized_start=368
+  _SSGREPLY._serialized_end=667
+  _SSGREPLY_COORDINATES._serialized_start=457
+  _SSGREPLY_COORDINATES._serialized_end=507
+  _SSGREPLY_SITESPARSITYDATA._serialized_start=510
+  _SSGREPLY_SITESPARSITYDATA._serialized_end=667
+  _FINDSPARSITYSCORES._serialized_start=670
+  _FINDSPARSITYSCORES._serialized_end=1015
 # @@protoc_insertion_point(module_scope)
