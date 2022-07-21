@@ -4,7 +4,7 @@ import UseConnectionStatus from './hooks/UseConnectionStatus';
 import Checkbox from '@mui/material/Checkbox';
 
 import { makeStyles } from "@material-ui/core";
-import { FormControlLabel, Paper, Stack } from '@mui/material';
+import { FormControlLabel, Paper, Stack, Typography } from '@mui/material';
 
 const useStyles = makeStyles({
   paper: {
@@ -19,6 +19,7 @@ export default function App() {
   const {serverConnection, DbConnection} = UseConnectionStatus();
   return (
     <Paper className={classes.paper} elevation={2}>
+      <Typography align="center">gRPC Status</Typography>
       <Stack>
         <FormControlLabel
           label="Server Connected"
