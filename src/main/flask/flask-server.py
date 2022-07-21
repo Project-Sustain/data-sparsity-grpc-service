@@ -38,7 +38,7 @@ def checkDbConnection():
     return json.dumps(response)
 
 
-@app.route("/sparsityScores") # Is this the right method??
+@app.route("/sparsityScores", methods=["POST", "GET"]) # Is this the right method??
 def sendSparsityScoreRequest():
 
     def generate():
