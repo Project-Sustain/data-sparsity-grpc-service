@@ -21,7 +21,7 @@ export default function SelectedSite(props) {
                 <Typography>Site Type: {JSON.stringify(props.site.monitoringLocationTypeName)}</Typography>
                 <Typography>Score: {props.site.sparsityScore}</Typography>
                 <Typography>Number of Measurements: {props.site.numberOfMeasurements}</Typography>
-                <Typography>Sites: {JSON.stringify(props.site.epochTimes)}</Typography>
+                <Typography>Measurement Times: {JSON.stringify(props.site.epochTimes)}</Typography>
                 <Typography>Coordinates: {props.site.coordinates.latitude}, {props.site.coordinates.longitude}</Typography>
             </Paper>
         );
