@@ -1,49 +1,89 @@
 
-import { React, useCallback, useState } from 'react'
+import { React, useEffect, useState } from 'react'
 import { useTheme } from '@mui/material/styles';
 import { makeStyles } from "@material-ui/core";
-import { Paper, Typography } from '@mui/material';
-import  { useStream } from 'react-fetch-streams';
+import { Paper, Typography, List, ListItemButton, Stack, ListItemText, ListSubheader } from '@mui/material';
 
 const useStyles = makeStyles({
   paper: {
     margin: "10px",
     padding: "10px",
-    minWidth: "25vw",
-    minHeight: "12vh"
+    maxHeight: "70vh",
+    width: "28vw",
+    overflow: "auto"
+  },
+  listHeader: {
+    margin: "0px"
   }
 });
 
 export default function SparsityData(props) {
     const theme = useTheme();
     const classes = useStyles(theme);
-    const [sparsityScores, setSparsityScores] = useState();
+    const [accumulatedResults, setAccumulatedResults] = useState([]);
+    const [selectedIndex, setSelectedIndex] = useState(1);
 
-    function formatSiteData(siteData) {
-      return (
-        <>
-          <Typography>Monintor ID: {siteData.monitorId}</Typography>
-          <Typography>Sparsity Score: {JSON.stringify(siteData.sparsityScore)}</Typography>
-          <Typography>Coordinates: ({JSON.stringify(siteData.coordinates.latitude)}, {JSON.stringify(siteData.coordinates.longitude)})</Typography>
-          <Typography>Number of Measurements: {JSON.stringify(siteData.numberOfMeasurements)}</Typography>
-          <Typography>Epoch Times: {JSON.stringify(siteData.epochTimes)}</Typography>
-        </>
+    const handleListItemClick = (event, index) => {
+      setSelectedIndex(index);
+    };
+    
+
+    useEffect(() => {
+        (async => {
+          const url = 'http://localhost:5000/sparsityScores';
+          let streamedResults = [];
+          fetch(url).then(async stream => {
+            let reader = stream.body.getReader();     
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) {
+                break;
+              }
+              else {
+                try {
+                  const response = JSON.parse(new TextDecoder().decode(value));
+                  streamedResults.push(response);
+                  // const sortedResults = streamedResults.sort((a, b) => {return a.sparsityScore > b.sparsityScore});
+                  setAccumulatedResults(streamedResults);
+                } catch(err) {}
+              }
+            }
+          });
+        })();
+    }, []);
+
+    function getItemButton(siteData, index) {
+      const sparsityScore = siteData.sparsityScore ? (siteData.sparsityScore).toFixed(3) : 0;
+      return(
+        <ListItemButton
+          key={index}
+          selected={selectedIndex === index}
+          onClick={(event) => handleListItemClick(event, index)}
+        >
+          <ListItemText primary={siteData.monitorId} />
+          <Typography edge='end'>{sparsityScore}</Typography>
+        </ListItemButton>
       );
     }
-    const onNext = useCallback(async res => {
-      try{
-        const streamedResult = await res.json();
-        setSparsityScores(streamedResult);
-      } catch (error) {}
-    }, []);
-    useStream('http://127.0.0.1:5000/sparsityScores', { onNext });
 
-    if(sparsityScores) {
+    if(accumulatedResults.length > 0) {
       return (
         <Paper className={classes.paper} elevation={2}>
-          {formatSiteData(sparsityScores)}
+          <List component="nav">
+            <ListSubheader className={classes.listHeader}>
+              <Stack direction='row' justifyContent='space-between'>
+                <Typography>Monitor Id</Typography>
+                <Typography>Sparsity Score</Typography>
+              </Stack>
+            </ListSubheader>
+            {
+              accumulatedResults.map((siteData, index) => {
+                return getItemButton(siteData, index)
+              })
+            }
+          </List>
         </Paper>
-      )
+      );
     }
 
     else {

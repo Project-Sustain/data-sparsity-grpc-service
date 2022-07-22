@@ -5,7 +5,7 @@ import UseConnectionStatus from './hooks/UseConnectionStatus';
 import ConnectionStatus from './components/ConnectionStatus';
 import { Container, Stack } from '@mui/material';
 import SparsityData from './components/SparsityData';
-import UseSparsityScoreGenerator from './hooks/UseSparsityScoreGenerator';
+// import UseSparsityScoreGenerator from './hooks/UseSparsityScoreGenerator';
 
 const useStyles = makeStyles({
   root: {
@@ -15,8 +15,8 @@ const useStyles = makeStyles({
 export default function App() {
   const classes = useStyles();
   const { serverConnection, DbConnection } = UseConnectionStatus();
-  const { sparsityScores } = UseSparsityScoreGenerator();
-  console.log({sparsityScores});
+  // const { sparsityScores } = UseSparsityScoreGenerator();
+  // console.log({sparsityScores});
 
   return (
     <Container maxWidth='lg'>

@@ -8,6 +8,7 @@ import org.bson.Document;
 import static com.mongodb.client.model.Filters.eq;
 import io.grpc.stub.StreamObserver;
 import java.util.logging.Logger;
+import java.text.DecimalFormat;
 
 public class SparsityScoreGenerator {
 
@@ -38,17 +39,16 @@ public class SparsityScoreGenerator {
                 double sparsityScore = getSparsityScore(timeList);
                 double[] coordinates = getCoordinates(monitorId, mongoConnection);
 
-                SSGReply.SiteSparsityData ssd = SSGReply.newBuilder()
+                SSGReply reply = SSGReply.newBuilder()
                     .setMonitorId(monitorId)
                     .setSparsityScore(sparsityScore)
                     .setCoordinates(SSGReply.Coordinates.newBuilder()
                         .setLongitude(coordinates[0])
                         .setLatitude(coordinates[1]))
                     .setNumberOfMeasurements(numberOfMeasurements)
-                    .setAllEpochTimes(timeList) // FIXME Set a list syntax
+                    .addAllEpochTimes(timeList) // FIXME Set a list syntax
                     .build();
 
-                SSGReply reply = SSGReply.newBuilder().setSiteSparsityData(ssd).build();
                 responseObserver.onNext(reply);
             });
         } catch(Exception e) {
@@ -66,6 +66,7 @@ public class SparsityScoreGenerator {
      * @Returns: Float representing the Sparsity Score for a given observation site
      */
     private Float getSparsityScore(List<Long> timeList) {
+        DecimalFormat df = new DecimalFormat("#.###");
         try {  
             Long sumOfDifferences = new Long(0);
             if(timeList.size() > 1) {
@@ -76,7 +77,7 @@ public class SparsityScoreGenerator {
                 float meanDifference = sumOfDifferences / timeList.size()-1;
                 int secondsInOneDay = 24 * 60 * 60;
                 int secondsInOneWeek = 7 * 24 * 60 * 60;
-                return (secondsInOneWeek/meanDifference) * 100;
+                return Float.parseFloat(df.format((secondsInOneWeek/meanDifference) * 100));
             }
             else {
                 return new Float(0);
