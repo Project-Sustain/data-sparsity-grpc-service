@@ -36,14 +36,6 @@ message ConnectionReply {
   bool status = 1;
 }
 
-// message ConnectionReply {
-//   enum ConnectionStatus {
-//     FAILURE = 0;
-//     SUCCESS = 1;
-//   }
-//   ConnectionStatus status = 1;
-// }
-
 message SSGRequest {
 
   enum ScopeType {
@@ -69,13 +61,10 @@ message SSGReply {
       double latitude = 2;
   }
 
-  message SiteSparsityData {
-    string monitorId = 1;
-    double sparsityScore = 2;
-    Coordinates coordinates = 3;
-    int32 numberOfMeasurements = 4;
-  }
-
-  SiteSparsityData siteSparsityData = 1;
+  string monitorId = 1;
+  double sparsityScore = 2;
+  Coordinates coordinates = 3;
+  int32 numberOfMeasurements = 4;
+  repeated int64 epochTimes = 5;
 
 }
