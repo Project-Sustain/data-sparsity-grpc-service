@@ -33,8 +33,7 @@ export default function SparsityData(props) {
     const onNext = useCallback(async res => {
       try{
         const streamedResult = await res.json();
-        const siteData = streamedResult.siteSparsityData;
-        setSparsityScores(siteData);
+        setSparsityScores(streamedResult);
       } catch (error) {}
     }, []);
     useStream('http://127.0.0.1:5000/sparsityScores', { onNext });

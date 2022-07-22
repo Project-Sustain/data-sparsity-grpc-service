@@ -7,7 +7,6 @@ export default function UseSparsityScoreGenerator() {
     const onNext = useCallback(async stream => {
         try {
             const streamedResult = await stream.json();
-            const siteData = streamedResult.siteSparsityData;
         } catch(error) {}
     }, []);
 
