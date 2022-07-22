@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1csparsityscoregenerator.proto\x12\x16sparsityscoregenerator\"\x13\n\x11\x43onnectionRequest\"!\n\x0f\x43onnectionReply\x12\x0e\n\x06status\x18\x01 \x01(\x08\"\xfc\x01\n\nSSGRequest\x12\x16\n\x0e\x63ollectionName\x18\x01 \x01(\t\x12\x42\n\x0cspatialScope\x18\x02 \x01(\x0e\x32,.sparsityscoregenerator.SSGRequest.ScopeType\x12\x19\n\x11spatialIdentifier\x18\x03 \x01(\t\x12\x11\n\tstartTime\x18\x04 \x01(\x03\x12\x0f\n\x07\x65ndTime\x18\x05 \x01(\x03\x12\x18\n\x10measurementTypes\x18\x06 \x03(\t\"9\n\tScopeType\x12\x08\n\x04SITE\x10\x00\x12\n\n\x06\x43OUNTY\x10\x01\x12\t\n\x05STATE\x10\x02\x12\x0b\n\x07\x43OUNTRY\x10\x03\"\xdd\x01\n\x08SSGReply\x12\x11\n\tmonitorId\x18\x01 \x01(\t\x12\x15\n\rsparsityScore\x18\x02 \x01(\x01\x12\x41\n\x0b\x63oordinates\x18\x03 \x01(\x0b\x32,.sparsityscoregenerator.SSGReply.Coordinates\x12\x1c\n\x14numberOfMeasurements\x18\x04 \x01(\x05\x12\x12\n\nepochTimes\x18\x05 \x03(\x03\x1a\x32\n\x0b\x43oordinates\x12\x11\n\tlongitude\x18\x01 \x01(\x01\x12\x10\n\x08latitude\x18\x02 \x01(\x01\x32\xd9\x02\n\x12\x46indSparsityScores\x12m\n\x15\x43heckServerConnection\x12).sparsityscoregenerator.ConnectionRequest\x1a\'.sparsityscoregenerator.ConnectionReply\"\x00\x12o\n\x17\x43heckDatabaseConnection\x12).sparsityscoregenerator.ConnectionRequest\x1a\'.sparsityscoregenerator.ConnectionReply\"\x00\x12\x63\n\x17\x43\x61lculateSparsityScores\x12\".sparsityscoregenerator.SSGRequest\x1a .sparsityscoregenerator.SSGReply\"\x00\x30\x01\x42R\n+io.grpc.datasparsity.sparsityscoregeneratorB\x1bSparsityScoreGeneratorProtoP\x01\xa2\x02\x03SSGb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1csparsityscoregenerator.proto\x12\x16sparsityscoregenerator\"\x13\n\x11\x43onnectionRequest\"!\n\x0f\x43onnectionReply\x12\x0e\n\x06status\x18\x01 \x01(\x08\"\xfc\x01\n\nSSGRequest\x12\x16\n\x0e\x63ollectionName\x18\x01 \x01(\t\x12\x42\n\x0cspatialScope\x18\x02 \x01(\x0e\x32,.sparsityscoregenerator.SSGRequest.ScopeType\x12\x19\n\x11spatialIdentifier\x18\x03 \x01(\t\x12\x11\n\tstartTime\x18\x04 \x01(\x03\x12\x0f\n\x07\x65ndTime\x18\x05 \x01(\x03\x12\x18\n\x10measurementTypes\x18\x06 \x03(\t\"9\n\tScopeType\x12\x08\n\x04SITE\x10\x00\x12\n\n\x06\x43OUNTY\x10\x01\x12\t\n\x05STATE\x10\x02\x12\x0b\n\x07\x43OUNTRY\x10\x03\"\xa1\x02\n\x08SSGReply\x12\x11\n\tmonitorId\x18\x01 \x01(\t\x12\x15\n\rsparsityScore\x18\x02 \x01(\x01\x12\x41\n\x0b\x63oordinates\x18\x03 \x01(\x0b\x32,.sparsityscoregenerator.SSGReply.Coordinates\x12\x1c\n\x14numberOfMeasurements\x18\x04 \x01(\x05\x12\x12\n\nepochTimes\x18\x05 \x03(\x03\x12\x1e\n\x16organizationFormalName\x18\x06 \x01(\t\x12\"\n\x1amonitoringLocationTypeName\x18\x07 \x01(\t\x1a\x32\n\x0b\x43oordinates\x12\x11\n\tlongitude\x18\x01 \x01(\x01\x12\x10\n\x08latitude\x18\x02 \x01(\x01\x32\xd9\x02\n\x12\x46indSparsityScores\x12m\n\x15\x43heckServerConnection\x12).sparsityscoregenerator.ConnectionRequest\x1a\'.sparsityscoregenerator.ConnectionReply\"\x00\x12o\n\x17\x43heckDatabaseConnection\x12).sparsityscoregenerator.ConnectionRequest\x1a\'.sparsityscoregenerator.ConnectionReply\"\x00\x12\x63\n\x17\x43\x61lculateSparsityScores\x12\".sparsityscoregenerator.SSGRequest\x1a .sparsityscoregenerator.SSGReply\"\x00\x30\x01\x42R\n+io.grpc.datasparsity.sparsityscoregeneratorB\x1bSparsityScoreGeneratorProtoP\x01\xa2\x02\x03SSGb\x06proto3')
 
 
 
@@ -74,9 +74,9 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _SSGREQUEST_SCOPETYPE._serialized_start=308
   _SSGREQUEST_SCOPETYPE._serialized_end=365
   _SSGREPLY._serialized_start=368
-  _SSGREPLY._serialized_end=589
-  _SSGREPLY_COORDINATES._serialized_start=539
-  _SSGREPLY_COORDINATES._serialized_end=589
-  _FINDSPARSITYSCORES._serialized_start=592
-  _FINDSPARSITYSCORES._serialized_end=937
+  _SSGREPLY._serialized_end=657
+  _SSGREPLY_COORDINATES._serialized_start=607
+  _SSGREPLY_COORDINATES._serialized_end=657
+  _FINDSPARSITYSCORES._serialized_start=660
+  _FINDSPARSITYSCORES._serialized_end=1005
 # @@protoc_insertion_point(module_scope)

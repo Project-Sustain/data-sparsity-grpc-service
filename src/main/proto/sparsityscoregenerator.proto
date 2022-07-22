@@ -66,5 +66,7 @@ message SSGReply {
   Coordinates coordinates = 3;
   int32 numberOfMeasurements = 4;
   repeated int64 epochTimes = 5;
+  string organizationFormalName = 6;
+  string monitoringLocationTypeName = 7;
 
 }
