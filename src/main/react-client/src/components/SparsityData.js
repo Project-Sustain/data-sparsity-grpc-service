@@ -26,6 +26,7 @@ export default function SparsityData(props) {
           <Typography>Sparsity Score: {JSON.stringify(siteData.sparsityScore)}</Typography>
           <Typography>Coordinates: ({JSON.stringify(siteData.coordinates.latitude)}, {JSON.stringify(siteData.coordinates.longitude)})</Typography>
           <Typography>Number of Measurements: {JSON.stringify(siteData.numberOfMeasurements)}</Typography>
+          <Typography>Epoch Times: {JSON.stringify(siteData.epochTimes)}</Typography>
         </>
       );
     }

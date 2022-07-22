@@ -38,13 +38,14 @@ public class SparsityScoreGenerator {
                 double sparsityScore = getSparsityScore(timeList);
                 double[] coordinates = getCoordinates(monitorId, mongoConnection);
 
-                SSGReply.SiteSparsityData ssd = SSGReply.SiteSparsityData.newBuilder()
+                SSGReply.SiteSparsityData ssd = SSGReply.newBuilder()
                     .setMonitorId(monitorId)
                     .setSparsityScore(sparsityScore)
                     .setCoordinates(SSGReply.Coordinates.newBuilder()
                         .setLongitude(coordinates[0])
                         .setLatitude(coordinates[1]))
                     .setNumberOfMeasurements(numberOfMeasurements)
+                    .setAllEpochTimes(timeList) // FIXME Set a list syntax
                     .build();
 
                 SSGReply reply = SSGReply.newBuilder().setSiteSparsityData(ssd).build();
