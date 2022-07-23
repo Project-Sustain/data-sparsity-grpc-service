@@ -9,6 +9,7 @@ import static com.mongodb.client.model.Filters.eq;
 import io.grpc.stub.StreamObserver;
 import java.util.logging.Logger;
 import java.text.DecimalFormat;
+import java.util.stream.Collectors;
 
 public class SparsityScoreGenerator {
 
@@ -34,12 +35,9 @@ public class SparsityScoreGenerator {
         try {
             results.forEach(document -> {
                 String monitorId = document.getString("_id");
-                List<Long> timeList = document.getList("epochTimes", Long.class);
+                List<Long> timeList = (document.getList("epochTimes", Long.class)).stream().distinct().collect(Collectors.toList());
                 int numberOfMeasurements = timeList.size();
                 double sparsityScore = getSparsityScore(timeList);
-                // double[] coordinates = getCoordinates(monitorId, mongoConnection);
-                // String formalName = document.getString("properties.OrganizationFormalName");
-                // String locationType = document.getString("properties.MonitoringLocationTypeName");
                 SiteInfo site = new SiteInfo(monitorId, mongoConnection);
                 double[] coordinates = site.getCoordinates();
 
@@ -94,21 +92,10 @@ public class SparsityScoreGenerator {
     }
     
     /*
-     * Helper for streamSparsityData()
+     * Internal class holding data for getSparsityScore
      * Queries MongoDB for the location of the observation site represented by the monitorId passed in
-     * @Params: String representing a monitorId
-     * @Returns: double[] containing [longitude, latitude] for a observation site
+     *  and gets the coordinates, formal name, and location type
      */
-    // private double[] getCoordinates(String monitorId, MongoConnection mongoConnection) {
-    //     Document siteDocument = mongoConnection.getCollection("water_quality_sites").find(eq("MonitoringLocationIdentifier", monitorId)).first();
-    //     Document geoDoc = siteDocument.get("geometry", Document.class);
-    //     List geoCoord = geoDoc.get("coordinates", List.class);
-    //     double longitude = Double.parseDouble(geoCoord.get(0).toString());
-    //     double latitude = Double.parseDouble(geoCoord.get(1).toString());
-    //     double[] coordinates = {longitude, latitude};
-    //     return coordinates;
-    // }
-
     private class SiteInfo {
 
         private String formalName;

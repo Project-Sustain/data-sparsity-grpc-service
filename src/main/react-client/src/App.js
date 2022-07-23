@@ -14,7 +14,7 @@ export default function App() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const { sparsityData } = UseSparsityScoreGenerator(setSelectedIndex);
 
-  console.log({selectedIndex})
+  console.log({sparsityData})
 
   if(serverConnection && DbConnection) {
     return (
