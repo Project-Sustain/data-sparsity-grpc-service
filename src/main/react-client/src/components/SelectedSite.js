@@ -26,5 +26,11 @@ export default function SelectedSite(props) {
             </Paper>
         );
     }
-    else return null;
+    else {
+        return (
+            <Paper className={classes.paper}>
+                <Typography>Data Loading...</Typography>
+            </Paper>
+        );
+    }
 }
