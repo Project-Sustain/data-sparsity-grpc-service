@@ -21,6 +21,9 @@ export default function UseSparsityScoreGenerator(setSelectedIndex) {
                 else {
                     try {
                         const response = JSON.parse(new TextDecoder().decode(value));
+                        let score = response.sparsityScore ? response.sparsityScore : 0;
+                        if(score < 0) score *= -1;
+                        response.sparsityScore = score;
                         streamedResults.push(response);
                         // FIXME to get results back in a stream, do something like this
                         // if(index % 100 === 0) {

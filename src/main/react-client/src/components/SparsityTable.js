@@ -25,7 +25,7 @@ export default function SparsityTable(props) {
     };
     
     function getItemButton(siteData, index) {
-      const sparsityScore = siteData.sparsityScore ? (siteData.sparsityScore).toFixed(3) : 0;
+      const sparsityScore = siteData.sparsityScore.toFixed(3);
       return(
         <ListItemButton
           key={index}

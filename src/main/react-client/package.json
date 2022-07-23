@@ -15,6 +15,7 @@
     "react-fetch-streams": "^1.1.2",
     "react-scripts": "5.0.1",
     "recharts": "^2.1.12",
+    "simple-statistics": "^7.7.5",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
