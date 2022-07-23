@@ -11,22 +11,23 @@ export default function UseSparsityScoreGenerator(setSelectedIndex) {
         let streamedResults = [];
         fetch(url).then(async stream => {
             let reader = stream.body.getReader();     
-            const { done, value } = await reader.read();
             while (true) {
+            const { done, value } = await reader.read();
                 if (done) {
                     setSparsityData(streamedResults);
                     setSelectedIndex(streamedResults.length-1);
                     break;
                 }
                 else {
-                    // await new Promise(r => setTimeout(r, 10));
                     try {
                         const response = JSON.parse(new TextDecoder().decode(value));
                         streamedResults.push(response);
-                        if(index % 10 === 0) {
-                            setSparsityData(streamedResults);
-                            setSelectedIndex(index);
-                        }
+                        // FIXME to get results back in a stream, do something like this
+                        // if(index % 100 === 0) {
+                        //     await new Promise(r => setTimeout(r, 50));
+                        //     setSparsityData(streamedResults);
+                        //     setSelectedIndex(index);
+                        // }
                     } catch(err){}
                 }
                 index++;
