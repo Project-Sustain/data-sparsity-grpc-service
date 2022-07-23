@@ -7,6 +7,7 @@ import ConnectionStatus from './components/ConnectionStatus';
 import UseSparsityScoreGenerator from './hooks/UseSparsityScoreGenerator';
 import SparsityTable from './components/SparsityTable';
 import SelectedSite from './components/SelectedSite';
+import TestChart from './components/TestChart';
 
 export default function App() {
   const { serverConnection, DbConnection } = UseConnectionStatus();
@@ -17,17 +18,24 @@ export default function App() {
 
   if(serverConnection && DbConnection) {
     return (
-      <Stack direction='row'>
-        <Container maxWidth='xs'>
-            <ConnectionStatus serverConnection={serverConnection} DbConnection={DbConnection}/>
-        </Container>
-        <Container maxWidth='med'>
-            <SparsityTable selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} sparsityData={sparsityData}/>
-        </Container>
-        <Container maxWidth='med'>
-            <SelectedSite site={sparsityData[selectedIndex]}/>
-        </Container>
-      </Stack>
+      <>
+        <Stack direction='row'>
+          <Container maxWidth='sm'>
+              <ConnectionStatus serverConnection={serverConnection} DbConnection={DbConnection}/>
+          </Container>
+          <Container maxWidth='auto'>
+              <SparsityTable selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} sparsityData={sparsityData}/>
+          </Container>
+        </Stack>
+        <Stack direction='row'>
+          <Container maxWidth='auto'>
+              <SelectedSite site={sparsityData[selectedIndex]}/>
+          </Container>
+          <Container maxWidth='auto'>
+              <TestChart sparsityData={sparsityData} />
+          </Container>
+        </Stack>
+      </>
     );
   }
 
