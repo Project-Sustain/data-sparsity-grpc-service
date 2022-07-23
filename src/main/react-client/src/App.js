@@ -14,21 +14,19 @@ export default function App() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const { sparsityData } = UseSparsityScoreGenerator(setSelectedIndex);
 
-  console.log({sparsityData})
-
   if(serverConnection && DbConnection) {
     return (
       <Stack direction='row'>
         <Container maxWidth='auto'>
           <Stack>
-                <ConnectionStatus serverConnection={serverConnection} DbConnection={DbConnection}/>
-                <SparsityTable selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} sparsityData={sparsityData}/>
+                <ConnectionStatus serverConnection={serverConnection} DbConnection={DbConnection} />
+                <SparsityTable selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} sparsityData={sparsityData} />
           </Stack>
         </Container>
         <Container maxWidth='auto'>
         <Stack>
-            <SelectedSite site={sparsityData[selectedIndex]}/>
-            <TestChart sparsityData={sparsityData} />
+          <TestChart sparsityData={sparsityData} />
+            <SelectedSite site={sparsityData[selectedIndex]} />
         </Stack>
         </Container>
 
