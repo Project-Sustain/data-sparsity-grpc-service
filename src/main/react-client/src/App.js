@@ -1,6 +1,6 @@
 
 import { React, useState } from 'react'
-import { makeStyles } from "@material-ui/core";
+// import { makeStyles } from "@material-ui/core";
 import { Container, Stack } from '@mui/material';
 import UseConnectionStatus from './hooks/UseConnectionStatus';
 import ConnectionStatus from './components/ConnectionStatus';
@@ -8,16 +8,12 @@ import UseSparsityScoreGenerator from './hooks/UseSparsityScoreGenerator';
 import SparsityTable from './components/SparsityTable';
 import SelectedSite from './components/SelectedSite';
 
-const useStyles = makeStyles({
-  root: {
-  }
-});
-
 export default function App() {
-  const classes = useStyles();
   const { serverConnection, DbConnection } = UseConnectionStatus();
-  const { sparsityData } = UseSparsityScoreGenerator();
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const { sparsityData } = UseSparsityScoreGenerator(setSelectedIndex);
+
+  console.log({selectedIndex})
 
   if(serverConnection && DbConnection) {
     return (
