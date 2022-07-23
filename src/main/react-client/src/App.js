@@ -1,29 +1,43 @@
 
-import { React } from 'react'
-import { makeStyles } from "@material-ui/core";
+import { React, useState } from 'react'
+// import { makeStyles } from "@material-ui/core";
+import { Container, Stack } from '@mui/material';
 import UseConnectionStatus from './hooks/UseConnectionStatus';
 import ConnectionStatus from './components/ConnectionStatus';
-import { Container, Stack } from '@mui/material';
-import SparsityData from './components/SparsityData';
-// import UseSparsityScoreGenerator from './hooks/UseSparsityScoreGenerator';
-
-const useStyles = makeStyles({
-  root: {
-  }
-});
+import UseSparsityScoreGenerator from './hooks/UseSparsityScoreGenerator';
+import SparsityTable from './components/SparsityTable';
+import SelectedSite from './components/SelectedSite';
 
 export default function App() {
-  const classes = useStyles();
   const { serverConnection, DbConnection } = UseConnectionStatus();
-  // const { sparsityScores } = UseSparsityScoreGenerator();
-  // console.log({sparsityScores});
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const { sparsityData } = UseSparsityScoreGenerator(setSelectedIndex);
 
-  return (
-    <Container maxWidth='lg'>
-      <Stack direction='column' justifyContent='center' alignItems='center'>
-        <ConnectionStatus serverConnection={serverConnection} DbConnection={DbConnection}/>
-        <SparsityData/>
+  console.log({selectedIndex})
+
+  if(serverConnection && DbConnection) {
+    return (
+      <Stack direction='row'>
+        <Container maxWidth='xs'>
+            <ConnectionStatus serverConnection={serverConnection} DbConnection={DbConnection}/>
+        </Container>
+        <Container maxWidth='med'>
+            <SparsityTable selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} sparsityData={sparsityData}/>
+        </Container>
+        <Container maxWidth='med'>
+            <SelectedSite site={sparsityData[selectedIndex]}/>
+        </Container>
       </Stack>
-    </Container>
-  );
+    );
+  }
+
+  else {
+    return (
+      <Stack direction='row'>
+        <Container maxWidth='xs'>
+            <ConnectionStatus serverConnection={serverConnection} DbConnection={DbConnection}/>
+        </Container>
+      </Stack>
+    );
+  }
 }

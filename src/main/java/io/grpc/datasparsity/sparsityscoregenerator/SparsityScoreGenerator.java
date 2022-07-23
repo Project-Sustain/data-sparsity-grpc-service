@@ -37,7 +37,11 @@ public class SparsityScoreGenerator {
                 List<Long> timeList = document.getList("epochTimes", Long.class);
                 int numberOfMeasurements = timeList.size();
                 double sparsityScore = getSparsityScore(timeList);
-                double[] coordinates = getCoordinates(monitorId, mongoConnection);
+                // double[] coordinates = getCoordinates(monitorId, mongoConnection);
+                // String formalName = document.getString("properties.OrganizationFormalName");
+                // String locationType = document.getString("properties.MonitoringLocationTypeName");
+                SiteInfo site = new SiteInfo(monitorId, mongoConnection);
+                double[] coordinates = site.getCoordinates();
 
                 SSGReply reply = SSGReply.newBuilder()
                     .setMonitorId(monitorId)
@@ -46,7 +50,9 @@ public class SparsityScoreGenerator {
                         .setLongitude(coordinates[0])
                         .setLatitude(coordinates[1]))
                     .setNumberOfMeasurements(numberOfMeasurements)
-                    .addAllEpochTimes(timeList) // FIXME Set a list syntax
+                    .addAllEpochTimes(timeList)
+                    .setOrganizationFormalName(site.getFormalName())
+                    .setMonitoringLocationTypeName(site.getLocationType())
                     .build();
 
                 responseObserver.onNext(reply);
@@ -93,14 +99,51 @@ public class SparsityScoreGenerator {
      * @Params: String representing a monitorId
      * @Returns: double[] containing [longitude, latitude] for a observation site
      */
-    private double[] getCoordinates(String monitorId, MongoConnection mongoConnection) {
-        Document siteDocument = mongoConnection.getCollection("water_quality_sites").find(eq("MonitoringLocationIdentifier", monitorId)).first();
-        Document geoDoc = siteDocument.get("geometry", Document.class);
-        List geoCoord = geoDoc.get("coordinates", List.class);
-        double longitude = Double.parseDouble(geoCoord.get(0).toString());
-        double latitude = Double.parseDouble(geoCoord.get(1).toString());
-        double[] coordinates = {longitude, latitude};
-        return coordinates;
+    // private double[] getCoordinates(String monitorId, MongoConnection mongoConnection) {
+    //     Document siteDocument = mongoConnection.getCollection("water_quality_sites").find(eq("MonitoringLocationIdentifier", monitorId)).first();
+    //     Document geoDoc = siteDocument.get("geometry", Document.class);
+    //     List geoCoord = geoDoc.get("coordinates", List.class);
+    //     double longitude = Double.parseDouble(geoCoord.get(0).toString());
+    //     double latitude = Double.parseDouble(geoCoord.get(1).toString());
+    //     double[] coordinates = {longitude, latitude};
+    //     return coordinates;
+    // }
+
+    private class SiteInfo {
+
+        private String formalName;
+        private String locationType;
+        private double[] coordinates = new double[2];
+
+        public SiteInfo(String monitorId, MongoConnection mongoConnection) {
+            
+            Document siteDocument = mongoConnection.getCollection("water_quality_sites").find(eq("MonitoringLocationIdentifier", monitorId)).first();
+            
+            Document propertyDoc = siteDocument.get("properties", Document.class);
+            this.formalName = propertyDoc.getString("OrganizationFormalName");
+            this.locationType = propertyDoc.getString("MonitoringLocationTypeName");
+
+            Document geoDoc = siteDocument.get("geometry", Document.class);
+            List geoCoord = geoDoc.get("coordinates", List.class);
+            double longitude = Double.parseDouble(geoCoord.get(0).toString());
+            double latitude = Double.parseDouble(geoCoord.get(1).toString());
+
+            this.coordinates[0] = longitude;
+            this.coordinates[1] = latitude;
+        }
+
+        public String getFormalName() {
+            return this.formalName;
+        }
+
+        public String getLocationType() {
+            return this.locationType;
+
+        }
+        public double[] getCoordinates() {
+            return this.coordinates;
+        }
+
     }
 
 }
