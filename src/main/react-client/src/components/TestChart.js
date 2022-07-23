@@ -21,18 +21,24 @@ export default function TestChart(props) {
     const classes = useStyles();
     // const data = [{name: 'Bucket 1', numberOfSites: 25}, {name: 'Bucket 2', numberOfSites: 72}, {name: 'Bucket 3', numberOfSites: 51}];
     const [data, setData] = useState({});
+    const [average, setAverage] = useState(0);
 
     useEffect(() => {
+        const scores = props.sparsityData.map((siteData) => {
+            return siteData.sparsityScore;
+        })
+        let sum = 0;
         let b1 = 0;
         let b2 = 0;
         let b3 = 0;
         let b4 = 0;
         let b5 = 0;
-        props.sparsityData.forEach((site) => {
-            if(site.sparsityScore < 1) b1 += 1;
-            else if(site.sparsityScore < 5) b2 += 1;
-            else if(site.sparsityScore < 100) b3 += 1;
-            else if(site.sparsityScore < 1000) b4 += 1;
+        scores.forEach((score) => {
+            sum += score;
+            if(score < 1) b1 += 1;
+            else if(score < 5) b2 += 1;
+            else if(score < 100) b3 += 1;
+            else if(score < 1000) b4 += 1;
             else b5 += 1;
         });
         const tempData = [
@@ -42,12 +48,15 @@ export default function TestChart(props) {
             {name: '100-1000', numberOfSites: b4},
             {name: '>1000', numberOfSites: b5}
         ];
+        const avg = sum / scores.length;
+        setAverage(avg);
         setData(tempData);
     }, [props.sparsityData]);
 
     if(props.sparsityData.length > 0) {
         return (
             <Paper elevation={2} className={classes.paper}>
+                <Typography>Average Sparsity Score: {average}</Typography>
                 <BarChart width={600} height={300} data={data}>
                     <XAxis dataKey="name" stroke="#8884d8" />
                     <YAxis />

@@ -10,8 +10,6 @@ import sparsityscoregenerator_pb2_grpc
 
 from google.protobuf.json_format import MessageToDict, MessageToJson
 
-from enums import scopeTypeEnum
-
 app = Flask(__name__)
 CORS(app)
 
@@ -46,7 +44,7 @@ def sendSparsityScoreRequest():
             stub = sparsityscoregenerator_pb2_grpc.FindSparsityScoresStub(channel)
             request = sparsityscoregenerator_pb2.SSGRequest(
                 collectionName = "water_quality_bodies_of_water", 
-                spatialScope = scopeTypeEnum[2], 
+                spatialScope = "STATE", 
                 spatialIdentifier = "G080",
                 startTime = 946742626000,
                 endTime = 1577894626000,
