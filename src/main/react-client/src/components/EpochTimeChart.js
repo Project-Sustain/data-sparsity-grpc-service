@@ -25,6 +25,7 @@ const useStyles = makeStyles({
 export default function EpochTimeChart(props) {
     const classes = useStyles();
     const [data, setData] = useState([]);
+    const [siteDataMap, setSiteDataMap] = useState([]);
     const [numBuckets, setNumbuckets] = useState(10);
 
     useEffect(() => {
@@ -42,16 +43,21 @@ export default function EpochTimeChart(props) {
             for (const [key, value] of Object.entries(count)) {
                 chartData.push({'value': value, 'time': parseInt(key)});
             }
-            const items_per_bucket = chartData.length / numBuckets;
+            setSiteDataMap(chartData);
+        }
+        
+    }, [props.sparsityData]);
+
+    useEffect(() => {
+        if(siteDataMap.length > 0) {
+            const items_per_bucket = siteDataMap.length / numBuckets;
             let bucketData = [];
             for(let i = 0; i < numBuckets; i++) {
-                bucketData.push(convertBucket(chartData.slice(i*items_per_bucket, (i+1)*items_per_bucket)));
+                bucketData.push(convertBucket(siteDataMap.slice(i*items_per_bucket, (i+1)*items_per_bucket)));
             }
             setData(bucketData);
         }
-        
-    }, [props.sparsityData, numBuckets]);
-
+    }, [props.sparsityData, numBuckets, siteDataMap]);
 
     function convertBucket(bucket) {
         const startTime = moment.unix(bucket[0].time/1000).format('MM/YYYY');
