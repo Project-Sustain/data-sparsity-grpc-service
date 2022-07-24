@@ -1,6 +1,6 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { makeStyles } from "@material-ui/core";
-import { Paper, Typography } from "@mui/material";
+import { Paper, Typography, Slider } from "@mui/material";
 import { useEffect, useState } from 'react';
 import moment from 'moment';
 import { sum } from 'simple-statistics';
@@ -22,6 +22,7 @@ const useStyles = makeStyles({
 export default function EpochTimeChart(props) {
     const classes = useStyles();
     const [data, setData] = useState([]);
+    const [numBuckets, setNumbuckets] = useState(10);
 
     useEffect(() => {
         if(props.sparsityData.length > 0) {
@@ -38,16 +39,19 @@ export default function EpochTimeChart(props) {
             for (const [key, value] of Object.entries(count)) {
                 chartData.push({'value': value, 'time': parseInt(key)});
             }
-            const num_buckets = 10;
-            const items_per_bucket = chartData.length / num_buckets;
+            const items_per_bucket = chartData.length / numBuckets;
             let bucketData = [];
-            for(let i = 0; i < num_buckets; i++) {
+            for(let i = 0; i < numBuckets; i++) {
                 bucketData.push(convertBucket(chartData.slice(i*items_per_bucket, (i+1)*items_per_bucket)));
             }
             setData(bucketData);
         }
         
-    }, [props.sparsityData]);
+    }, [props.sparsityData, numBuckets]);
+
+    useEffect(() => {
+
+    }, []);
 
 
     function convertBucket(bucket) {
@@ -86,6 +90,16 @@ export default function EpochTimeChart(props) {
                         activeDot={{ r: 8 }}
                     />
                 </LineChart>
+                <Slider
+                    value={numBuckets ?? 10}
+                    min={5}
+                    max={50}
+                    marks
+                    valueLabelDisplay="auto"
+                    step={1}
+                    onChange={(event, newValue) => setNumbuckets(newValue)}
+                >
+                </Slider>
             </Paper>
         );
     }
