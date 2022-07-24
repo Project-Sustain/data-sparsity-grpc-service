@@ -1,8 +1,9 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { makeStyles } from "@material-ui/core";
 import { Paper, Typography } from "@mui/material";
 import { useEffect, useState } from 'react';
-import moment from 'moment'
+import moment from 'moment';
+import { sum } from 'simple-statistics';
 
 const useStyles = makeStyles({
     paper: {
@@ -28,6 +29,7 @@ export default function EpochTimeChart(props) {
                 return siteData.epochTimes.map((time) => {return parseInt(time)});
             });
             const times = [].concat.apply([], timeLists);
+            times.sort();
             const count = {};
             let chartData = [];
             times.forEach(element => {
@@ -36,59 +38,54 @@ export default function EpochTimeChart(props) {
             for (const [key, value] of Object.entries(count)) {
                 chartData.push({'value': value, 'time': parseInt(key)});
             }
-            // FIXME bucket chartData! based on size of chartData
-            setData(chartData)
+            const num_buckets = 10;
+            const items_per_bucket = chartData.length / num_buckets;
+            let bucketData = [];
+            for(let i = 0; i < num_buckets; i++) {
+                bucketData.push(convertBucket(chartData.slice(i*items_per_bucket, (i+1)*items_per_bucket)));
+            }
+            setData(bucketData);
         }
         
     }, [props.sparsityData]);
 
 
+    function convertBucket(bucket) {
+        const startTime = moment.unix(bucket[0].time/1000).format('MM/YYYY');
+        const endTime = moment.unix(bucket[bucket.length-1].time/1000).format('MM/YYYY');
+        const values = bucket.map(entry => {return entry.value});
+        const totalValue = sum(values);
+        return {'name': `${startTime} - ${endTime}`, 'Number of Observations': totalValue};
+    }
+
+
     if(props.sparsityData.length > 0) {
         return (
             <Paper elevation={2} className={classes.paper}>
-                {/* <ScatterChart width={900} height={500}>
-                    <XAxis
-                        dataKey="time"
-                        domain = {['auto', 'auto']}
-                        tickFormatter = {(unixTime) => moment(unixTime).format('YYYY')}
-                        type="number"
+                <Typography align='center'>Number of Observations by Time</Typography>
+                <LineChart
+                    width={1700}
+                    height={400}
+                    data={data}
+                    margin={{
+                        top: 5,
+                        right: 30,
+                        left: 20,
+                        bottom: 5,
+                    }}
+                >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Line 
+                        type="monotone" 
+                        dataKey="Number of Observations" 
+                        stroke="#8884d8"
+                        activeDot={{ r: 8 }}
                     />
-                    <YAxis dataKey = 'value' />
-                    <Scatter
-                        data = {data}
-                        line = {{ stroke: '#111' }}
-                    />
-                </ScatterChart> */}
-
-                <ResponsiveContainer width="100%" height="100%">
-                    <LineChart
-                        width={900}
-                        height={400}
-                        data={data}
-                        // margin={{
-                        //     top: 5,
-                        //     right: 30,
-                        //     left: 20,
-                        //     bottom: 5,
-                        // }}
-                    >
-                        {/* <CartesianGrid strokeDasharray="3 3" /> */}
-                        <XAxis 
-                            dataKey="time"
-                            tickFormatter = {(unixTime) => moment(unixTime).format('YYYY')}
-                        />
-                        <YAxis />
-                        {/* <Tooltip /> */}
-                        {/* <Legend /> */}
-                        <Line 
-                            type="monotone" 
-                            dataKey="value" 
-                            stroke="#8884d8" 
-                            // activeDot={{ r: 3 }} 
-                        />
-                    </LineChart>
-                </ResponsiveContainer>
-
+                </LineChart>
             </Paper>
         );
     }

@@ -1,4 +1,4 @@
-import { BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import { makeStyles } from "@material-ui/core";
 import { Paper, Typography } from "@mui/material";
 import { useEffect, useState } from 'react';
@@ -61,9 +61,10 @@ export default function SparsityScoresChart(props) {
             <Paper elevation={2} className={classes.paper}>
                 <Typography align='center'>Average Sparsity Score: {average}</Typography>
                 <BarChart width={600} height={300} data={data}>
-                    <XAxis label={{value: 'Sparsity Score Range'}} dataKey="name" stroke="#8884d8" />
-                    <YAxis label={{value: 'Number of Sites', angle: -90}} />
-                    <Tooltip wrapperStyle={{ width: 200, backgroundColor: '#ccc' }} />
+                    <XAxis dataKey="name" stroke="#8884d8" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
                     <Bar dataKey="numberOfSites" fill="#8884d8" barSize={30} />
                 </BarChart>
             </Paper>
