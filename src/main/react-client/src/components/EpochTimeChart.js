@@ -1,6 +1,6 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { makeStyles } from "@material-ui/core";
-import { Paper, Typography, Slider } from "@mui/material";
+import { Paper, Typography, Slider, Divider } from "@mui/material";
 import { useEffect, useState } from 'react';
 import moment from 'moment';
 import { sum } from 'simple-statistics';
@@ -16,6 +16,9 @@ const useStyles = makeStyles({
     chart: {
         width: "15vw",
         height: "7vh"
+    },
+    divider: {
+        margin: '20px'
     }
 });
 
@@ -48,10 +51,6 @@ export default function EpochTimeChart(props) {
         }
         
     }, [props.sparsityData, numBuckets]);
-
-    useEffect(() => {
-
-    }, []);
 
 
     function convertBucket(bucket) {
@@ -90,6 +89,8 @@ export default function EpochTimeChart(props) {
                         activeDot={{ r: 8 }}
                     />
                 </LineChart>
+                <Divider className={classes.divider} />
+                <Typography align='center'>Granularity Control</Typography>
                 <Slider
                     value={numBuckets ?? 10}
                     min={5}
@@ -98,8 +99,7 @@ export default function EpochTimeChart(props) {
                     valueLabelDisplay="auto"
                     step={1}
                     onChange={(event, newValue) => setNumbuckets(newValue)}
-                >
-                </Slider>
+                />
             </Paper>
         );
     }
