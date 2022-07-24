@@ -26,8 +26,8 @@ export default function App() {
         </Container>
         <Container maxWidth='auto'>
           <Stack>
-            <SparsityScoresChart sparsityData={sparsityData} />
             <SelectedSite site={sparsityData[selectedIndex]} />
+            <SparsityScoresChart sparsityData={sparsityData} />
           </Stack>
         </Container>
       </Stack>

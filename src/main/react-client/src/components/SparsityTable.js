@@ -8,11 +8,15 @@ const useStyles = makeStyles({
   paper: {
     margin: "10px",
     padding: "10px",
-    maxHeight: "50vh",
-    overflow: "auto"
   },
   listHeader: {
     margin: "0px"
+  },
+  list: {
+    margin: "10px",
+    padding: "10px",
+    maxHeight: "45vh",
+    overflow: "auto"
   }
 });
 
@@ -25,7 +29,7 @@ export default function SparsityTable(props) {
     };
     
     function getItemButton(siteData, index) {
-      const sparsityScore = siteData.sparsityScore.toFixed(3);
+      const sparsityScore = siteData.sparsityScore;
       return(
         <ListItemButton
           key={index}
@@ -41,8 +45,9 @@ export default function SparsityTable(props) {
     if(props.sparsityData.length > 0) {
       return (
         <Paper className={classes.paper} elevation={2}>
-          <List component="nav">
-            <ListSubheader className={classes.listHeader}>
+          <Typography align='center' variant='h5'>Sparsity Score Table</Typography>
+          <List component="nav" className={classes.list} disablePadding>
+            <ListSubheader disableGutters className={classes.listHeader}>
               <Stack direction='row' justifyContent='space-between'>
                 <Typography>Monitor Id</Typography>
                 <Typography>Sparsity Score</Typography>

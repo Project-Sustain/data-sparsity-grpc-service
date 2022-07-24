@@ -12,19 +12,30 @@ export default function UseSparsityScoreGenerator(setSelectedIndex) {
         fetch(url).then(async stream => {
             let reader = stream.body.getReader();     
             while (true) {
-            const { done, value } = await reader.read();
+                const { done, value } = await reader.read();
                 if (done) {
                     streamedResults.sort((a, b) => {return b.sparsityScore - a.sparsityScore});
-                    setSparsityData(streamedResults);
-                    setSelectedIndex(streamedResults.length-1);
+
+                    // FIXME add the relative score on the server? Not possible if we stream...possible if we don't
+                    const scoresList = [...new Set(streamedResults.map(result => {return result.sparsityScore}))];
+                    const numberOfUniqueScores = scoresList.length - 1;
+                    const scoreMap = {};
+                    scoresList.forEach((score, index) => {
+                        scoreMap[score] = parseInt(((numberOfUniqueScores - index) / numberOfUniqueScores) * 100) + "%";
+                    });
+                    const formattedResults = streamedResults.map(result => {
+                        result.relativeSparsityScore = scoreMap[result.sparsityScore];
+                        return result
+                    });
+
+                    setSparsityData(formattedResults);
+                    setSelectedIndex(formattedResults.length-1);
                     break;
                 }
                 else {
                     try {
                         const response = JSON.parse(new TextDecoder().decode(value));
-                        let score = response.sparsityScore ? response.sparsityScore : 0;
-                        if(score < 0) score *= -1;
-                        response.sparsityScore = score;
+                        response.sparsityScore = response.sparsityScore ? parseFloat((response.sparsityScore).toFixed(3)) : 0;
                         streamedResults.push(response);
                         // FIXME to get results back in a stream, do something like this
                         // if(index % 100 === 0) {

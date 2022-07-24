@@ -59,7 +59,7 @@ export default function SparsityScoresChart(props) {
     if(props.sparsityData.length > 0) {
         return (
             <Paper elevation={2} className={classes.paper}>
-                <Typography align='center'>Average Sparsity Score: {average}</Typography>
+                <Typography variant='h5' align='center'>Sparsity Score Spread, Average: {average}</Typography>
                 <BarChart width={600} height={300} data={data}>
                     <XAxis dataKey="name" stroke="#8884d8" />
                     <YAxis />

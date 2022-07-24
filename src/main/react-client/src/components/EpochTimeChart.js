@@ -26,26 +26,27 @@ export default function EpochTimeChart(props) {
     const classes = useStyles();
     const [data, setData] = useState([]);
     const [siteDataMap, setSiteDataMap] = useState([]);
-    const [numBuckets, setNumbuckets] = useState(10);
+    const [numBuckets, setNumbuckets] = useState(100);
 
+    /**
+     * This function will eventually take place in the gRPC java server, and be send via an rpc.
+     */
     useEffect(() => {
         if(props.sparsityData.length > 0) {
             const timeLists = props.sparsityData.map((siteData) => {
                 return siteData.epochTimes.map((time) => {return parseInt(time)});
             });
             const times = [].concat.apply([], timeLists);
-            times.sort();
-            const count = {};
-            let chartData = [];
+            const countDuplicates = {};
             times.forEach(element => {
-                count[element] = (count[element] || 0) + 1;
+                countDuplicates[element] = (countDuplicates[element] || 0) + 1;
             })
-            for (const [key, value] of Object.entries(count)) {
-                chartData.push({'value': value, 'time': parseInt(key)});
-            }
+            const chartData = Object.entries(countDuplicates).map(([key, value]) => {
+                return {'value': value, 'time': parseInt(key)};
+            });
+            chartData.sort((a, b) => {return a.time - b.time});
             setSiteDataMap(chartData);
         }
-        
     }, [props.sparsityData]);
 
     useEffect(() => {
@@ -67,11 +68,10 @@ export default function EpochTimeChart(props) {
         return {'name': `${startTime} - ${endTime}`, 'Number of Observations': totalValue};
     }
 
-
     if(props.sparsityData.length > 0) {
         return (
             <Paper elevation={2} className={classes.paper}>
-                <Typography align='center'>Number of Observations by Time</Typography>
+                <Typography variant='h5' align='center'>Number of Observations by Time</Typography>
                 <LineChart
                     width={1700}
                     height={400}
@@ -84,7 +84,10 @@ export default function EpochTimeChart(props) {
                     }}
                 >
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
+                    <XAxis
+                        dataKey="name"
+                        // tickFormatter = {(unixTime) => moment(unixTime).format('HH:mm Do')}
+                    />
                     <YAxis />
                     <Tooltip />
                     <Legend />
@@ -95,14 +98,13 @@ export default function EpochTimeChart(props) {
                         activeDot={{ r: 8 }}
                     />
                 </LineChart>
-                <Divider className={classes.divider} />
-                <Typography align='center'>Granularity Control</Typography>
+                <Divider className={classes.divider} textAlign="left">Granularity Control</Divider>
                 <Slider
                     value={numBuckets ?? 10}
                     min={5}
-                    max={50}
-                    marks
-                    valueLabelDisplay="auto"
+                    max={200}
+                    // marks
+                    // valueLabelDisplay="auto"
                     step={1}
                     onChange={(event, newValue) => setNumbuckets(newValue)}
                 />
