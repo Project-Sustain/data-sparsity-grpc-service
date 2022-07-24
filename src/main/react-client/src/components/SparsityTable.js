@@ -46,8 +46,15 @@ export default function SparsityTable(props) {
     if(props.sparsityData.length > 0) {
       return (
         <Paper className={classes.paper} elevation={2}>
-          <Typography align='center' variant='h5'>Sparsity Score Table</Typography>
-          {returnTable()}
+          <Stack
+            direction="column"
+            justifyContent="center"
+            alignItems="center"
+            spacing={2}
+          >
+            <Typography align='center' variant='h5'>Sparsity Score Table</Typography>
+            {returnDataGrid()}
+          </Stack>
         </Paper>
       );
     }
@@ -60,51 +67,26 @@ export default function SparsityTable(props) {
       );
     }
 
-    function returnTable() {
+    function returnDataGrid() {
+      const columns = [
+        {field: 'id', headerName: '', width: 100},
+        {field: 'monitorId', headerName: 'Monitor ID', width: 450},
+        {field: 'sparsityScore', headerName: 'Sparsity Score', width: 200}
+      ]
+      const rows = props.sparsityData.map((site, index) => {
+        return {id: index, monitorId: site.monitorId, sparsityScore: site.sparsityScore};
+      });
       return (
-          <TableContainer component={Paper} className={classes.list} >
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Monitor ID</TableCell>
-                  <TableCell>Sparsity Score</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {
-                  props.sparsityData.map((siteData, index) => {
-                    return (
-                      <TableRow
-                        key={index}
-                        onClick={(event) => handleListItemClick(event, index)}
-                      >
-                        <TableCell>{siteData.monitorId}</TableCell>
-                        <TableCell align='right'>{siteData.sparsityScore}</TableCell>
-                      </TableRow>
-                    );
-                  })
-                }
-              </TableBody>
-            </Table>
-          </TableContainer>
+        <div style={{ height: 400, width: 750 }}>
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            pageSize={100}
+            rowsPerPageOptions={[100]}
+            onCellClick={params => {props.setSelectedIndex(params.id)}}
+          />
+        </div>
       );
     }
 
-    function returnList() {
-      return (
-        <List component="nav" className={classes.list} disablePadding>
-          <ListSubheader disableGutters>
-            <Stack direction='row' justifyContent='space-between'>
-              <Typography className={classes.listHeader}>Monitor Id</Typography>
-              <Typography className={classes.listHeader}>Sparsity Score</Typography>
-            </Stack>
-          </ListSubheader>
-          {
-            props.sparsityData.map((siteData, index) => {
-              return getItemButton(siteData, index)
-            })
-          }
-        </List>
-      );
-    }
 }
