@@ -9,6 +9,22 @@ import SparsityTable from './components/SparsityTable';
 import SelectedSite from './components/SelectedSite';
 import SparsityScoresChart from './components/SparsityScoresChart';
 import EpochTimeChart from './components/EpochTimeChart';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { colors } from './helpers/colors';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: colors.primary,
+    },
+    secondary: {
+      main: colors.secondary,
+    },
+    tertiary: {
+      main: colors.tertiary
+    }
+  }
+});
 
 export default function App() {
   const { serverConnection, DbConnection } = UseConnectionStatus();
@@ -16,7 +32,8 @@ export default function App() {
   const { sparsityData } = UseSparsityScoreGenerator(setSelectedIndex);
 
   return (
-    <>
+    <ThemeProvider theme={theme}>
+
       <Stack direction='row'>
         <Container maxWidth='auto'>
           <Stack>
@@ -24,6 +41,7 @@ export default function App() {
             <SparsityTable selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} sparsityData={sparsityData} />
           </Stack>
         </Container>
+
         <Container maxWidth='auto'>
           <Stack>
             <SelectedSite site={sparsityData[selectedIndex]} />
@@ -39,7 +57,7 @@ export default function App() {
             </Stack>
           </Container>
       </Stack>
-    </>
 
+    </ThemeProvider>
     );
 }

@@ -4,6 +4,7 @@ import { Paper, Typography, Slider, Divider } from "@mui/material";
 import { useEffect, useState } from 'react';
 import moment from 'moment';
 import { sum } from 'simple-statistics';
+import { colors } from '../helpers/colors';
 
 const useStyles = makeStyles({
     paper: {
@@ -94,7 +95,7 @@ export default function EpochTimeChart(props) {
                     <Line 
                         type="monotone" 
                         dataKey="Number of Observations" 
-                        stroke="#8884d8"
+                        stroke={colors.tertiary}
                         activeDot={{ r: 8 }}
                     />
                 </LineChart>
@@ -103,6 +104,7 @@ export default function EpochTimeChart(props) {
                     value={numBuckets ?? 10}
                     min={5}
                     max={200}
+                    color='tertiary'
                     // marks
                     // valueLabelDisplay="auto"
                     step={1}

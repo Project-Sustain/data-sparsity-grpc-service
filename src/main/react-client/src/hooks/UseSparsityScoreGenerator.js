@@ -14,20 +14,7 @@ export default function UseSparsityScoreGenerator(setSelectedIndex) {
             while (true) {
                 const { done, value } = await reader.read();
                 if (done) {
-                    streamedResults.sort((a, b) => {return b.sparsityScore - a.sparsityScore});
-
-                    // FIXME add the relative score on the server? Not possible if we stream...possible if we don't
-                    const scoresList = [...new Set(streamedResults.map(result => {return result.sparsityScore}))];
-                    const numberOfUniqueScores = scoresList.length - 1;
-                    const scoreMap = {};
-                    scoresList.forEach((score, index) => {
-                        scoreMap[score] = parseInt(((numberOfUniqueScores - index) / numberOfUniqueScores) * 100) + "%";
-                    });
-                    const formattedResults = streamedResults.map(result => {
-                        result.relativeSparsityScore = scoreMap[result.sparsityScore];
-                        return result
-                    });
-
+                    const formattedResults = formatResults(streamedResults);
                     setSparsityData(formattedResults);
                     setSelectedIndex(formattedResults.length-1);
                     break;
@@ -49,6 +36,21 @@ export default function UseSparsityScoreGenerator(setSelectedIndex) {
             }
         });
     }, [setSelectedIndex]);
+
+    function formatResults(streamedResults) {
+        streamedResults.sort((a, b) => {return b.sparsityScore - a.sparsityScore});
+        const scoresList = [...new Set(streamedResults.map(result => {return result.sparsityScore}))];
+        const numberOfUniqueScores = scoresList.length - 1;
+        const scoreMap = {};
+        scoresList.forEach((absoulteScore, index) => {
+            scoreMap[absoulteScore] = parseInt(((numberOfUniqueScores - index) / numberOfUniqueScores) * 100) + "%";
+        });
+        const formattedResults = streamedResults.map(result => {
+            result.relativeSparsityScore = scoreMap[result.sparsityScore];
+            return result
+        });
+        return formattedResults;
+    }
 
     return { sparsityData }
 

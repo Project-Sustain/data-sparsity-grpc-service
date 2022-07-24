@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core";
 import { Paper, Typography } from "@mui/material";
 import { useEffect, useState } from 'react';
 import { mean, standardDeviation } from 'simple-statistics';
+import { colors } from '../helpers/colors';
 
 const useStyles = makeStyles({
     paper: {
@@ -61,11 +62,11 @@ export default function SparsityScoresChart(props) {
             <Paper elevation={2} className={classes.paper}>
                 <Typography variant='h5' align='center'>Sparsity Score Spread, Average: {average}</Typography>
                 <BarChart width={600} height={300} data={data}>
-                    <XAxis dataKey="name" stroke="#8884d8" />
+                    <XAxis dataKey="name" />
                     <YAxis />
                     <Tooltip />
                     <Legend />
-                    <Bar dataKey="numberOfSites" fill="#8884d8" barSize={30} />
+                    <Bar dataKey="numberOfSites" fill={colors.secondary} barSize={30} />
                 </BarChart>
             </Paper>
         );

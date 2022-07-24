@@ -16,7 +16,7 @@ export default function ConnectionStatus(props) {
   const classes = useStyles(theme);
   return (
     <Paper className={classes.paper} elevation={2}>
-      <Typography align="center">gRPC Status</Typography>
+      <Typography align="center" variant='h5'>Application Status</Typography>
       <Stack>
         <FormControlLabel
           label="Server Connected"
