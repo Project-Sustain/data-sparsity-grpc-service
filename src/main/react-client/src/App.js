@@ -7,40 +7,39 @@ import ConnectionStatus from './components/ConnectionStatus';
 import UseSparsityScoreGenerator from './hooks/UseSparsityScoreGenerator';
 import SparsityTable from './components/SparsityTable';
 import SelectedSite from './components/SelectedSite';
-import TestChart from './components/TestChart';
+import SparsityScoresChart from './components/SparsityScoresChart';
+import EpochTimeChart from './components/EpochTimeChart';
 
 export default function App() {
   const { serverConnection, DbConnection } = UseConnectionStatus();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const { sparsityData } = UseSparsityScoreGenerator(setSelectedIndex);
 
-  if(serverConnection && DbConnection) {
-    return (
+  return (
+    <>
       <Stack direction='row'>
         <Container maxWidth='auto'>
           <Stack>
-                <ConnectionStatus serverConnection={serverConnection} DbConnection={DbConnection} />
-                <SparsityTable selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} sparsityData={sparsityData} />
+            <ConnectionStatus serverConnection={serverConnection} DbConnection={DbConnection} />
+            <SparsityTable selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} sparsityData={sparsityData} />
           </Stack>
         </Container>
         <Container maxWidth='auto'>
-        <Stack>
-          <TestChart sparsityData={sparsityData} />
+          <Stack>
+            <SparsityScoresChart sparsityData={sparsityData} />
             <SelectedSite site={sparsityData[selectedIndex]} />
-        </Stack>
+          </Stack>
         </Container>
-
       </Stack>
-    );
-  }
 
-  else {
-    return (
       <Stack direction='row'>
-        <Container maxWidth='xs'>
-            <ConnectionStatus serverConnection={serverConnection} DbConnection={DbConnection}/>
-        </Container>
+        <Container maxWidth='auto'>
+            <Stack>
+              <EpochTimeChart sparsityData={sparsityData} />
+            </Stack>
+          </Container>
       </Stack>
+    </>
+
     );
-  }
 }

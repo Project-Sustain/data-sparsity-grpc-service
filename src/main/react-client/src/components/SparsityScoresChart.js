@@ -1,4 +1,4 @@
-import { BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import { makeStyles } from "@material-ui/core";
 import { Paper, Typography } from "@mui/material";
 import { useEffect, useState } from 'react';
@@ -18,18 +18,14 @@ const useStyles = makeStyles({
     }
 });
 
-export default function TestChart(props) {
+export default function SparsityScoresChart(props) {
     const classes = useStyles();
-    // const data = [{name: 'Bucket 1', numberOfSites: 25}, {name: 'Bucket 2', numberOfSites: 72}, {name: 'Bucket 3', numberOfSites: 51}];
     const [data, setData] = useState({});
     const [average, setAverage] = useState(0);
-    const [buckets, setBuckets] = useState([]);
 
     useEffect(() => {
         if(props.sparsityData.length > 0){
-            const scores = props.sparsityData.map((siteData) => {
-                return siteData.sparsityScore;
-            })
+            const scores = props.sparsityData.map((siteData) => {return siteData.sparsityScore});
             const scores_sd = standardDeviation(scores);
             const scores_mean = mean(scores)
 
@@ -39,7 +35,7 @@ export default function TestChart(props) {
 
             const cutoff_1 = 0.001;
             const cutoff_2 = 0.01;
-            const cutoff_3 = 0.05;
+            const cutoff_3 = 0.1;
             const cutoff_4 = 1;
 
             const bucket1 = scores.filter(score => score < cutoff_1);
@@ -65,9 +61,10 @@ export default function TestChart(props) {
             <Paper elevation={2} className={classes.paper}>
                 <Typography align='center'>Average Sparsity Score: {average}</Typography>
                 <BarChart width={600} height={300} data={data}>
-                    <XAxis label={{value: 'Sparsity Score Range'}} dataKey="name" stroke="#8884d8" />
-                    <YAxis label={{value: 'Number of Sites', angle: -90}} />
-                    <Tooltip wrapperStyle={{ width: 200, backgroundColor: '#ccc' }} />
+                    <XAxis dataKey="name" stroke="#8884d8" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
                     <Bar dataKey="numberOfSites" fill="#8884d8" barSize={30} />
                 </BarChart>
             </Paper>

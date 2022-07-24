@@ -1,5 +1,5 @@
 
-import { React, useEffect, useState } from 'react'
+import { React } from 'react'
 import { useTheme } from '@mui/material/styles';
 import { makeStyles } from "@material-ui/core";
 import { Paper, Typography, List, ListItemButton, Stack, ListItemText, ListSubheader } from '@mui/material';
@@ -8,7 +8,7 @@ const useStyles = makeStyles({
   paper: {
     margin: "10px",
     padding: "10px",
-    maxHeight: "70vh",
+    maxHeight: "50vh",
     overflow: "auto"
   },
   listHeader: {

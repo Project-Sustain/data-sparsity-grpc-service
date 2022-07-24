@@ -7,13 +7,14 @@ export default function UseSparsityScoreGenerator(setSelectedIndex) {
 
     useEffect(() => {
         console.log("useEffect in SparsityScore hook")
-        let index = 0;
+        // let index = 0;
         let streamedResults = [];
         fetch(url).then(async stream => {
             let reader = stream.body.getReader();     
             while (true) {
             const { done, value } = await reader.read();
                 if (done) {
+                    streamedResults.sort((a, b) => {return b.sparsityScore - a.sparsityScore});
                     setSparsityData(streamedResults);
                     setSelectedIndex(streamedResults.length-1);
                     break;
@@ -33,7 +34,7 @@ export default function UseSparsityScoreGenerator(setSelectedIndex) {
                         // }
                     } catch(err){}
                 }
-                index++;
+                // index++;
             }
         });
     }, [setSelectedIndex]);
