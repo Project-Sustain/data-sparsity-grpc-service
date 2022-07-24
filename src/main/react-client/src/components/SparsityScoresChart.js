@@ -18,18 +18,14 @@ const useStyles = makeStyles({
     }
 });
 
-export default function TestChart(props) {
+export default function SparsityScoresChart(props) {
     const classes = useStyles();
-    // const data = [{name: 'Bucket 1', numberOfSites: 25}, {name: 'Bucket 2', numberOfSites: 72}, {name: 'Bucket 3', numberOfSites: 51}];
     const [data, setData] = useState({});
     const [average, setAverage] = useState(0);
-    const [buckets, setBuckets] = useState([]);
 
     useEffect(() => {
         if(props.sparsityData.length > 0){
-            const scores = props.sparsityData.map((siteData) => {
-                return siteData.sparsityScore;
-            })
+            const scores = props.sparsityData.map((siteData) => {return siteData.sparsityScore});
             const scores_sd = standardDeviation(scores);
             const scores_mean = mean(scores)
 
@@ -39,7 +35,7 @@ export default function TestChart(props) {
 
             const cutoff_1 = 0.001;
             const cutoff_2 = 0.01;
-            const cutoff_3 = 0.05;
+            const cutoff_3 = 0.1;
             const cutoff_4 = 1;
 
             const bucket1 = scores.filter(score => score < cutoff_1);
