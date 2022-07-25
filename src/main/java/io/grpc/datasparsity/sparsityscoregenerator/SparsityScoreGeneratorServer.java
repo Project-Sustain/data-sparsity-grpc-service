@@ -23,7 +23,14 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import org.bson.Document;
+import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Projections.*;
+import com.mongodb.client.model.Aggregates;
+import com.mongodb.BasicDBObject;
+import com.mongodb.client.MongoCollection;
+
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Arrays;
 
 public class SparsityScoreGeneratorServer {
@@ -37,6 +44,7 @@ public class SparsityScoreGeneratorServer {
     int port = grpcConstants.portNum;
     server = ServerBuilder.forPort(port)
         .addService(new FindSparsityScoresImpl())
+        .addService(new GetRequestParamsImpl())
         .build()
         .start();
     logger.info("Server started, listening on " + port);
@@ -74,6 +82,37 @@ public class SparsityScoreGeneratorServer {
     final SparsityScoreGeneratorServer server = new SparsityScoreGeneratorServer();
     server.start();
     server.blockUntilShutdown();
+  }
+
+  static class GetRequestParamsImpl extends GetRequestParamsGrpc.GetRequestParamsImplBase {
+    @Override
+    public void temporalRange(TRRequest req, StreamObserver<TRReply> responseObserver) {
+      String collectionName = req.getCollectionName();
+      // ScopeType spatialScope = req.getSpatialScope();
+      // String spatialIdentifier = req.getSpatialIdentifier();
+      MongoConnection mongoConnection = new MongoConnection();
+      Document metadata = mongoConnection.getCollection("Metadata").find(eq("collection", collectionName)).first();
+      List<Document> fieldMetadata = metadata.getList("fieldMetadata", Document.class);
+      Long[] minMax = findEpochTime(fieldMetadata);
+      TRReply reply = TRReply.newBuilder().setFirstTime(minMax[0]).setLastTime(minMax[1]).build();
+      responseObserver.onNext(reply);
+      responseObserver.onCompleted();
+    }
+
+    private Long[] findEpochTime(List<Document> fieldMetadata) {
+      for(Document entry : fieldMetadata) {
+        try {
+          String name = entry.getString("name");
+          if(name.equals("epoch_time")) {
+            return new Long[]{entry.getLong("minDate"), entry.getLong("maxDate")};
+          }
+        } catch(Exception e) {
+          logger.warning(e.toString());
+        }
+      }
+      return new Long[]{0L, 0L};
+    }
+
   }
 
   static class FindSparsityScoresImpl extends FindSparsityScoresGrpc.FindSparsityScoresImplBase {
@@ -125,7 +164,7 @@ public class SparsityScoreGeneratorServer {
 
       // Extract client-defined params
       String collectionName = req.getCollectionName();
-      SSGRequest.ScopeType spatialScope = req.getSpatialScope();
+      ScopeType spatialScope = req.getSpatialScope();
       String spatialIdentifier = req.getSpatialIdentifier();
       Long startTime = req.getStartTime();
       Long endTime = req.getEndTime();

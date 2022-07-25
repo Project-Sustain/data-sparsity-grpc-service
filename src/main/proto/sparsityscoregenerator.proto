@@ -20,6 +20,10 @@ option objc_class_prefix = "SSG";
 
 package sparsityscoregenerator;
 
+service GetRequestParams {
+  rpc TemporalRange (TRRequest) returns (TRReply) {}
+}
+
 service FindSparsityScores {
 
   rpc CheckServerConnection (ConnectionRequest) returns (ConnectionReply) {}
@@ -30,6 +34,24 @@ service FindSparsityScores {
 
 }
 
+enum ScopeType {
+  SITE = 0;
+  COUNTY = 1;
+  STATE = 2;
+  COUNTRY = 3;
+}
+
+message TRRequest {
+  string collectionName = 1;
+  // ScopeType spatialScope = 2;
+  // string spatialIdentifier = 3;
+}
+
+message TRReply {
+  int64 firstTime = 1;
+  int64 lastTime = 2;
+}
+
 message ConnectionRequest {}
 
 message ConnectionReply {
@@ -37,13 +59,6 @@ message ConnectionReply {
 }
 
 message SSGRequest {
-
-  enum ScopeType {
-    SITE = 0;
-    COUNTY = 1;
-    STATE = 2;
-    COUNTRY = 3;
-  }
 
   string collectionName = 1;
   ScopeType spatialScope = 2;

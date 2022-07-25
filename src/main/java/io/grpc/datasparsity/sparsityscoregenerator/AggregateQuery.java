@@ -23,7 +23,7 @@ public class AggregateQuery {
     private static final Logger logger = Logger.getLogger(AggregateQuery.class.getName());
     private List<Bson> query;
 
-    public AggregateQuery(Long startTime, Long endTime, ArrayList<String> measurementTypes, SSGRequest.ScopeType spatialScope, String spatialIdentifier) {
+    public AggregateQuery(Long startTime, Long endTime, ArrayList<String> measurementTypes, ScopeType spatialScope, String spatialIdentifier) {
         Bson sort = Aggregates.sort(ascending("epoch_time"));
 
         BsonField accumulator = new BsonField("epochTimes", new Document("$push", "$epoch_time"));
@@ -45,7 +45,7 @@ public class AggregateQuery {
      *      2: spatialIdentifier is a GISJOIN `if` spatialScope is STATE or COUNTY, `else an empty string`
      * @Returns List of observation site ID's
      */
-    private ArrayList<String> generateSiteList(SSGRequest.ScopeType spatialScope, String spatialIdentifier, MongoConnection mongoConnection) {
+    private ArrayList<String> generateSiteList(ScopeType spatialScope, String spatialIdentifier, MongoConnection mongoConnection) {
         switch(spatialScope) {
             case STATE: return getSiteListFromGeoWitin(mongoConnection, "state_geo", spatialIdentifier);
             case COUNTY: return getSiteListFromGeoWitin(mongoConnection, "county_geo", spatialIdentifier);

@@ -33,6 +33,17 @@ def checkDatabaseConnection():
     print(f"Database Connection: {response.status}")
 
 
+def getTemporalRange():
+    with grpc.insecure_channel('localhost:50042') as channel:
+        stub = sparsityscoregenerator_pb2_grpc.GetRequestParamsStub(channel)
+        response = stub.TemporalRange(sparsityscoregenerator_pb2.TRRequest(
+            collectionName = "water_quality_bodies_of_water",
+            spatialScope = "STATE",
+            spatialIdentifier = "G080"
+        ))
+    print(f"{response.firstTime} -> {response.lastTime}")
+
+
 async def sendSparsityScoreRequest(request):
     async with grpc.aio.insecure_channel('localhost:50042') as channel:
         stub = sparsityscoregenerator_pb2_grpc.FindSparsityScoresStub(channel)
@@ -57,12 +68,13 @@ if __name__ == '__main__':
     logging.basicConfig()
     checkServerConnection()
     checkDatabaseConnection()
-    tempData = {
-        "collectionName": "water_quality_bodies_of_water",
-        "spatialScope": "STATE",
-        "spatialIdentifier": "G080",
-        "startTime": 946742626000,
-        "endTime": 1577894626000,
-        "measurementTypes": ["Ammonia", "Phosphate", "Sulphate", "Temperature, water"]
-    }
-    asyncio.run(sendSparsityScoreRequest(tempData))
+    getTemporalRange()
+    # tempData = {
+    #     "collectionName": "water_quality_bodies_of_water",
+    #     "spatialScope": "STATE",
+    #     "spatialIdentifier": "G080",
+    #     "startTime": 946742626000,
+    #     "endTime": 1577894626000,
+    #     "measurementTypes": ["Ammonia", "Phosphate", "Sulphate", "Temperature, water"]
+    # }
+    # asyncio.run(sendSparsityScoreRequest(tempData))

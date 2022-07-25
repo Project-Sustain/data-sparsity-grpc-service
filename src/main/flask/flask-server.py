@@ -36,6 +36,17 @@ def checkDbConnection():
     return json.dumps(response)
 
 
+@app.route("/temporalRange")
+def getTemporalRange():
+    with grpc.insecure_channel('localhost:50042') as channel:
+        stub = sparsityscoregenerator_pb2_grpc.GetRequestParamsStub(channel)
+        response = stub.TemporalRange(sparsityscoregenerator_pb2.TRRequest(
+            collectionName = "water_quality_bodies_of_water"
+        ))
+    reply = [response.firstTime, response.lastTime]
+    return json.dumps(reply)
+
+
 @app.route("/sparsityScores", methods=["POST", "GET"]) # Is this the right method??
 def sendSparsityScoreRequest():
 
