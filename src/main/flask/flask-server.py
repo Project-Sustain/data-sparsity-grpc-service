@@ -8,7 +8,7 @@ import grpc
 import sparsityscoregenerator_pb2
 import sparsityscoregenerator_pb2_grpc
 
-from google.protobuf.json_format import MessageToJson
+from google.protobuf.json_format import MessageToJson, MessageToDict
 
 app = Flask(__name__)
 CORS(app)
@@ -43,8 +43,7 @@ def getTemporalRange():
         response = stub.TemporalRange(sparsityscoregenerator_pb2.TRRequest(
             collectionName = "water_quality_bodies_of_water"
         ))
-    reply = [response.firstTime, response.lastTime]
-    return json.dumps(reply)
+    return json.dumps(MessageToDict(response, preserving_proto_field_name=True))
 
 
 @app.route("/sparsityScores", methods=["POST", "GET"]) # Is this the right method??

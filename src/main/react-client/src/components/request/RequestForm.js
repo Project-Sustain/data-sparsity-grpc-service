@@ -1,27 +1,40 @@
 import { useState, useEffect } from 'react';
 import { gisStateCounty } from '../../library/gisInfo';
 import {  } from '@mui/material';
-import { makeStyles } from "@material-ui/core";
 import SpatialDropdown from './SpatialDropdown';
 import SpatialRadios from './SpatialRadios';
-
-
-const useStyles = makeStyles({
-    select: {
-      margin: "10px",
-    }
-  });
+import UseRequest from '../../hooks/UseRequest';
+import { sendRequest } from '../../helpers/api';
+import TemporalSlider from './TemporalSlider';
 
 
 export default function RequestForm() {
-    const classes = useStyles();
 
-    const [collectionName, setCollectionName] = useState("");
+    const { startTime, endTime } = UseRequest();
+    console.log({startTime})
+    console.log({endTime})
+
+    const [firstTime, setFirstTime] = useState();
+    const [lastTime, setLastTime] = useState();
+
+    useEffect(() => {
+        (async () => {
+            const response = await sendRequest("temporalRange");
+            if(response) {
+                setFirstTime(parseInt(response.firstTime));
+                setLastTime(parseInt(response.lastTime));
+            }
+            else console.log("ERROR sending serverConnection request");
+        })();
+    }, []);
+
+    console.log({firstTime})
+    console.log({lastTime})
+
+    // const [collectionName, setCollectionName] = useState("");
     const [spatialScope, setSpatialScope] = useState("STATE");
     const [spatialIdentifier, setSpatialIdentifier] = useState("");
-    const [dataConstraints, setDataConstraints] = useState([]);
-    const [startTime, setStartTime] = useState();
-    const [endTime, setEndTime] = useState();
+    // const [dataConstraints, setDataConstraints] = useState([]);
 
     const [stateInfo, setStateInfo] = useState([]);
     const [selectedState, setSelectedState] = useState({});
@@ -87,6 +100,10 @@ export default function RequestForm() {
                     label='County'
                     update={updateSelectedCounty}
                     value={selectedCounty}
+                />
+                <TemporalSlider
+                    min={firstTime}
+                    max={lastTime}
                 />
             </>
         );
