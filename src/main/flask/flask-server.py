@@ -46,6 +46,16 @@ def getTemporalRange():
     return json.dumps(MessageToDict(response, preserving_proto_field_name=True))
 
 
+@app.route("/measurementTypes")
+def getMeasurementTypes():
+    with grpc.insecure_channel('localhost:50042') as channel:
+        stub = sparsityscoregenerator_pb2_grpc.GetRequestParamsStub(channel)
+        response = stub.AllMeasurementTypes(sparsityscoregenerator_pb2.AMTRequest(
+            collectionName = "water_quality_bodies_of_water"
+        ))
+    return json.dumps(MessageToDict(response, preserving_proto_field_name=True))
+
+
 @app.route("/sparsityScores", methods=["POST", "GET"]) # Is this the right method??
 def sendSparsityScoreRequest():
 

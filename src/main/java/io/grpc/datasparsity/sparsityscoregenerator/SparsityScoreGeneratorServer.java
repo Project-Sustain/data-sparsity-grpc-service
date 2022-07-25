@@ -25,9 +25,11 @@ import java.util.logging.Logger;
 import org.bson.Document;
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Projections.*;
-import com.mongodb.client.model.Aggregates;
+import static com.mongodb.client.model.Aggregates.*;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
+import org.bson.conversions.Bson;
+import com.mongodb.client.model.BsonField;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,9 +94,32 @@ public class SparsityScoreGeneratorServer {
       // String spatialIdentifier = req.getSpatialIdentifier();
       MongoConnection mongoConnection = new MongoConnection();
       Document metadata = mongoConnection.getCollection("Metadata").find(eq("collection", collectionName)).first();
+      mongoConnection.closeConnection();
       List<Document> fieldMetadata = metadata.getList("fieldMetadata", Document.class);
       Long[] minMax = findEpochTime(fieldMetadata);
       TRReply reply = TRReply.newBuilder().setFirstTime(minMax[0]).setLastTime(minMax[1]).build();
+      responseObserver.onNext(reply);
+      responseObserver.onCompleted();
+    }
+
+    @Override
+    public void allMeasurementTypes(AMTRequest req, StreamObserver<AMTReply> responseObserver) {
+      String collectionName = req.getCollectionName();
+      MongoConnection mongoConnection = new MongoConnection();
+      Document metadata = mongoConnection.getCollection("Metadata").find(eq("collection", collectionName)).first();
+      mongoConnection.closeConnection();
+      List<Document> fieldMetadata = metadata.getList("fieldMetadata", Document.class);
+      List<String> tempReturn = new ArrayList<>();
+      fieldMetadata.forEach(document -> {
+        try {
+          if(!document.getString("name").equals("epoch_time")){
+            tempReturn.add(document.getString("name"));
+          }
+        } catch(Exception e) {
+          logger.warning(e.toString());
+        }
+      });
+      AMTReply reply = AMTReply.newBuilder().addAllMeasurementTypes(tempReturn).build();
       responseObserver.onNext(reply);
       responseObserver.onCompleted();
     }

@@ -22,6 +22,8 @@ package sparsityscoregenerator;
 
 service GetRequestParams {
   rpc TemporalRange (TRRequest) returns (TRReply) {}
+
+  rpc AllMeasurementTypes (AMTRequest) returns (AMTReply) {}
 }
 
 service FindSparsityScores {
@@ -39,6 +41,14 @@ enum ScopeType {
   COUNTY = 1;
   STATE = 2;
   COUNTRY = 3;
+}
+
+message AMTRequest {
+  string collectionName = 1;
+}
+
+message AMTReply {
+  repeated string measurementTypes = 1;
 }
 
 message TRRequest {

@@ -4,9 +4,7 @@ import { sendRequest } from '../helpers/api';
 export default function UseRequest() {
     const [firstTime, setFirstTime] = useState(0);
     const [lastTime, setLastTime] = useState(0);
-    console.log({firstTime});
-    console.log({lastTime});
-    // const [allMeasurementTypes, setAllMeasurementTypes] = useState([]);
+    const [allMeasurementTypes, setAllMeasurementTypes] = useState([]);
 
     useEffect(() => {
         (async () => {
@@ -19,6 +17,16 @@ export default function UseRequest() {
         })();
     }, []);
 
-    return { firstTime, lastTime };
+    useEffect(() => {
+        (async () => {
+            const response = await sendRequest("measurementTypes");
+            if(response) {
+                setAllMeasurementTypes(parseInt(response.measurementTypes));
+            }
+            else console.log("ERROR sending serverConnection request");
+        })();
+    }, []);
+
+    return { firstTime, lastTime, allMeasurementTypes };
 
 }

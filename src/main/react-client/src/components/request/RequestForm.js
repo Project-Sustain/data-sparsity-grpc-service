@@ -3,19 +3,26 @@ import { gisStateCounty } from '../../library/gisInfo';
 import {  } from '@mui/material';
 import SpatialDropdown from './SpatialDropdown';
 import SpatialRadios from './SpatialRadios';
-import UseRequest from '../../hooks/UseRequest';
 import { sendRequest } from '../../helpers/api';
 import TemporalSlider from './TemporalSlider';
+import DataConstraints from './DataConstraints';
 
 
 export default function RequestForm() {
 
-    const { startTime, endTime } = UseRequest();
-    console.log({startTime})
-    console.log({endTime})
-
     const [firstTime, setFirstTime] = useState();
     const [lastTime, setLastTime] = useState();
+    const [dataConstraints, setDataConstraints] = useState([]);
+
+    useEffect(() => {
+        (async () => {
+            const response = await sendRequest("measurementTypes");
+            if(response) {
+                setDataConstraints(response.measurementTypes);
+            }
+            else console.log("ERROR sending serverConnection request");
+        })();
+    }, []);
 
     useEffect(() => {
         (async () => {
@@ -28,20 +35,14 @@ export default function RequestForm() {
         })();
     }, []);
 
-    console.log({firstTime})
-    console.log({lastTime})
-
     // const [collectionName, setCollectionName] = useState("");
     const [spatialScope, setSpatialScope] = useState("STATE");
     const [spatialIdentifier, setSpatialIdentifier] = useState("");
-    // const [dataConstraints, setDataConstraints] = useState([]);
-
     const [stateInfo, setStateInfo] = useState([]);
     const [selectedState, setSelectedState] = useState({});
     const [selectedCounty, setSelectedCounty] = useState({});
 
-    console.log({spatialScope})
-    console.log({spatialIdentifier})
+    console.log({dataConstraints})
 
     useEffect(() => {
         setStateInfo(gisStateCounty);
@@ -105,6 +106,7 @@ export default function RequestForm() {
                     min={firstTime}
                     max={lastTime}
                 />
+                <DataConstraints dataConstraints={dataConstraints} />
             </>
         );
     }

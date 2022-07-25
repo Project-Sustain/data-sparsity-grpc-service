@@ -38,10 +38,19 @@ def getTemporalRange():
         stub = sparsityscoregenerator_pb2_grpc.GetRequestParamsStub(channel)
         response = stub.TemporalRange(sparsityscoregenerator_pb2.TRRequest(
             collectionName = "water_quality_bodies_of_water",
-            spatialScope = "STATE",
-            spatialIdentifier = "G080"
+            # spatialScope = "STATE",
+            # spatialIdentifier = "G080"
         ))
     print(f"{response.firstTime} -> {response.lastTime}")
+
+
+def getMeasurementTypes():
+    with grpc.insecure_channel('localhost:50042') as channel:
+        stub = sparsityscoregenerator_pb2_grpc.GetRequestParamsStub(channel)
+        response = stub.AllMeasurementTypes(sparsityscoregenerator_pb2.AMTRequest(
+            collectionName = "water_quality_bodies_of_water"
+        ))
+    print(f"{response}")
 
 
 async def sendSparsityScoreRequest(request):
@@ -69,6 +78,7 @@ if __name__ == '__main__':
     checkServerConnection()
     checkDatabaseConnection()
     getTemporalRange()
+    getMeasurementTypes()
     # tempData = {
     #     "collectionName": "water_quality_bodies_of_water",
     #     "spatialScope": "STATE",
