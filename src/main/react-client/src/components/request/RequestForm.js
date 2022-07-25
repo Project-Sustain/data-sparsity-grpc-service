@@ -106,7 +106,7 @@ export default function RequestForm() {
                     min={firstTime}
                     max={lastTime}
                 />
-                <DataConstraints dataConstraints={dataConstraints} />
+                <DataConstraints setDataConstraints={setDataConstraints} dataConstraints={dataConstraints} />
             </>
         );
     }
