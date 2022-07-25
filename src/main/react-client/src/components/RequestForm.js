@@ -27,14 +27,15 @@ export default function RequestForm() {
     const [countyGranularity, setCountyGranularity] = useState(false);
 
 
-    console.log({stateInfo})
+    console.log({spatialScope})
+    console.log({spatialIdentifier})
 
     useEffect(() => {
         setStateInfo(gisStateCounty);
         setSelectedState(gisStateCounty[0]);
         setSelectedCounty(gisStateCounty[0].counties[0]);
         setSpatialScope("STATE");
-        setSpatialIdentifier(gisStateCounty[0].GISJOIN);
+        setSpatialIdentifier(selectedState.GISJOIN);
     }, []);
 
     useEffect(() => {
@@ -61,7 +62,7 @@ export default function RequestForm() {
     if(stateInfo.length > 0) {
         return (
             <>
-                {spatialSelect(stateInfo.sort((a, b) => {return a.name - b.name}), 'State', updateSelectedState, false)}
+                {spatialSelect(stateInfo.sort((a, b) => {return a.name - b.name}), 'State', updateSelectedState, false, selectedState)}
                 <FormGroup>
                     <FormControlLabel
                         control={
@@ -73,20 +74,20 @@ export default function RequestForm() {
                         label='County Granularity'
                     />
                 </FormGroup>
-                {spatialSelect(selectedState.counties.sort((a, b) => {return a.name - b.name}), 'County', updateSelectedCounty, !countyGranularity)}
+                {spatialSelect(selectedState.counties.sort((a, b) => {return a.name - b.name}), 'County', updateSelectedCounty, !countyGranularity, selectedCounty)}
             </>
         );
     }
 
     else return null;
 
-    function spatialSelect(options, label, update, disable) {
+    function spatialSelect(options, label, update, disable, value) {
         return (
             <FormControl fullWidth className={classes.select}>
                 <InputLabel>{label}</InputLabel>
                 <Select
                     disabled={disable}
-                    value={selectedCounty}
+                    value={value}
                     label={label}
                     onChange={update}
                 >
