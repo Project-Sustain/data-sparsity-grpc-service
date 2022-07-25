@@ -3,7 +3,7 @@ import { React } from 'react'
 import { useTheme } from '@mui/material/styles';
 import { makeStyles } from "@material-ui/core";
 import { FormControlLabel, Paper, Stack, Typography, Checkbox } from '@mui/material';
-import RequestForm from './RequestForm';
+import RequestForm from './request/RequestForm';
 
 const useStyles = makeStyles({
   paper: {
