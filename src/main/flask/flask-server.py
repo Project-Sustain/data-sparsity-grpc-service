@@ -1,4 +1,4 @@
-from flask import Flask, make_response, stream_with_context
+from flask import Flask, stream_with_context
 from flask_cors import CORS
 
 import json
@@ -8,7 +8,7 @@ import grpc
 import sparsityscoregenerator_pb2
 import sparsityscoregenerator_pb2_grpc
 
-from google.protobuf.json_format import MessageToDict, MessageToJson
+from google.protobuf.json_format import MessageToJson
 
 app = Flask(__name__)
 CORS(app)

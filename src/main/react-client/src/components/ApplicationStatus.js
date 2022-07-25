@@ -3,6 +3,7 @@ import { React } from 'react'
 import { useTheme } from '@mui/material/styles';
 import { makeStyles } from "@material-ui/core";
 import { FormControlLabel, Paper, Stack, Typography, Checkbox } from '@mui/material';
+import RequestForm from './RequestForm';
 
 const useStyles = makeStyles({
   paper: {
@@ -11,7 +12,7 @@ const useStyles = makeStyles({
   }
 });
 
-export default function ConnectionStatus(props) {
+export default function ApplicationStatus(props) {
   const theme = useTheme();
   const classes = useStyles(theme);
   return (
@@ -27,6 +28,7 @@ export default function ConnectionStatus(props) {
           control={<Checkbox checked={props.DbConnection}/>}
         />
       </Stack>
+      <RequestForm />
     </Paper>
   );
 }
