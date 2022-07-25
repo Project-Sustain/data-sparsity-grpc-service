@@ -9,6 +9,15 @@ export default function UseSparsityScoreGenerator(setSelectedIndex) {
         console.log("useEffect in SparsityScore hook")
         // let index = 0;
         let streamedResults = [];
+
+        // await fetch(url).then(response => {
+        //     reader = response.body.getReader();
+        // });
+        // myAsyncIterator = await createIterator(reader);
+        // for await (const feature of myAsyncIterator){
+        //     console.log({feature})
+        // }
+
         fetch(url).then(async stream => {
             let reader = stream.body.getReader();     
             while (true) {

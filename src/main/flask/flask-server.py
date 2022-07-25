@@ -1,4 +1,4 @@
-from flask import Flask, make_response, stream_with_context
+from flask import Flask, stream_with_context
 from flask_cors import CORS
 
 import json
@@ -8,7 +8,7 @@ import grpc
 import sparsityscoregenerator_pb2
 import sparsityscoregenerator_pb2_grpc
 
-from google.protobuf.json_format import MessageToDict, MessageToJson
+from google.protobuf.json_format import MessageToJson, MessageToDict
 
 app = Flask(__name__)
 CORS(app)
@@ -34,6 +34,26 @@ def checkDbConnection():
         databaseResponse = stub.CheckDatabaseConnection(sparsityscoregenerator_pb2.ConnectionRequest())
     response = databaseResponse.status
     return json.dumps(response)
+
+
+@app.route("/temporalRange")
+def getTemporalRange():
+    with grpc.insecure_channel('localhost:50042') as channel:
+        stub = sparsityscoregenerator_pb2_grpc.GetRequestParamsStub(channel)
+        response = stub.TemporalRange(sparsityscoregenerator_pb2.TRRequest(
+            collectionName = "water_quality_bodies_of_water"
+        ))
+    return json.dumps(MessageToDict(response, preserving_proto_field_name=True))
+
+
+@app.route("/measurementTypes")
+def getMeasurementTypes():
+    with grpc.insecure_channel('localhost:50042') as channel:
+        stub = sparsityscoregenerator_pb2_grpc.GetRequestParamsStub(channel)
+        response = stub.AllMeasurementTypes(sparsityscoregenerator_pb2.AMTRequest(
+            collectionName = "water_quality_bodies_of_water"
+        ))
+    return json.dumps(MessageToDict(response, preserving_proto_field_name=True))
 
 
 @app.route("/sparsityScores", methods=["POST", "GET"]) # Is this the right method??

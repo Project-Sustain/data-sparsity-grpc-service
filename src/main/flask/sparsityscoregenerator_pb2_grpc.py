@@ -5,6 +5,100 @@ import grpc
 import sparsityscoregenerator_pb2 as sparsityscoregenerator__pb2
 
 
+class GetRequestParamsStub(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.TemporalRange = channel.unary_unary(
+                '/sparsityscoregenerator.GetRequestParams/TemporalRange',
+                request_serializer=sparsityscoregenerator__pb2.TRRequest.SerializeToString,
+                response_deserializer=sparsityscoregenerator__pb2.TRReply.FromString,
+                )
+        self.AllMeasurementTypes = channel.unary_unary(
+                '/sparsityscoregenerator.GetRequestParams/AllMeasurementTypes',
+                request_serializer=sparsityscoregenerator__pb2.AMTRequest.SerializeToString,
+                response_deserializer=sparsityscoregenerator__pb2.AMTReply.FromString,
+                )
+
+
+class GetRequestParamsServicer(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def TemporalRange(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def AllMeasurementTypes(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_GetRequestParamsServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'TemporalRange': grpc.unary_unary_rpc_method_handler(
+                    servicer.TemporalRange,
+                    request_deserializer=sparsityscoregenerator__pb2.TRRequest.FromString,
+                    response_serializer=sparsityscoregenerator__pb2.TRReply.SerializeToString,
+            ),
+            'AllMeasurementTypes': grpc.unary_unary_rpc_method_handler(
+                    servicer.AllMeasurementTypes,
+                    request_deserializer=sparsityscoregenerator__pb2.AMTRequest.FromString,
+                    response_serializer=sparsityscoregenerator__pb2.AMTReply.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'sparsityscoregenerator.GetRequestParams', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+
+
+ # This class is part of an EXPERIMENTAL API.
+class GetRequestParams(object):
+    """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def TemporalRange(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/sparsityscoregenerator.GetRequestParams/TemporalRange',
+            sparsityscoregenerator__pb2.TRRequest.SerializeToString,
+            sparsityscoregenerator__pb2.TRReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def AllMeasurementTypes(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/sparsityscoregenerator.GetRequestParams/AllMeasurementTypes',
+            sparsityscoregenerator__pb2.AMTRequest.SerializeToString,
+            sparsityscoregenerator__pb2.AMTReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+
 class FindSparsityScoresStub(object):
     """Missing associated documentation comment in .proto file."""
 

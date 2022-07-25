@@ -1,9 +1,8 @@
 
 import { React, useState } from 'react'
-// import { makeStyles } from "@material-ui/core";
 import { Container, Stack } from '@mui/material';
 import UseConnectionStatus from './hooks/UseConnectionStatus';
-import ConnectionStatus from './components/ConnectionStatus';
+import ApplicationStatus from './components/ApplicationStatus';
 import UseSparsityScoreGenerator from './hooks/UseSparsityScoreGenerator';
 import SparsityTable from './components/SparsityTable';
 import SelectedSite from './components/SelectedSite';
@@ -37,7 +36,7 @@ export default function App() {
       <Stack direction='row'>
         <Container maxWidth='auto'>
           <Stack>
-            <ConnectionStatus serverConnection={serverConnection} DbConnection={DbConnection} />
+            <ApplicationStatus serverConnection={serverConnection} DbConnection={DbConnection} />
             <SparsityTable selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} sparsityData={sparsityData} />
           </Stack>
         </Container>
