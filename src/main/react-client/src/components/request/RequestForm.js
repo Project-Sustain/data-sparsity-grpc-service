@@ -1,25 +1,38 @@
 import { useState, useEffect } from 'react';
 import { gisStateCounty } from '../../library/gisInfo';
-import {  } from '@mui/material';
 import SpatialDropdown from './SpatialDropdown';
 import SpatialRadios from './SpatialRadios';
 import { sendRequest } from '../../helpers/api';
 import TemporalSlider from './TemporalSlider';
 import DataConstraints from './DataConstraints';
+import { sparsityMetadata } from '../../library/metadata';
+import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { makeStyles } from "@material-ui/core";
+
+const useStyles = makeStyles({
+    select: {
+      margin: "10px",
+    }
+  });
 
 
 export default function RequestForm() {
+    const classes = useStyles();
 
     const [stateInfo, setStateInfo] = useState([]);
     const [firstTime, setFirstTime] = useState();
     const [lastTime, setLastTime] = useState();
     const [dataConstraints, setDataConstraints] = useState([]);
     const [dataConstraintFilter, setDataConstraintFilter] = useState("");
-    const [collectionName, setCollectionName] = useState("");
+    const [collection, setCollection] = useState({});
     const [spatialScope, setSpatialScope] = useState("STATE");
     const [spatialIdentifier, setSpatialIdentifier] = useState("");
     const [selectedState, setSelectedState] = useState({});
     const [selectedCounty, setSelectedCounty] = useState({});
+
+    useEffect(() => {
+        setCollection(sparsityMetadata[0]);
+    });
 
     useEffect(() => {
         (async () => {
@@ -84,9 +97,29 @@ export default function RequestForm() {
         setSpatialScope(event.target.value);
     }
 
+    const updateCollection = (event) => {
+        setCollection(event.target.value);
+    }
+
     if(stateInfo.length > 0) {
         return (
             <>
+                <FormControl fullWidth className={classes.select}>
+                <InputLabel>{collection.collection}</InputLabel>
+                <Select
+                    value={collection}
+                    label={collection.collection}
+                    onChange={updateCollection}
+                >
+                    {
+                        sparsityMetadata.map((dataset, index) => {
+                            return (
+                                <MenuItem key={index} value={dataset}>{dataset.collection}</MenuItem>
+                            );
+                        })
+                    }
+                </Select>
+            </FormControl>
                 <SpatialRadios
                     spatialScope={spatialScope}
                     updateSpatialScope={updateSpatialScope}

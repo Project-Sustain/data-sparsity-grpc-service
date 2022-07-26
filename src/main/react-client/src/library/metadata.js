@@ -1,4 +1,4 @@
-[
+export const sparsityMetadata = [
     {
         "collection": "water_quality_bodies_of_water",
         "site_name": "MonitoringLocationIdentifier"
