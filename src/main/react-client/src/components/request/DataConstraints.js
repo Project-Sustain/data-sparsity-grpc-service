@@ -32,7 +32,7 @@ export default function DataConstraints(props) {
         setVisibleConstraints(results);
     }
 
-    if(visibleContraints.length > 0) {
+    if(props.dataConstraints.length > 0) {
         return (
             <>
                 <Typography align='center' variant='h6'>Data Constraints</Typography>
