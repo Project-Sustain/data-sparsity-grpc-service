@@ -30,9 +30,18 @@ export default function RequestForm() {
     const [selectedState, setSelectedState] = useState({});
     const [selectedCounty, setSelectedCounty] = useState({});
 
+    const sendTemporalRangeRequest = () => {
+        const collectionName = collection.collection;
+    }
+
+    const sendMeasurementTypesRequest = () => {
+        const collectionName = collection.collection;
+        const filter = dataConstraintFilter;
+    }
+
     useEffect(() => {
         setCollection(sparsityMetadata[0]);
-    });
+    }, [sparsityMetadata]);
 
     useEffect(() => {
         (async () => {
@@ -54,9 +63,6 @@ export default function RequestForm() {
             else console.log("ERROR sending serverConnection request");
         })();
     }, []);
-
-
-    console.log({dataConstraints})
 
     useEffect(() => {
         setStateInfo(gisStateCounty);
@@ -105,21 +111,21 @@ export default function RequestForm() {
         return (
             <>
                 <FormControl fullWidth className={classes.select}>
-                <InputLabel>{collection.collection}</InputLabel>
-                <Select
-                    value={collection}
-                    label={collection.collection}
-                    onChange={updateCollection}
-                >
-                    {
-                        sparsityMetadata.map((dataset, index) => {
-                            return (
-                                <MenuItem key={index} value={dataset}>{dataset.collection}</MenuItem>
-                            );
-                        })
-                    }
-                </Select>
-            </FormControl>
+                    <InputLabel>Dataset</InputLabel>
+                    <Select
+                        value={collection}
+                        label="Dataset"
+                        onChange={updateCollection}
+                    >
+                        {
+                            sparsityMetadata.map((dataset, index) => {
+                                return (
+                                    <MenuItem key={index} value={dataset}>{dataset.label}</MenuItem>
+                                );
+                            })
+                        }
+                    </Select>
+                </FormControl>
                 <SpatialRadios
                     spatialScope={spatialScope}
                     updateSpatialScope={updateSpatialScope}
