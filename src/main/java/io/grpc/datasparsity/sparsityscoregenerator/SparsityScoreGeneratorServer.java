@@ -105,6 +105,7 @@ public class SparsityScoreGeneratorServer {
     @Override
     public void allMeasurementTypes(AMTRequest req, StreamObserver<AMTReply> responseObserver) {
       String collectionName = req.getCollectionName();
+      String filter = req.getFilter();
       MongoConnection mongoConnection = new MongoConnection();
       Document metadata = mongoConnection.getCollection("Metadata").find(eq("collection", collectionName)).first();
       mongoConnection.closeConnection();
@@ -112,8 +113,14 @@ public class SparsityScoreGeneratorServer {
       List<String> tempReturn = new ArrayList<>();
       fieldMetadata.forEach(document -> {
         try {
-          if(!document.getString("name").equals("epoch_time")){
+          if(document.getString("name").equals("epoch_time")) {}
+          else if(filter.equals("")) {
             tempReturn.add(document.getString("name"));
+          }
+          else {
+            if(document.getString("name").contains(filter)) {
+              tempReturn.add(document.getString("name"));
+            }
           }
         } catch(Exception e) {
           logger.warning(e.toString());

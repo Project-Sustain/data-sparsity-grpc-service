@@ -20,16 +20,15 @@ export default function DataConstraints(props) {
     const classes = useStyles();
     const [searchString, setSearchString] = useState("");
     const [visibleContraints, setVisibleConstraints] = useState([]);
-    console.log({searchString})
 
     useEffect(() => {
-        setVisibleConstraints(props.dataConstraints);
+        setVisibleConstraints(props.dataConstraints.sort());
     }, [props.dataConstraints]);
 
     const onChange = (event) => {
         const newValue = event.target.value;
         setSearchString(newValue);
-        const results = props.dataConstraints.filter(word => word.includes(newValue));
+        const results = props.dataConstraints.filter(word => word.includes(newValue)).sort();
         setVisibleConstraints(results);
     }
 

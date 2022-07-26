@@ -10,19 +10,26 @@ import DataConstraints from './DataConstraints';
 
 export default function RequestForm() {
 
+    const [stateInfo, setStateInfo] = useState([]);
     const [firstTime, setFirstTime] = useState();
     const [lastTime, setLastTime] = useState();
     const [dataConstraints, setDataConstraints] = useState([]);
+    const [dataConstraintFilter, setDataConstraintFilter] = useState("");
+    const [collectionName, setCollectionName] = useState("");
+    const [spatialScope, setSpatialScope] = useState("STATE");
+    const [spatialIdentifier, setSpatialIdentifier] = useState("");
+    const [selectedState, setSelectedState] = useState({});
+    const [selectedCounty, setSelectedCounty] = useState({});
 
     useEffect(() => {
         (async () => {
-            const response = await sendRequest("measurementTypes");
+            const response = await sendRequest("measurementTypes"); // FIXME send request params!
             if(response) {
                 setDataConstraints(response.measurementTypes);
             }
             else console.log("ERROR sending serverConnection request");
         })();
-    }, []);
+    }, [dataConstraintFilter]);
 
     useEffect(() => {
         (async () => {
@@ -35,12 +42,6 @@ export default function RequestForm() {
         })();
     }, []);
 
-    // const [collectionName, setCollectionName] = useState("");
-    const [spatialScope, setSpatialScope] = useState("STATE");
-    const [spatialIdentifier, setSpatialIdentifier] = useState("");
-    const [stateInfo, setStateInfo] = useState([]);
-    const [selectedState, setSelectedState] = useState({});
-    const [selectedCounty, setSelectedCounty] = useState({});
 
     console.log({dataConstraints})
 
