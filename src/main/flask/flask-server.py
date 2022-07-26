@@ -52,7 +52,7 @@ def getMeasurementTypes():
         stub = sparsityscoregenerator_pb2_grpc.GetRequestParamsStub(channel)
         response = stub.AllMeasurementTypes(sparsityscoregenerator_pb2.AMTRequest(
             collectionName = "water_quality_bodies_of_water",
-            filter = "ammonia"
+            filter = "water"
         ))
     return json.dumps(MessageToDict(response, preserving_proto_field_name=True))
 
