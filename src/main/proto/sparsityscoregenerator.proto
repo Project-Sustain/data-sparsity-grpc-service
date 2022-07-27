@@ -45,6 +45,7 @@ enum ScopeType {
 
 message AMTRequest {
   string collectionName = 1;
+  string filter = 2;
 }
 
 message AMTReply {

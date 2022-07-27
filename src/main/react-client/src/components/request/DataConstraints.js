@@ -20,7 +20,6 @@ export default function DataConstraints(props) {
     const classes = useStyles();
     const [searchString, setSearchString] = useState("");
     const [visibleContraints, setVisibleConstraints] = useState([]);
-    console.log({searchString})
 
     useEffect(() => {
         setVisibleConstraints(props.dataConstraints);
@@ -33,7 +32,7 @@ export default function DataConstraints(props) {
         setVisibleConstraints(results);
     }
 
-    if(visibleContraints.length > 0) {
+    if(props.dataConstraints.length > 0) {
         return (
             <>
                 <Typography align='center' variant='h6'>Data Constraints</Typography>
@@ -48,7 +47,12 @@ export default function DataConstraints(props) {
                     {
                         visibleContraints.map((constraint, index) => {
                             return (
-                                <IndividualConstraint key={index} constraint={constraint} />
+                                <IndividualConstraint
+                                    key={index}
+                                    constraint={constraint}
+                                    selectedConstraints={props.selectedConstraints}
+                                    setSelectedConstraints={props.setSelectedConstraints}
+                                />
                             );
                         })
                     }

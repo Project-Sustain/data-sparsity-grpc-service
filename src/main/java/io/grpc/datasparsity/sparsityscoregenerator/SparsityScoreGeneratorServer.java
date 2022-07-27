@@ -34,6 +34,7 @@ import com.mongodb.client.model.BsonField;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
+import java.util.Collections;
 
 public class SparsityScoreGeneratorServer {
   private static final Logger logger = Logger.getLogger(SparsityScoreGeneratorServer.class.getName());
@@ -105,20 +106,27 @@ public class SparsityScoreGeneratorServer {
     @Override
     public void allMeasurementTypes(AMTRequest req, StreamObserver<AMTReply> responseObserver) {
       String collectionName = req.getCollectionName();
+      String filter = req.getFilter();
+      /*
+       * Can we avoid getting this collection info every time? Only do it if the collectionName has changed?
+       */
       MongoConnection mongoConnection = new MongoConnection();
       Document metadata = mongoConnection.getCollection("Metadata").find(eq("collection", collectionName)).first();
       mongoConnection.closeConnection();
       List<Document> fieldMetadata = metadata.getList("fieldMetadata", Document.class);
+
       List<String> tempReturn = new ArrayList<>();
       fieldMetadata.forEach(document -> {
         try {
-          if(!document.getString("name").equals("epoch_time")){
+          if(document.getString("name").equals("epoch_time")) {}
+          else {
             tempReturn.add(document.getString("name"));
           }
         } catch(Exception e) {
           logger.warning(e.toString());
         }
       });
+      Collections.sort(tempReturn);
       AMTReply reply = AMTReply.newBuilder().addAllMeasurementTypes(tempReturn).build();
       responseObserver.onNext(reply);
       responseObserver.onCompleted();

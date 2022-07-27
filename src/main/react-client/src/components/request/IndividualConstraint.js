@@ -11,7 +11,17 @@ const useStyles = makeStyles({
 
 export default function IndividualConstraint(props) {
     const classes = useStyles();
-    const [checked, setChecked] = useState(true);
+    const [checked, setChecked] = useState(false);
+
+    const handleCheck = () => {
+        setChecked(!checked)
+        if(props.selectedConstraints.includes(props.constraint)){
+            props.setSelectedConstraints(props.selectedConstraints.filter(constraint => {return constraint != props.constraint}))
+        }
+        else {
+            props.setSelectedConstraints([...props.selectedConstraints, props.constraint]);
+        }
+    }
 
     return (
         <FormGroup>
@@ -19,7 +29,7 @@ export default function IndividualConstraint(props) {
                 control={
                         <Checkbox
                             checked={checked}
-                            onChange={() => setChecked(!checked)}
+                            onChange={handleCheck}
                         />
                     } 
                 label={props.constraint}

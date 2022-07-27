@@ -1,4 +1,4 @@
-from flask import Flask, stream_with_context
+from flask import Flask, request, stream_with_context
 from flask_cors import CORS
 
 import json
@@ -36,40 +36,59 @@ def checkDbConnection():
     return json.dumps(response)
 
 
-@app.route("/temporalRange")
+@app.route("/testDataTransfer", methods=["POST", "GET"])
+def testDataTransfer():
+    if request.method == 'POST':
+        body = request.json
+        return json.dumps(body + " RESPONSE")
+
+
+@app.route("/temporalRange", methods=["POST", "GET"])
 def getTemporalRange():
-    with grpc.insecure_channel('localhost:50042') as channel:
-        stub = sparsityscoregenerator_pb2_grpc.GetRequestParamsStub(channel)
-        response = stub.TemporalRange(sparsityscoregenerator_pb2.TRRequest(
-            collectionName = "water_quality_bodies_of_water"
-        ))
-    return json.dumps(MessageToDict(response, preserving_proto_field_name=True))
+    if request.method == 'POST':
+        body = request.json
+        if 'collectionName' in body:
+            collectionName = body['collectionName']
+            with grpc.insecure_channel('localhost:50042') as channel:
+                stub = sparsityscoregenerator_pb2_grpc.GetRequestParamsStub(channel)
+                response = stub.TemporalRange(sparsityscoregenerator_pb2.TRRequest(
+                    collectionName = collectionName
+                ))
+            return json.dumps(MessageToDict(response, preserving_proto_field_name=True))
+        else: return json.dumps({'measurementTypes':[]})
 
 
-@app.route("/measurementTypes")
+@app.route("/measurementTypes", methods=["POST", "GET"])
 def getMeasurementTypes():
-    with grpc.insecure_channel('localhost:50042') as channel:
-        stub = sparsityscoregenerator_pb2_grpc.GetRequestParamsStub(channel)
-        response = stub.AllMeasurementTypes(sparsityscoregenerator_pb2.AMTRequest(
-            collectionName = "water_quality_bodies_of_water"
-        ))
-    return json.dumps(MessageToDict(response, preserving_proto_field_name=True))
+    if request.method == 'POST':
+        body = request.json
+        if 'collectionName' in body:
+            collectionName = body['collectionName']
+            with grpc.insecure_channel('localhost:50042') as channel:
+                stub = sparsityscoregenerator_pb2_grpc.GetRequestParamsStub(channel)
+                response = stub.AllMeasurementTypes(sparsityscoregenerator_pb2.AMTRequest(
+                    collectionName = collectionName
+                ))
+            return json.dumps(MessageToDict(response, preserving_proto_field_name=True))
+        else: return json.dumps({'measurementTypes':[]})
 
 
-@app.route("/sparsityScores", methods=["POST", "GET"]) # Is this the right method??
+@app.route("/sparsityScores", methods=["POST", "GET"])
 def sendSparsityScoreRequest():
+    if request.method == 'POST': body = request.json
+    else: body = {}
 
     def generate():
         with grpc.insecure_channel('localhost:50042') as channel:
             stub = sparsityscoregenerator_pb2_grpc.FindSparsityScoresStub(channel)
             request = sparsityscoregenerator_pb2.SSGRequest(
-                collectionName = "water_quality_bodies_of_water", 
-                spatialScope = "STATE", 
-                spatialIdentifier = "G080",
-                startTime = 946742626000,
-                endTime = 1577894626000,
-                measurementTypes = ["Ammonia", "Phosphate", "Sulphate", "Temperature, water"]
-                )
+                collectionName = body['collectionName'], 
+                spatialScope = body['spatialScope'], 
+                spatialIdentifier = body['spatialIdentifier'],
+                startTime = body['startTime'],
+                endTime = body['endTime'],
+                measurementTypes = body['measurementTypes']
+            )
 
             for stream_response in stub.CalculateSparsityScores(request):
                 yield MessageToJson(stream_response, preserving_proto_field_name=True)
