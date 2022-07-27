@@ -47,7 +47,12 @@ export default function DataConstraints(props) {
                     {
                         visibleContraints.map((constraint, index) => {
                             return (
-                                <IndividualConstraint key={index} constraint={constraint} />
+                                <IndividualConstraint
+                                    key={index}
+                                    constraint={constraint}
+                                    selectedConstraints={props.selectedConstraints}
+                                    setSelectedConstraints={props.setSelectedConstraints}
+                                />
                             );
                         })
                     }

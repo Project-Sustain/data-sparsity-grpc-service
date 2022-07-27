@@ -119,13 +119,8 @@ public class SparsityScoreGeneratorServer {
       fieldMetadata.forEach(document -> {
         try {
           if(document.getString("name").equals("epoch_time")) {}
-          else if(filter.equals("")) {
-            tempReturn.add(document.getString("name"));
-          }
           else {
-            if(document.getString("name").contains(filter)) {
-              tempReturn.add(document.getString("name"));
-            }
+            tempReturn.add(document.getString("name"));
           }
         } catch(Exception e) {
           logger.warning(e.toString());

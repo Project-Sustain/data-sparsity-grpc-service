@@ -28,7 +28,8 @@ const theme = createTheme({
 export default function App() {
   const { serverConnection, DbConnection } = UseConnectionStatus();
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const { sparsityData } = UseSparsityScoreGenerator(setSelectedIndex);
+  // const { sparsityData } = UseSparsityScoreGenerator(setSelectedIndex);
+  const [sparsityData, setSparsityData] = useState({});
 
   return (
     <ThemeProvider theme={theme}>
@@ -36,7 +37,7 @@ export default function App() {
       <Stack direction='row'>
         <Container maxWidth='auto'>
           <Stack>
-            <ApplicationStatus serverConnection={serverConnection} DbConnection={DbConnection} />
+            <ApplicationStatus setSelectedIndex={setSelectedIndex} setSparsityData={setSparsityData} serverConnection={serverConnection} DbConnection={DbConnection} />
             <SparsityTable selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} sparsityData={sparsityData} />
           </Stack>
         </Container>
