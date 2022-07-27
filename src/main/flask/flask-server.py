@@ -1,4 +1,4 @@
-from flask import Flask, stream_with_context
+from flask import Flask, request, stream_with_context
 from flask_cors import CORS
 
 import json
@@ -36,7 +36,14 @@ def checkDbConnection():
     return json.dumps(response)
 
 
-@app.route("/temporalRange")
+@app.route("/testDataTransfer", methods=["POST", "GET"])
+def testDataTransfer():
+    if request.method == 'POST':
+        body = request.json
+        return json.dumps(body + " RESPONSE")
+
+
+@app.route("/temporalRange", methods=["POST", "GET"])
 def getTemporalRange():
     with grpc.insecure_channel('localhost:50042') as channel:
         stub = sparsityscoregenerator_pb2_grpc.GetRequestParamsStub(channel)
@@ -46,18 +53,24 @@ def getTemporalRange():
     return json.dumps(MessageToDict(response, preserving_proto_field_name=True))
 
 
-@app.route("/measurementTypes")
+@app.route("/measurementTypes", methods=["POST", "GET"])
 def getMeasurementTypes():
-    with grpc.insecure_channel('localhost:50042') as channel:
-        stub = sparsityscoregenerator_pb2_grpc.GetRequestParamsStub(channel)
-        response = stub.AllMeasurementTypes(sparsityscoregenerator_pb2.AMTRequest(
-            collectionName = "water_quality_bodies_of_water",
-            filter = "water"
-        ))
-    return json.dumps(MessageToDict(response, preserving_proto_field_name=True))
+    if request.method == 'POST':
+        body = request.json
+        if 'collectionName' in body:
+            collectionName = body['collectionName']
+            filter = body['filter']
+            with grpc.insecure_channel('localhost:50042') as channel:
+                stub = sparsityscoregenerator_pb2_grpc.GetRequestParamsStub(channel)
+                response = stub.AllMeasurementTypes(sparsityscoregenerator_pb2.AMTRequest(
+                    collectionName = collectionName,
+                    filter = filter
+                ))
+            return json.dumps(MessageToDict(response, preserving_proto_field_name=True))
+        else: return json.dumps({'measurementTypes':[]})
 
 
-@app.route("/sparsityScores", methods=["POST", "GET"]) # Is this the right method??
+@app.route("/sparsityScores", methods=["POST", "GET"])
 def sendSparsityScoreRequest():
 
     def generate():

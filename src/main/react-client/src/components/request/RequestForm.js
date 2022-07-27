@@ -8,6 +8,7 @@ import DataConstraints from './DataConstraints';
 import { sparsityMetadata } from '../../library/metadata';
 import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { makeStyles } from "@material-ui/core";
+import TestDataTransfer from './TestDataTransfer';
 
 const useStyles = makeStyles({
     select: {
@@ -45,13 +46,21 @@ export default function RequestForm() {
 
     useEffect(() => {
         (async () => {
-            const response = await sendRequest("measurementTypes"); // FIXME send request params!
+            const collectionName = collection.collection;
+            const body = {
+                'method': "POST",
+                headers : {
+                    'Content-Type':'application/json'
+                },
+                body: JSON.stringify({'collectionName': collectionName, 'filter': dataConstraintFilter})
+            }
+            const response = await sendRequest("measurementTypes", body);
             if(response) {
                 setDataConstraints(response.measurementTypes);
             }
             else console.log("ERROR sending serverConnection request");
         })();
-    }, [dataConstraintFilter]);
+    }, [dataConstraintFilter, collection]);
 
     useEffect(() => {
         (async () => {
@@ -110,6 +119,7 @@ export default function RequestForm() {
     if(stateInfo.length > 0) {
         return (
             <>
+                <TestDataTransfer />
                 <FormControl fullWidth className={classes.select}>
                     <InputLabel>Dataset</InputLabel>
                     <Select
