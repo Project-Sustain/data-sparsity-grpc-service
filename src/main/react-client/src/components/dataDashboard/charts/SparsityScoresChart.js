@@ -32,25 +32,23 @@ export default function SparsityScoresChart(props) {
     const [scaleName, setScaleName] = useState('scale1');
     const [cutoffs, setCutoffs] = useState([]);
 
-    const [scores, setScores] = useState();
+    const [scores, setScores] = useState([]);
 
     useEffect(() => {
         setCutoffs(scales.scale1);
     }, []);
 
-    // useEffect(() => {
-    //     const tempScores = props.sparsityData.map((siteData) => {return siteData.sparsityScore});
-    //     setScores(tempScores)
-    //     setStdDev(standardDeviation(scores).toFixed(2));
-    //     setAverage(mean(scores).toFixed(2));
-    // }, [props.sparsityData]);
+    useEffect(() => {
+        if(props.sparsityData.length > 0){
+            const tempScores = props.sparsityData.map((siteData) => {return siteData.sparsityScore});
+            setScores(tempScores)
+            setStdDev(standardDeviation(tempScores).toFixed(2));
+            setAverage(mean(tempScores).toFixed(2));
+        }
+    }, [props.sparsityData]);
 
     useEffect(() => {
         if(props.sparsityData.length > 0){
-            const scores = props.sparsityData.map((siteData) => {return siteData.sparsityScore});
-            setStdDev(standardDeviation(scores).toFixed(2));
-            setAverage(mean(scores).toFixed(2));
-
             const bucket1 = scores.filter(score => score < cutoffs[0]);
             const bucket2 = scores.filter(score => score >= cutoffs[0] && score < cutoffs[1]);
             const bucket3 = scores.filter(score => score >= cutoffs[1] && score < cutoffs[2]);
@@ -89,16 +87,16 @@ export default function SparsityScoresChart(props) {
                     </BarChart>
                 </ResponsiveContainer>
                 <FormControl>
-                    <FormLabel id="scale">X-Axis Scale</FormLabel>
+                    <FormLabel color='secondary' id="scale">X-Axis Scale</FormLabel>
                     <RadioGroup
                         row
                         aria-labelledby="scale"
                         value={scaleName}
                         onChange={updateScale}
                     >
-                        <FormControlLabel value='scale1' control={<Radio />} label="Scale 1" />
-                        <FormControlLabel value='scale2' control={<Radio />} label="Scale 2" />
-                        <FormControlLabel value='scale3' control={<Radio />} label="Scale 3" />
+                        <FormControlLabel value='scale1' control={<Radio color='secondary' />} label="Scale 1" />
+                        <FormControlLabel value='scale2' control={<Radio color='secondary' />} label="Scale 2" />
+                        <FormControlLabel value='scale3' control={<Radio color='secondary' />} label="Scale 3" />
                     </RadioGroup>
                 </FormControl>
             </Paper>
