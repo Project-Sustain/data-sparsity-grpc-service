@@ -12,8 +12,6 @@ export default function SubmitButton(props) {
 
     const sendSparsityScoreRequest = async() => {
 
-        console.log("***"+ props.sparsityData + "***");
-
         props.setStreamComplete(false);
         props.setRequestPending(true);
 
@@ -59,6 +57,7 @@ export default function SubmitButton(props) {
                             const parsedResponse = response.substring(0, response.indexOf('\n'));
                             const obj = JSON.parse(parsedResponse);
                             response = response.substring(response.indexOf('\n') + 1, response.length);
+                            obj.sparsityScore = obj.sparsityScore ? parseFloat((obj.sparsityScore).toFixed(3)) : 0;
                             streamedResults.push(obj);
                         }
                         if(response.indexOf('\n') === -1 && response.length !== 0){
@@ -67,8 +66,6 @@ export default function SubmitButton(props) {
                         else{
                             incompleteResponse = "";
                         }
-                        response.sparsityScore = response.sparsityScore ? parseFloat((response.sparsityScore).toFixed(3)) : 0;
-                        streamedResults.push(response);
                     } catch(err){
                         console.log("Error while streaming "+ err);
                     }
