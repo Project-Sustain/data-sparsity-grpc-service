@@ -20,7 +20,7 @@ const useStyles = makeStyles({
 
 export default function SelectedSite(props) {
     const classes = useStyles();
-    if(props.streamComplete && props.site) {
+    if(props.streamComplete && props.site && !props.noData) {
         const dates = props.site.epochTimes.map((epoch) => {
             return moment.unix(epoch/1000).format('MM/DD/YYYY HH:mm:ss');
         })
@@ -47,6 +47,15 @@ export default function SelectedSite(props) {
             </Paper>
         );
     }
+    
+    else if(props.streamComplete && props.noData) {
+        return (
+            <Paper elevation={2} className={classes.paper}>
+                <Typography>No Data Matching Request</Typography>
+            </Paper>
+        );
+    }
+
     else if(props.requestPending) {
         return (
             <Paper className={classes.paper}>
@@ -55,5 +64,6 @@ export default function SelectedSite(props) {
             </Paper>
         );
     }
+
     else return null;
 }

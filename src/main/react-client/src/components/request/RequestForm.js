@@ -29,13 +29,11 @@ export default memo(function RequestForm(props) {
     const [lastTime, setLastTime] = useState();
     const [selectedState, setSelectedState] = useState({});
     const [selectedCounty, setSelectedCounty] = useState({});
-    // const [dataConstraints, setDataConstraints] = useState([]);
 
     const [collection, setCollection] = useState({});
     const [spatialScope, setSpatialScope] = useState("COUNTY");
     const [spatialIdentifier, setSpatialIdentifier] = useState("");
     const [temporalRange, setTemporalRange] = useState([]);
-    // const [selectedConstraints, setSelectedConstraints] = useState([]);
     const selectedConstraints = [];
 
     useEffect(() => {
@@ -64,18 +62,6 @@ export default memo(function RequestForm(props) {
                 break;                
         }
     }, [selectedState, selectedCounty, spatialScope]);
-
-    // useEffect(() => {
-    //     (async () => {
-    //         const collectionName = collection.collection;
-    //         const params = {'collectionName': collectionName}
-    //         const response = await sendJsonRequest("measurementTypes", params);
-    //         if(response) {
-    //             setDataConstraints(response.measurementTypes);
-    //         }
-    //         else console.log("ERROR sending serverConnection request");
-    //     })();
-    // }, [collection]);
 
     useEffect(() => {
         (async () => {
@@ -139,12 +125,6 @@ export default memo(function RequestForm(props) {
                     temporalRange={temporalRange}
                     setTemporalRange={setTemporalRange}
                 />
-                {/* <DataConstraints
-                    selectedConstraints={selectedConstraints}
-                    setSelectedConstraints={setSelectedConstraints}
-                    dataConstraints={dataConstraints}
-                    setDataConstraints={setDataConstraints}
-                /> */}
                 <SubmitButton 
                     collectionName={collection.collection}
                     spatialScope={spatialScope}

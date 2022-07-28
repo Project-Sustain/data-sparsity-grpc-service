@@ -72,7 +72,7 @@ export default function EpochTimeChart(props) {
         return {'name': `${startTime} - ${endTime}`, 'Number of Observations': totalValue};
     }
 
-    if(props.streamComplete) {
+    if(props.streamComplete && !props.noData) {
         return (
             <Paper elevation={2} className={classes.paper}>
                 <Typography variant='h5' align='center'>Number of Observations by Time</Typography>
@@ -111,6 +111,14 @@ export default function EpochTimeChart(props) {
                     step={1}
                     onChange={(event, newValue) => setNumbuckets(newValue)}
                 />
+            </Paper>
+        );
+    }
+
+    else if(props.streamComplete && props.noData) {
+        return (
+            <Paper elevation={2} className={classes.paper}>
+                <Typography>No Data Matching Request</Typography>
             </Paper>
         );
     }

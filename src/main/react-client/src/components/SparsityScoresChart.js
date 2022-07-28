@@ -51,7 +51,7 @@ export default function SparsityScoresChart(props) {
         }
     }, [props.sparsityData]);
 
-    if(props.streamComplete) {
+    if(props.streamComplete && !props.noData) {
         return (
             <Paper elevation={2} className={classes.paper}>
                 <Typography variant='h5' align='center'>Sparsity Score Spread, Average: {average}</Typography>
@@ -65,6 +65,15 @@ export default function SparsityScoresChart(props) {
             </Paper>
         );
     }
+
+    else if(props.streamComplete && props.noData) {
+        return (
+            <Paper elevation={2} className={classes.paper}>
+                <Typography>No Data Matching Request</Typography>
+            </Paper>
+        );
+    }
+
     else if(props.requestPending) {
         return (
             <Paper elevation={2} className={classes.paper}>
@@ -73,5 +82,6 @@ export default function SparsityScoresChart(props) {
             </Paper>
         );
     }
+    
     else return null;
 }
