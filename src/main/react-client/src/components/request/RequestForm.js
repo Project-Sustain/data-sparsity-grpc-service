@@ -6,7 +6,7 @@ import { Modal } from '@mui/material';
 import SpatialDropdown from './SpatialDropdown';
 import SpatialRadios from './SpatialRadios';
 import TemporalSlider from './TemporalSlider';
-import DataConstraints from './DataConstraints';
+// import DataConstraints from './DataConstraints';
 import CollectionSelector from './CollectionSelecter';
 import SubmitButton from './SubmitButton';
 
@@ -17,13 +17,14 @@ export default memo(function RequestForm(props) {
     const [lastTime, setLastTime] = useState();
     const [selectedState, setSelectedState] = useState({});
     const [selectedCounty, setSelectedCounty] = useState({});
-    const [dataConstraints, setDataConstraints] = useState([]);
+    // const [dataConstraints, setDataConstraints] = useState([]);
 
     const [collection, setCollection] = useState({});
     const [spatialScope, setSpatialScope] = useState("COUNTY");
     const [spatialIdentifier, setSpatialIdentifier] = useState("");
     const [temporalRange, setTemporalRange] = useState([]);
-    const [selectedConstraints, setSelectedConstraints] = useState([]);
+    // const [selectedConstraints, setSelectedConstraints] = useState([]);
+    const selectedConstraints = [];
 
     const style = {
         position: 'absolute',
@@ -39,7 +40,6 @@ export default memo(function RequestForm(props) {
 
 
     useEffect(() => {
-        console.log("useEffect() doing initual setup based off of imported gis & metadata file.");
         setStateInfo(gisStateCounty);
         setSelectedState(gisStateCounty[0]);
         setSelectedCounty(gisStateCounty[0].counties[0]);
@@ -48,7 +48,6 @@ export default memo(function RequestForm(props) {
     }, []);
     
     useEffect(() => {
-        console.log("useEffect() setting spatialIdentifier when state, county, or scope changes.")
         switch(spatialScope) {
             case "COUNTRY":
                 setSpatialIdentifier("");
@@ -67,22 +66,20 @@ export default memo(function RequestForm(props) {
         }
     }, [selectedState, selectedCounty, spatialScope]);
 
-    useEffect(() => {
-        (async () => {
-            console.log("async useEffect() setting dataConstraints when the collection changes.")
-            const collectionName = collection.collection;
-            const params = {'collectionName': collectionName}
-            const response = await sendJsonRequest("measurementTypes", params);
-            if(response) {
-                setDataConstraints(response.measurementTypes);
-            }
-            else console.log("ERROR sending serverConnection request");
-        })();
-    }, [collection]);
+    // useEffect(() => {
+    //     (async () => {
+    //         const collectionName = collection.collection;
+    //         const params = {'collectionName': collectionName}
+    //         const response = await sendJsonRequest("measurementTypes", params);
+    //         if(response) {
+    //             setDataConstraints(response.measurementTypes);
+    //         }
+    //         else console.log("ERROR sending serverConnection request");
+    //     })();
+    // }, [collection]);
 
     useEffect(() => {
         (async () => {
-            console.log("async useEffect() setting temporalRange, firstTime, lastTime when collection changes.")
             const collectionName = collection.collection;
             const params = {'collectionName': collectionName}
             const response = await sendJsonRequest("temporalRange", params);
@@ -128,7 +125,7 @@ export default memo(function RequestForm(props) {
                     value={selectedState}
                 />
                 <SpatialDropdown
-                    disabled={spatialScope != 'COUNTY'}
+                    disabled={spatialScope !== 'COUNTY'}
                     options={selectedState.counties}
                     label='County'
                     update={updateSelectedCounty}

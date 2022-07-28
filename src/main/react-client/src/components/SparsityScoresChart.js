@@ -1,6 +1,6 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import { makeStyles } from "@material-ui/core";
-import { Paper, Typography } from "@mui/material";
+import { Paper, Typography, LinearProgress } from "@mui/material";
 import { useEffect, useState } from 'react';
 import { mean, standardDeviation } from 'simple-statistics';
 import { colors } from '../helpers/colors';
@@ -75,6 +75,7 @@ export default function SparsityScoresChart(props) {
         return (
             <Paper elevation={2} className={classes.paper}>
                 <Typography>Chart Loading...</Typography>
+                <LinearProgress color='secondary' />
             </Paper>
         );
     }

@@ -1,6 +1,6 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { makeStyles } from "@material-ui/core";
-import { Paper, Typography, Slider, Divider } from "@mui/material";
+import { Paper, Typography, Slider, Divider, LinearProgress } from "@mui/material";
 import { useEffect, useState } from 'react';
 import moment from 'moment';
 import { sum } from 'simple-statistics';
@@ -55,7 +55,11 @@ export default function EpochTimeChart(props) {
             const items_per_bucket = siteDataMap.length / numBuckets;
             let bucketData = [];
             for(let i = 0; i < numBuckets; i++) {
-                bucketData.push(convertBucket(siteDataMap.slice(i*items_per_bucket, (i+1)*items_per_bucket)));
+                try {
+                    bucketData.push(convertBucket(siteDataMap.slice(i*items_per_bucket, (i+1)*items_per_bucket)));
+                } catch(err){
+                    console.log("Error trying to convert buckets");
+                }
             }
             setData(bucketData);
         }
@@ -118,6 +122,7 @@ export default function EpochTimeChart(props) {
         return (
             <Paper elevation={2} className={classes.paper}>
                 <Typography>Chart Loading...</Typography>
+                <LinearProgress color='tertiary' />
             </Paper>
         );
     }

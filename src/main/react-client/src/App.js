@@ -3,7 +3,6 @@ import { React, useState } from 'react'
 import { Container, Stack } from '@mui/material';
 import UseConnectionStatus from './hooks/UseConnectionStatus';
 import ApplicationStatus from './components/ApplicationStatus';
-import UseSparsityScoreGenerator from './hooks/UseSparsityScoreGenerator';
 import SparsityTable from './components/SparsityTable';
 import SelectedSite from './components/SelectedSite';
 import SparsityScoresChart from './components/SparsityScoresChart';
