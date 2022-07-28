@@ -104,7 +104,6 @@ export default memo(function RequestForm(props) {
         setSelectedCounty(event.target.value);
     }
 
-    console.log("Request Form Re-Rendering")
     if(stateInfo.length > 0) {
         return (
             <>

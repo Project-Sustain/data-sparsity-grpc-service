@@ -9,8 +9,6 @@ const useStyles = makeStyles({
     paper: {
         margin: "10px",
         padding: "10px",
-        maxHeight: "70vh",
-        maxWidth: "40vw",
         overflow: "auto"
     },
     chart: {
@@ -29,10 +27,6 @@ export default function SparsityScoresChart(props) {
             const scores = props.sparsityData.map((siteData) => {return siteData.sparsityScore});
             const scores_sd = standardDeviation(scores);
             const scores_mean = mean(scores)
-
-            console.log({scores});
-            console.log({scores_sd})
-            console.log({scores_mean})
 
             const cutoff_1 = 0.001;
             const cutoff_2 = 0.01;

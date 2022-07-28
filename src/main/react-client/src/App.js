@@ -27,9 +27,11 @@ const theme = createTheme({
 export default function App() {
   const { serverConnection, DbConnection } = UseConnectionStatus();
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [sparsityData, setSparsityData] = useState({});
+  const [sparsityData, setSparsityData] = useState([]);
   const [streamComplete, setStreamComplete] = useState(false);
   const [requestPending, setRequestPending] = useState(false);
+
+  console.log({sparsityData})
 
   return (
     <ThemeProvider theme={theme}>
@@ -38,14 +40,14 @@ export default function App() {
         <Container maxWidth='auto'>
           <Stack>
             <ApplicationStatus setRequestPending={setRequestPending} setStreamComplete={setStreamComplete} setSelectedIndex={setSelectedIndex} setSparsityData={setSparsityData} serverConnection={serverConnection} DbConnection={DbConnection} />
-            <SparsityTable requestPending={requestPending} streamComplete={streamComplete} selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} sparsityData={sparsityData} />
+            <SelectedSite requestPending={requestPending} streamComplete={streamComplete} site={sparsityData[selectedIndex]} />
           </Stack>
         </Container>
 
         <Container maxWidth='auto'>
           <Stack>
-            <SelectedSite requestPending={requestPending} streamComplete={streamComplete} site={sparsityData[selectedIndex]} />
             <SparsityScoresChart requestPending={requestPending} streamComplete={streamComplete} sparsityData={sparsityData} />
+            <SparsityTable requestPending={requestPending} streamComplete={streamComplete} selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} sparsityData={sparsityData} />
           </Stack>
         </Container>
       </Stack>
