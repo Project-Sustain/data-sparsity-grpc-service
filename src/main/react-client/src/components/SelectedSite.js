@@ -1,7 +1,6 @@
 import { makeStyles } from "@material-ui/core";
-import { Divider, Paper, Typography, List, ListItemText, Stack } from '@mui/material';
+import { Paper, Typography, List, ListItemText, Stack, LinearProgress } from '@mui/material';
 import moment from 'moment';
-// import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 const useStyles = makeStyles({
     paper: {
@@ -21,7 +20,7 @@ const useStyles = makeStyles({
 
 export default function SelectedSite(props) {
     const classes = useStyles();
-    if(props.site) {
+    if(props.streamComplete) {
         const dates = props.site.epochTimes.map((epoch) => {
             return moment.unix(epoch/1000).format('MM/DD/YYYY HH:mm:ss');
         })
@@ -45,16 +44,16 @@ export default function SelectedSite(props) {
                     </Paper>
 
                 </Stack>
-                {/* <Typography>Coordinates: {props.site.coordinates.latitude}, {props.site.coordinates.longitude}</Typography> */}
-                <Divider textAlign="left">Data Samples Over Time</Divider>
             </Paper>
         );
     }
-    else {
+    else if(props.requestPending) {
         return (
             <Paper className={classes.paper}>
                 <Typography>Data Loading...</Typography>
+                <LinearProgress />
             </Paper>
         );
     }
+    else return null;
 }

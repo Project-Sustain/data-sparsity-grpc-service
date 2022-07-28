@@ -2,7 +2,7 @@
 import { React } from 'react'
 import { useTheme } from '@mui/material/styles';
 import { makeStyles } from "@material-ui/core";
-import { Paper, Typography, Stack } from '@mui/material';
+import { Paper, Typography, Stack, LinearProgress } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 
 const useStyles = makeStyles({
@@ -25,7 +25,7 @@ export default function SparsityTable(props) {
     const theme = useTheme();
     const classes = useStyles(theme);
 
-    if(props.sparsityData.length > 0) {
+    if(props.streamComplete) {
       return (
         <Paper className={classes.paper} elevation={2}>
           <Stack
@@ -41,13 +41,16 @@ export default function SparsityTable(props) {
       );
     }
 
-    else {
+    else if(props.requestPending) {
       return (
         <Paper className={classes.paper} elevation={2}>
           <Typography>Sparsity Data Coming...</Typography>
+          <LinearProgress />
         </Paper>
       );
     }
+
+    else return null;
 
     function returnDataGrid() {
       const columns = [

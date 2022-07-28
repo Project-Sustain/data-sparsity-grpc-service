@@ -16,6 +16,7 @@ export default function SpatialDropdown(props) {
         <FormControl fullWidth className={classes.select}>
             <InputLabel>{props.label}</InputLabel>
             <Select
+                disabled={props.disabled}
                 value={props.value}
                 label={props.label}
                 onChange={props.update}

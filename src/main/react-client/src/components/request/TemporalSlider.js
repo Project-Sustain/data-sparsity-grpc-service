@@ -1,18 +1,9 @@
-import { useState, useEffect } from 'react';
 import Slider from '@mui/material/Slider';
 import moment from 'moment';
-import { makeStyles } from "@material-ui/core";
 import { Typography } from '@mui/material';
 
-const useStyles = makeStyles({
-    root: {
-        // margin: "0px 10px"
-    }
-});
 
 export default function TemporalSlider(props) {
-    const classes = useStyles();
-
     const handleChange = (event, newValue) => {
         props.setTemporalRange(newValue);
     };
@@ -21,12 +12,11 @@ export default function TemporalSlider(props) {
         return moment.unix(value/1000).format('MM/DD/YYYY');
     }
 
-  if(props.temporalRange.length > 0) {
+  if(props.temporalRange.length > 0 && props.min && props.max) {
     return (
         <>
             <Typography align='center'>Select Date Range {valueText(props.temporalRange[0])} - {valueText(props.temporalRange[1])}</Typography>
             <Slider
-                className={classes.root}
                 min={props.min}
                 max={props.max}
                 value={props.temporalRange}

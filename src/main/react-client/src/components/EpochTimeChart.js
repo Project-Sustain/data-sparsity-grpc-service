@@ -1,6 +1,6 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { makeStyles } from "@material-ui/core";
-import { Paper, Typography, Slider, Divider } from "@mui/material";
+import { Paper, Typography, Slider, Divider, LinearProgress } from "@mui/material";
 import { useEffect, useState } from 'react';
 import moment from 'moment';
 import { sum } from 'simple-statistics';
@@ -11,7 +11,7 @@ const useStyles = makeStyles({
         margin: "10px",
         padding: "10px",
         maxHeight: "70vh",
-        maxWidth: "90vw",
+        // maxWidth: "90vw",
         overflow: "auto"
     },
     chart: {
@@ -55,7 +55,11 @@ export default function EpochTimeChart(props) {
             const items_per_bucket = siteDataMap.length / numBuckets;
             let bucketData = [];
             for(let i = 0; i < numBuckets; i++) {
-                bucketData.push(convertBucket(siteDataMap.slice(i*items_per_bucket, (i+1)*items_per_bucket)));
+                try {
+                    bucketData.push(convertBucket(siteDataMap.slice(i*items_per_bucket, (i+1)*items_per_bucket)));
+                } catch(err){
+                    console.log("Error trying to convert buckets");
+                }
             }
             setData(bucketData);
         }
@@ -69,7 +73,7 @@ export default function EpochTimeChart(props) {
         return {'name': `${startTime} - ${endTime}`, 'Number of Observations': totalValue};
     }
 
-    if(props.sparsityData.length > 0) {
+    if(props.streamComplete) {
         return (
             <Paper elevation={2} className={classes.paper}>
                 <Typography variant='h5' align='center'>Number of Observations by Time</Typography>
@@ -105,8 +109,6 @@ export default function EpochTimeChart(props) {
                     min={5}
                     max={200}
                     color='tertiary'
-                    // marks
-                    // valueLabelDisplay="auto"
                     step={1}
                     onChange={(event, newValue) => setNumbuckets(newValue)}
                 />
@@ -114,11 +116,13 @@ export default function EpochTimeChart(props) {
         );
     }
 
-    else {
+    else if(props.requestPending) {
         return (
             <Paper elevation={2} className={classes.paper}>
                 <Typography>Chart Loading...</Typography>
+                <LinearProgress color='tertiary' />
             </Paper>
         );
     }
+    else return null;
 }

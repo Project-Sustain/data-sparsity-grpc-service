@@ -1,6 +1,6 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import { makeStyles } from "@material-ui/core";
-import { Paper, Typography } from "@mui/material";
+import { Paper, Typography, LinearProgress } from "@mui/material";
 import { useEffect, useState } from 'react';
 import { mean, standardDeviation } from 'simple-statistics';
 import { colors } from '../helpers/colors';
@@ -9,8 +9,6 @@ const useStyles = makeStyles({
     paper: {
         margin: "10px",
         padding: "10px",
-        maxHeight: "70vh",
-        maxWidth: "40vw",
         overflow: "auto"
     },
     chart: {
@@ -29,10 +27,6 @@ export default function SparsityScoresChart(props) {
             const scores = props.sparsityData.map((siteData) => {return siteData.sparsityScore});
             const scores_sd = standardDeviation(scores);
             const scores_mean = mean(scores)
-
-            console.log({scores});
-            console.log({scores_sd})
-            console.log({scores_mean})
 
             const cutoff_1 = 0.001;
             const cutoff_2 = 0.01;
@@ -57,7 +51,7 @@ export default function SparsityScoresChart(props) {
         }
     }, [props.sparsityData]);
 
-    if(props.sparsityData.length > 0) {
+    if(props.streamComplete) {
         return (
             <Paper elevation={2} className={classes.paper}>
                 <Typography variant='h5' align='center'>Sparsity Score Spread, Average: {average}</Typography>
@@ -71,11 +65,13 @@ export default function SparsityScoresChart(props) {
             </Paper>
         );
     }
-    else {
+    else if(props.requestPending) {
         return (
             <Paper elevation={2} className={classes.paper}>
                 <Typography>Chart Loading...</Typography>
+                <LinearProgress color='secondary' />
             </Paper>
         );
     }
+    else return null;
 }
