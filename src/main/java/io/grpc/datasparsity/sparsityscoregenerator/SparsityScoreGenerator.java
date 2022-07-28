@@ -23,7 +23,6 @@ public class SparsityScoreGenerator {
         MongoCollection<Document> collection = mongoConnection.getCollection(collectionName);
         ArrayList<Document> queryResults = collection.aggregate(aggregateQuery.getQuery()).allowDiskUse(true).into(new ArrayList<>());
         this.results = queryResults;
-        logger.info("***Number of Results Found: " + results.size());
         mongoConnection.closeConnection();
     }
 
@@ -63,7 +62,6 @@ public class SparsityScoreGenerator {
         }  
         mongoConnection.closeConnection();
         responseObserver.onCompleted();
-        logger.info("***Number of Results Streamed: " + numberOfResultsStreamed);
     }
 
     /*
