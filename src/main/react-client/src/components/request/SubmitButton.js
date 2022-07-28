@@ -42,6 +42,7 @@ export default function SubmitButton(props) {
                 const { done, value } = await reader.read();
                 if (done) {
                     const formattedResults = formatResults(streamedResults);
+                    console.log("formattedResults.length: " + formattedResults.length)
                     props.setSparsityData(formattedResults);
                     props.setSelectedIndex(0);
                     props.setStreamComplete(true);
@@ -54,7 +55,34 @@ export default function SubmitButton(props) {
                         response.sparsityScore = response.sparsityScore ? parseFloat((response.sparsityScore).toFixed(3)) : 0;
                         streamedResults.push(response);
                         props.setSparsityData([...props.sparsityData, response]);
-                    } catch(err){}
+                    } catch(err){
+                        console.log("Error while streaming "+ err);
+                    }
+                }
+            }
+
+            function checkMessage() {
+                let incompleteResponse  = ""
+
+                while(true){
+
+                    let response = new TextDecoder().decode(value);
+                        response = incompleteResponse + response;
+
+                    while(response.indexOf('\n') !== -1) {
+                        const parsedResponse = response.substring(0, response.indexOf('\n'));
+                        const obj = JSON.parse(parsedResponse);
+                        response = response.substring(response.indexOf('\n') + 1, response.length);
+                        yield obj
+
+                        if(response.indexOf('\n') === -1 && response.length !== 0){
+                            incompleteResponse = response;
+                        }
+                        else{
+                            incompleteResponse = "";
+                        }
+
+                    }
                 }
             }
 

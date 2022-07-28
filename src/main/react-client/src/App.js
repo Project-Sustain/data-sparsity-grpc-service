@@ -34,7 +34,7 @@ export default function App() {
   const [requestPending, setRequestPending] = useState(false);
   const [noData, setNoData] = useState(false);
 
-  console.log([streamComplete, requestPending, noData])
+  console.log("Number of Streamed Results: " + sparsityData.length);
 
   useEffect(() => {
     setNoData(sparsityData.length === 0);
