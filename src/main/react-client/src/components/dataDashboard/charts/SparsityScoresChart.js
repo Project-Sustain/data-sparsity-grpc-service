@@ -22,21 +22,18 @@ export default function SparsityScoresChart(props) {
     const [data, setData] = useState({});
     const [average, setAverage] = useState(0);
     const [stdDev, setStdDev] = useState(0);
-
+    const [scores, setScores] = useState([]);
 
     const scales = {
         'scale1': [0.001, 0.01, 0.1, 1],
         'scale2': [1, 10, 100, 1000],
-        'scale3': [0.1, 1, 1.1, 1.01]
+        'scale3': [0.1, 1, 1.1, 1.01],
+        'scale4': [25, 50, 75, 100],
+        'scale5': [50, 100, 150, 200]
     }
-    const [scaleName, setScaleName] = useState('scale1');
+    const scaleNames = Object.keys(scales);
+    const [scaleName, setScaleName] = useState('');
     const [cutoffs, setCutoffs] = useState([]);
-
-    const [scores, setScores] = useState([]);
-
-    useEffect(() => {
-        setCutoffs(scales.scale1);
-    }, []);
 
     useEffect(() => {
         if(props.sparsityData.length > 0){
@@ -44,16 +41,18 @@ export default function SparsityScoresChart(props) {
             setScores(tempScores)
             setStdDev(standardDeviation(tempScores).toFixed(2));
             setAverage(mean(tempScores).toFixed(2));
+            setCutoffs(scales.scale1);
+            setScaleName(scaleNames[0])
         }
     }, [props.sparsityData]);
 
     useEffect(() => {
-        if(props.sparsityData.length > 0){
+        if(scores.length > 0){
             const bucket1 = scores.filter(score => score < cutoffs[0]);
             const bucket2 = scores.filter(score => score >= cutoffs[0] && score < cutoffs[1]);
             const bucket3 = scores.filter(score => score >= cutoffs[1] && score < cutoffs[2]);
             const bucket4 = scores.filter(score => score >= cutoffs[2] && score < cutoffs[3]);
-            const bucket5 = scores.filter(score => score >= cutoffs[4]);
+            const bucket5 = scores.filter(score => score >= cutoffs[3]);
 
             const tempData = [
                 {name: `0-${cutoffs[0]}`, numberOfSites: bucket1.length},
@@ -65,7 +64,7 @@ export default function SparsityScoresChart(props) {
 
             setData(tempData);
         }
-    }, [props.sparsityData, cutoffs]);
+    }, [scores, cutoffs]);
 
     const updateScale = (event) => {
         const value = event.target.value;
@@ -94,9 +93,11 @@ export default function SparsityScoresChart(props) {
                         value={scaleName}
                         onChange={updateScale}
                     >
-                        <FormControlLabel value='scale1' control={<Radio color='secondary' />} label="Scale 1" />
-                        <FormControlLabel value='scale2' control={<Radio color='secondary' />} label="Scale 2" />
-                        <FormControlLabel value='scale3' control={<Radio color='secondary' />} label="Scale 3" />
+                        <FormControlLabel value='scale1' control={<Radio color='secondary' />} label="Exponential 1" />
+                        <FormControlLabel value='scale2' control={<Radio color='secondary' />} label="Exponential 2" />
+                        <FormControlLabel value='scale3' control={<Radio color='secondary' />} label="Log 1" />
+                        <FormControlLabel value='scale4' control={<Radio color='secondary' />} label="Linear 1" />
+                        <FormControlLabel value='scale5' control={<Radio color='secondary' />} label="Linear 2" />
                     </RadioGroup>
                 </FormControl>
             </Paper>
