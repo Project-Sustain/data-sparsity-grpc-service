@@ -2,15 +2,28 @@ import { useState, useEffect, memo } from 'react';
 import { gisStateCounty } from '../../library/gisInfo';
 import { sendJsonRequest } from '../../helpers/api';
 import { sparsityMetadata } from '../../library/metadata';
-import { Modal } from '@mui/material';
+import { Modal, Paper, Typography } from '@mui/material';
 import SpatialDropdown from './SpatialDropdown';
 import SpatialRadios from './SpatialRadios';
 import TemporalSlider from './TemporalSlider';
 // import DataConstraints from './DataConstraints';
 import CollectionSelector from './CollectionSelecter';
 import SubmitButton from './SubmitButton';
+import { makeStyles } from "@material-ui/core";
+
+const useStyles = makeStyles({
+    paper: {
+        margin: "10px",
+        padding: "10px",
+        overflow: "auto"
+    },
+    select: {
+        margin: '10px 0px'
+    }
+  });
 
 export default memo(function RequestForm(props) {
+    const classes = useStyles();
 
     const [stateInfo, setStateInfo] = useState([]);
     const [firstTime, setFirstTime] = useState();
@@ -106,8 +119,10 @@ export default memo(function RequestForm(props) {
 
     if(stateInfo.length > 0) {
         return (
-            <>
+            <Paper elevation={3} className={classes.paper}>
+                <Typography align='center' variant='h5'>Data Request Form</Typography>
                 <CollectionSelector
+                    className={classes.select}
                     setCollection={setCollection}
                     sparsityMetadata={sparsityMetadata}
                     collection={collection}
@@ -117,6 +132,7 @@ export default memo(function RequestForm(props) {
                     setSpatialScope={setSpatialScope}
                 />
                 <SpatialDropdown
+                    className={classes.select}
                     disabled={false}
                     options={stateInfo}
                     label='State'
@@ -124,6 +140,7 @@ export default memo(function RequestForm(props) {
                     value={selectedState}
                 />
                 <SpatialDropdown
+                    className={classes.select}
                     disabled={spatialScope !== 'COUNTY'}
                     options={selectedState.counties}
                     label='County'
@@ -156,7 +173,7 @@ export default memo(function RequestForm(props) {
                     setSparsityData={props.setSparsityData}
                     setSelectedIndex={props.setSelectedIndex}
                 />
-            </>
+            </Paper>
         );
     }
 

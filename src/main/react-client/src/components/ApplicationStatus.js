@@ -28,7 +28,6 @@ export default function ApplicationStatus(props) {
           control={<Checkbox checked={props.DbConnection}/>}
         />
       </Stack>
-      <RequestForm setRequestPending={props.setRequestPending} setStreamComplete={props.setStreamComplete} setSparsityData={props.setSparsityData} setSelectedIndex={props.setSelectedIndex} />
     </Paper>
   );
 }

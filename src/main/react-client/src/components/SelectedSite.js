@@ -20,7 +20,7 @@ const useStyles = makeStyles({
 
 export default function SelectedSite(props) {
     const classes = useStyles();
-    if(props.streamComplete) {
+    if(props.streamComplete && props.site) {
         const dates = props.site.epochTimes.map((epoch) => {
             return moment.unix(epoch/1000).format('MM/DD/YYYY HH:mm:ss');
         })

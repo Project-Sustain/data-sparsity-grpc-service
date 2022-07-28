@@ -1,6 +1,14 @@
 import { Button } from '@mui/material';
+import { makeStyles } from '@material-ui/core';
+
+const useStyles = makeStyles({
+    root: {
+        width: '100%'
+    }
+});
 
 export default function SubmitButton(props) {
+    const classes = useStyles();
 
     const sendSparsityScoreRequest = async() => {
 
@@ -67,5 +75,5 @@ export default function SubmitButton(props) {
         });
     }
 
-    return <Button  variant='outlined' onClick={sendSparsityScoreRequest}>Submit Request</Button>
+    return <Button className={classes.root} variant='outlined' onClick={sendSparsityScoreRequest}>Submit Request</Button>
 }

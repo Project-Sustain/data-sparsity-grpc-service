@@ -7,8 +7,10 @@ import SparsityTable from './components/SparsityTable';
 import SelectedSite from './components/SelectedSite';
 import SparsityScoresChart from './components/SparsityScoresChart';
 import EpochTimeChart from './components/EpochTimeChart';
+import RequestForm from './components/request/RequestForm';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { colors } from './helpers/colors';
+
 
 const theme = createTheme({
   palette: {
@@ -40,6 +42,7 @@ export default function App() {
         <Container maxWidth='auto'>
           <Stack>
             <ApplicationStatus setRequestPending={setRequestPending} setStreamComplete={setStreamComplete} setSelectedIndex={setSelectedIndex} setSparsityData={setSparsityData} serverConnection={serverConnection} DbConnection={DbConnection} />
+            <RequestForm setRequestPending={setRequestPending} setStreamComplete={setStreamComplete} setSparsityData={setSparsityData} setSelectedIndex={setSelectedIndex} />
             <SelectedSite requestPending={requestPending} streamComplete={streamComplete} site={sparsityData[selectedIndex]} />
           </Stack>
         </Container>
