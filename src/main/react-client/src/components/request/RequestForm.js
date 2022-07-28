@@ -2,11 +2,10 @@ import { useState, useEffect, memo } from 'react';
 import { gisStateCounty } from '../../library/gisInfo';
 import { sendJsonRequest } from '../../helpers/api';
 import { sparsityMetadata } from '../../library/metadata';
-import { Modal, Paper, Typography } from '@mui/material';
+import { Paper, Typography } from '@mui/material';
 import SpatialDropdown from './SpatialDropdown';
 import SpatialRadios from './SpatialRadios';
 import TemporalSlider from './TemporalSlider';
-// import DataConstraints from './DataConstraints';
 import CollectionSelector from './CollectionSelecter';
 import SubmitButton from './SubmitButton';
 import { makeStyles } from "@material-ui/core";
@@ -38,19 +37,6 @@ export default memo(function RequestForm(props) {
     const [temporalRange, setTemporalRange] = useState([]);
     // const [selectedConstraints, setSelectedConstraints] = useState([]);
     const selectedConstraints = [];
-
-    const style = {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 400,
-        bgcolor: 'background.paper',
-        border: '2px solid #000',
-        boxShadow: 24,
-        p: 4,
-      };
-
 
     useEffect(() => {
         setStateInfo(gisStateCounty);
@@ -142,7 +128,7 @@ export default memo(function RequestForm(props) {
                 <SpatialDropdown
                     className={classes.select}
                     disabled={spatialScope !== 'COUNTY'}
-                    options={selectedState.counties}
+                    options={selectedState.counties.sort((a, b) => {return a.collection - b.collection})}
                     label='County'
                     update={updateSelectedCounty}
                     value={selectedCounty}
