@@ -6,8 +6,10 @@ import { sendJsonRequest } from '../../helpers/api';
 import TemporalSlider from './TemporalSlider';
 import DataConstraints from './DataConstraints';
 import { sparsityMetadata } from '../../library/metadata';
-import { FormControl, InputLabel, Select, MenuItem, Button } from '@mui/material';
+import { Button } from '@mui/material';
 import { makeStyles } from "@material-ui/core";
+import CollectionSelector from './CollectionSelecter';
+import SubmitButton from './SubmitButton';
 
 const useStyles = makeStyles({
     select: {
@@ -30,6 +32,13 @@ export default function RequestForm(props) {
     const [selectedCounty, setSelectedCounty] = useState({});
     const [temporalRange, setTemporalRange] = useState([]);
     const [selectedConstraints, setSelectedConstraints] = useState([]);
+
+    useEffect(() => {
+        setStateInfo(gisStateCounty);
+        setSelectedState(gisStateCounty[0]);
+        setSelectedCounty(gisStateCounty[0].counties[0]);
+        setSpatialIdentifier(selectedState.GISJOIN);
+    }, []);
 
     useEffect(() => {
         setCollection(sparsityMetadata[0]);
@@ -67,13 +76,6 @@ export default function RequestForm(props) {
     }, [collection]);
 
     useEffect(() => {
-        setStateInfo(gisStateCounty);
-        setSelectedState(gisStateCounty[0]);
-        setSelectedCounty(gisStateCounty[0].counties[0]);
-        setSpatialIdentifier(selectedState.GISJOIN);
-    }, []);
-
-    useEffect(() => {
         switch(spatialScope) {
             case "COUNTRY":
                 setSpatialIdentifier("");
@@ -109,89 +111,14 @@ export default function RequestForm(props) {
         setCollection(event.target.value);
     }
 
-    const sendSparsityScoreRequest = async() => {
-
-        const params = {
-            'collectionName': collection.collection,
-            'spatialScope': spatialScope,
-            'spatialIdentifier': spatialIdentifier,
-            'startTime': temporalRange[0],
-            'endTime': temporalRange[1],
-            'measurementTypes': selectedConstraints
-        };
-
-        const body = {
-            'method':'POST',
-            headers: {
-                'Content-Type':'application/json'
-            },
-            body: JSON.stringify(params)
-        };
-
-        const url = "http://127.0.0.1:5000/sparsityScores";
-
-        let streamedResults = [];
-
-        fetch(url, body).then(async stream => {
-            let reader = stream.body.getReader();     
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) {
-                    const formattedResults = formatResults(streamedResults);
-                    console.log({formattedResults})
-                    props.setSparsityData(formattedResults);
-                    props.setSelectedIndex(formattedResults.length-1);
-                    break;
-                }
-                else {
-                    try {
-                        const response = JSON.parse(new TextDecoder().decode(value));
-                        response.sparsityScore = response.sparsityScore ? parseFloat((response.sparsityScore).toFixed(3)) : 0;
-                        streamedResults.push(response);
-                    } catch(err){}
-                }
-            }
-
-            function formatResults(streamedResults) {
-                streamedResults.sort((a, b) => {return b.sparsityScore - a.sparsityScore});
-                const scoresList = [...new Set(streamedResults.map(result => {return result.sparsityScore}))];
-                const numberOfUniqueScores = scoresList.length - 1;
-                const scoreMap = {};
-                scoresList.forEach((absoulteScore, index) => {
-                    scoreMap[absoulteScore] = parseInt(((numberOfUniqueScores - index) / numberOfUniqueScores) * 100) + "%";
-                });
-                const formattedResults = streamedResults.map(result => {
-                    result.relativeSparsityScore = scoreMap[result.sparsityScore];
-                    return result
-                });
-                return formattedResults;
-            }
-        });
-
-
-
-            
-    }
-
     if(stateInfo.length > 0) {
         return (
             <>
-                <FormControl fullWidth className={classes.select}>
-                    <InputLabel>Dataset</InputLabel>
-                    <Select
-                        value={collection}
-                        label="Dataset"
-                        onChange={updateCollection}
-                    >
-                        {
-                            sparsityMetadata.map((dataset, index) => {
-                                return (
-                                    <MenuItem key={index} value={dataset}>{dataset.label}</MenuItem>
-                                );
-                            })
-                        }
-                    </Select>
-                </FormControl>
+                <CollectionSelector
+                    updateCollection={updateCollection}
+                    sparsityMetadata={sparsityMetadata}
+                    collection={collection}
+                />
                 <SpatialRadios
                     spatialScope={spatialScope}
                     updateSpatialScope={updateSpatialScope}
@@ -220,10 +147,16 @@ export default function RequestForm(props) {
                     dataConstraints={dataConstraints}
                     setDataConstraints={setDataConstraints}
                 />
-                <Button
-                    variant='outlined'
-                    onClick={sendSparsityScoreRequest}
-                >Submit Request</Button>
+                <SubmitButton 
+                    collectionName={collection.collection}
+                    spatialScope={spatialScope}
+                    spatialIdentifier={spatialIdentifier}
+                    startTime={temporalRange[0]}
+                    endTime={temporalRange[1]}
+                    measurementTypes={selectedConstraints}
+                    setSparsityData={props.setSparsityData}
+                    setSelectedIndex={props.setSelectedIndex}
+                />
             </>
         );
     }
