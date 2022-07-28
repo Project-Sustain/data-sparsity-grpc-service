@@ -3,10 +3,10 @@ import { useEffect, useState } from 'react'
 import { Container, Stack } from '@mui/material';
 import UseConnectionStatus from './hooks/UseConnectionStatus';
 import ApplicationStatus from './components/ApplicationStatus';
-import SparsityTable from './components/SparsityTable';
-import SelectedSite from './components/SelectedSite';
-import SparsityScoresChart from './components/SparsityScoresChart';
-import EpochTimeChart from './components/EpochTimeChart';
+import SparsityTable from './components/dataDashboard/SparsityTable';
+import SelectedSite from './components/dataDashboard/SelectedSite';
+import SparsityScoresChart from './components/dataDashboard/charts/SparsityScoresChart';
+import EpochTimeChart from './components/dataDashboard/charts/EpochTimeChart';
 import RequestForm from './components/request/RequestForm';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { colors } from './helpers/colors';

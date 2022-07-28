@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core";
 import { Paper, Typography, LinearProgress } from "@mui/material";
 import { useEffect, useState } from 'react';
 import { mean, standardDeviation } from 'simple-statistics';
-import { colors } from '../helpers/colors';
+import { colors } from '../../../helpers/colors';
 
 const useStyles = makeStyles({
     paper: {
@@ -21,12 +21,13 @@ export default function SparsityScoresChart(props) {
     const classes = useStyles();
     const [data, setData] = useState({});
     const [average, setAverage] = useState(0);
+    const [stdDev, setStdDev] = useState(0);
 
     useEffect(() => {
         if(props.sparsityData.length > 0){
             const scores = props.sparsityData.map((siteData) => {return siteData.sparsityScore});
-            const scores_sd = standardDeviation(scores);
-            const scores_mean = mean(scores)
+            setStdDev(standardDeviation(scores).toFixed(2));
+            setAverage(mean(scores).toFixed(2));
 
             const cutoff_1 = 0.001;
             const cutoff_2 = 0.01;
@@ -46,7 +47,7 @@ export default function SparsityScoresChart(props) {
                 {name: `${cutoff_3}-${cutoff_4}`, numberOfSites: bucket4.length},
                 {name: `>${cutoff_4}`, numberOfSites: bucket5.length}
             ];
-            setAverage(scores_mean.toFixed(3));
+
             setData(tempData);
         }
     }, [props.sparsityData]);
@@ -54,7 +55,7 @@ export default function SparsityScoresChart(props) {
     if(props.streamComplete && !props.noData) {
         return (
             <Paper elevation={2} className={classes.paper}>
-                <Typography variant='h5' align='center'>Sparsity Score Spread, Average: {average}</Typography>
+                <Typography variant='h5' align='center'>Sparsity Score Spread, Mean: {average}, Std Dev: {stdDev}</Typography>
                 <BarChart width={600} height={300} data={data}>
                     <XAxis dataKey="name" />
                     <YAxis />

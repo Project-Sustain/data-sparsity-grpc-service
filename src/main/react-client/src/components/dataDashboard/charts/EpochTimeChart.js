@@ -4,7 +4,7 @@ import { Paper, Typography, Slider, Divider, LinearProgress } from "@mui/materia
 import { useEffect, useState } from 'react';
 import moment from 'moment';
 import { sum } from 'simple-statistics';
-import { colors } from '../helpers/colors';
+import { colors } from '../../../helpers/colors';
 
 const useStyles = makeStyles({
     paper: {
