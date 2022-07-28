@@ -23,6 +23,7 @@ public class SparsityScoreGenerator {
         MongoCollection<Document> collection = mongoConnection.getCollection(collectionName);
         ArrayList<Document> queryResults = collection.aggregate(aggregateQuery.getQuery()).allowDiskUse(true).into(new ArrayList<>());
         this.results = queryResults;
+        logger.info("***Number of Results Found: " + results.size());
         mongoConnection.closeConnection();
     }
 
@@ -32,8 +33,9 @@ public class SparsityScoreGenerator {
      */
     public void streamSparsityData(StreamObserver<SSGReply> responseObserver) {
         MongoConnection mongoConnection = new MongoConnection();
-        try {
-            results.forEach(document -> {
+        int numberOfResultsStreamed = 0;
+        for(Document document : results) {
+            try {
                 String monitorId = document.getString("_id");
                 List<Long> timeList = (document.getList("epochTimes", Long.class)).stream().distinct().collect(Collectors.toList());
                 int numberOfMeasurements = timeList.size();
@@ -54,13 +56,14 @@ public class SparsityScoreGenerator {
                     .build();
 
                 responseObserver.onNext(reply);
-            });
-        } catch(Exception e) {
-            logger.warning(e.toString());
-        } finally {
-            mongoConnection.closeConnection();
-            responseObserver.onCompleted();
-        }
+                numberOfResultsStreamed++;
+            } catch(Exception e) {
+                logger.warning(e.toString());
+            } 
+        }  
+        mongoConnection.closeConnection();
+        responseObserver.onCompleted();
+        logger.info("***Number of Results Streamed: " + numberOfResultsStreamed);
     }
 
     /*

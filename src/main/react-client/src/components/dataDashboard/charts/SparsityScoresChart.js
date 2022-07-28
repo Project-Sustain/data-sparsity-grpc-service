@@ -1,4 +1,4 @@
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { makeStyles } from "@material-ui/core";
 import { Paper, Typography, LinearProgress } from "@mui/material";
 import { useEffect, useState } from 'react';
@@ -12,8 +12,8 @@ const useStyles = makeStyles({
         overflow: "auto"
     },
     chart: {
-        width: "15vw",
-        height: "7vh"
+        width: "100%",
+        height: 300
     }
 });
 
@@ -56,13 +56,15 @@ export default function SparsityScoresChart(props) {
         return (
             <Paper elevation={2} className={classes.paper}>
                 <Typography variant='h5' align='center'>Sparsity Score Spread, Mean: {average}, Std Dev: {stdDev}</Typography>
-                <BarChart width={600} height={300} data={data}>
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="numberOfSites" fill={colors.secondary} barSize={30} />
-                </BarChart>
+                <ResponsiveContainer width='100%' height={300}>
+                    <BarChart data={data}>
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="numberOfSites" fill={colors.secondary} barSize={30} />
+                    </BarChart>
+                </ResponsiveContainer>
             </Paper>
         );
     }
