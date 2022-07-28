@@ -1,7 +1,10 @@
 import { FormControl, FormControlLabel, Radio, RadioGroup, FormLabel } from '@mui/material';
 
 export default function SpatialRadios(props) {
-    // const classes = useStyles();
+
+    const updateSpatialScope = (event) => {
+        props.setSpatialScope(event.target.value);
+    }
 
     return (
         <FormControl>
@@ -10,12 +13,12 @@ export default function SpatialRadios(props) {
                 row
                 aria-labelledby="spatial-scope"
                 value={props.spatialScope}
-                onChange={props.updateSpatialScope}
+                onChange={updateSpatialScope}
             >
-                <FormControlLabel value="COUNTRY" control={<Radio />} label="Country" />
+                <FormControlLabel disabled={true} value="COUNTRY" control={<Radio />} label="Country" />
                 <FormControlLabel value="STATE" control={<Radio />} label="State" />
                 <FormControlLabel value="COUNTY" control={<Radio />} label="County" />
-                <FormControlLabel value="SITE" control={<Radio />} label="Site" />
+                <FormControlLabel disabled={true} value="SITE" control={<Radio />} label="Site" />
             </RadioGroup>
         </FormControl>
     );

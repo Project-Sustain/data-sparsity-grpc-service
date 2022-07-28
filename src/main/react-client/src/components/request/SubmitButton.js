@@ -4,6 +4,9 @@ export default function SubmitButton(props) {
 
     const sendSparsityScoreRequest = async() => {
 
+        props.setStreamComplete(false);
+        props.setRequestPending(true);
+
         const params = {
             'collectionName': props.collectionName,
             'spatialScope': props.spatialScope,
@@ -32,7 +35,9 @@ export default function SubmitButton(props) {
                 if (done) {
                     const formattedResults = formatResults(streamedResults);
                     props.setSparsityData(formattedResults);
-                    props.setSelectedIndex(formattedResults.length-1);
+                    props.setSelectedIndex(0);
+                    props.setStreamComplete(true);
+                    props.setRequestPending(false);
                     break;
                 }
                 else {
@@ -40,6 +45,7 @@ export default function SubmitButton(props) {
                         const response = JSON.parse(new TextDecoder().decode(value));
                         response.sparsityScore = response.sparsityScore ? parseFloat((response.sparsityScore).toFixed(3)) : 0;
                         streamedResults.push(response);
+                        props.setSparsityData([...props.sparsityData, response]);
                     } catch(err){}
                 }
             }

@@ -69,7 +69,7 @@ export default function EpochTimeChart(props) {
         return {'name': `${startTime} - ${endTime}`, 'Number of Observations': totalValue};
     }
 
-    if(props.sparsityData.length > 0) {
+    if(props.streamComplete) {
         return (
             <Paper elevation={2} className={classes.paper}>
                 <Typography variant='h5' align='center'>Number of Observations by Time</Typography>
@@ -114,11 +114,12 @@ export default function EpochTimeChart(props) {
         );
     }
 
-    else {
+    else if(props.requestPending) {
         return (
             <Paper elevation={2} className={classes.paper}>
                 <Typography>Chart Loading...</Typography>
             </Paper>
         );
     }
+    else return null;
 }

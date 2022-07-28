@@ -57,7 +57,7 @@ export default function SparsityScoresChart(props) {
         }
     }, [props.sparsityData]);
 
-    if(props.sparsityData.length > 0) {
+    if(props.streamComplete) {
         return (
             <Paper elevation={2} className={classes.paper}>
                 <Typography variant='h5' align='center'>Sparsity Score Spread, Average: {average}</Typography>
@@ -71,11 +71,12 @@ export default function SparsityScoresChart(props) {
             </Paper>
         );
     }
-    else {
+    else if(props.requestPending) {
         return (
             <Paper elevation={2} className={classes.paper}>
                 <Typography>Chart Loading...</Typography>
             </Paper>
         );
     }
+    else return null;
 }

@@ -11,6 +11,10 @@ const useStyles = makeStyles({
 export default function CollectionSelector(props) {
     const classes = useStyles();
 
+    const updateCollection = (event) => {
+        props.setCollection(event.target.value);
+    }
+
     if(props.sparsityMetadata.length > 0) {
         return (
             <FormControl fullWidth className={classes.select}>
@@ -18,7 +22,7 @@ export default function CollectionSelector(props) {
                 <Select
                     value={props.collection}
                     label="Dataset"
-                    onChange={props.updateCollection}
+                    onChange={updateCollection}
                 >
                     {
                         props.sparsityMetadata.map((dataset, index) => {

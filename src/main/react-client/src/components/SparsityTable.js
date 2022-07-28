@@ -25,7 +25,7 @@ export default function SparsityTable(props) {
     const theme = useTheme();
     const classes = useStyles(theme);
 
-    if(props.sparsityData.length > 0) {
+    if(props.streamComplete) {
       return (
         <Paper className={classes.paper} elevation={2}>
           <Stack
@@ -41,13 +41,15 @@ export default function SparsityTable(props) {
       );
     }
 
-    else {
+    else if(props.requestPending) {
       return (
         <Paper className={classes.paper} elevation={2}>
           <Typography>Sparsity Data Coming...</Typography>
         </Paper>
       );
     }
+
+    else return null;
 
     function returnDataGrid() {
       const columns = [
