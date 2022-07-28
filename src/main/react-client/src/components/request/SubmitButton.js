@@ -12,6 +12,8 @@ export default function SubmitButton(props) {
 
     const sendSparsityScoreRequest = async() => {
 
+        console.log("***"+ props.sparsityData + "***");
+
         props.setStreamComplete(false);
         props.setRequestPending(true);
 
@@ -37,12 +39,12 @@ export default function SubmitButton(props) {
         let streamedResults = [];
 
         fetch(url, body).then(async stream => {
-            let reader = stream.body.getReader();     
+            let reader = stream.body.getReader();
+            let incompleteResponse  = "";
             while (true) {
                 const { done, value } = await reader.read();
                 if (done) {
                     const formattedResults = formatResults(streamedResults);
-                    console.log("formattedResults.length: " + formattedResults.length)
                     props.setSparsityData(formattedResults);
                     props.setSelectedIndex(0);
                     props.setStreamComplete(true);
@@ -51,37 +53,24 @@ export default function SubmitButton(props) {
                 }
                 else {
                     try {
-                        const response = JSON.parse(new TextDecoder().decode(value));
-                        response.sparsityScore = response.sparsityScore ? parseFloat((response.sparsityScore).toFixed(3)) : 0;
-                        streamedResults.push(response);
-                        props.setSparsityData([...props.sparsityData, response]);
-                    } catch(err){
-                        console.log("Error while streaming "+ err);
-                    }
-                }
-            }
-
-            function checkMessage() {
-                let incompleteResponse  = ""
-
-                while(true){
-
-                    let response = new TextDecoder().decode(value);
+                        let response = new TextDecoder().decode(value);
                         response = incompleteResponse + response;
-
-                    while(response.indexOf('\n') !== -1) {
-                        const parsedResponse = response.substring(0, response.indexOf('\n'));
-                        const obj = JSON.parse(parsedResponse);
-                        response = response.substring(response.indexOf('\n') + 1, response.length);
-                        yield obj
-
+                        while(response.indexOf('\n') !== -1) {
+                            const parsedResponse = response.substring(0, response.indexOf('\n'));
+                            const obj = JSON.parse(parsedResponse);
+                            response = response.substring(response.indexOf('\n') + 1, response.length);
+                            streamedResults.push(obj);
+                        }
                         if(response.indexOf('\n') === -1 && response.length !== 0){
                             incompleteResponse = response;
                         }
                         else{
                             incompleteResponse = "";
                         }
-
+                        response.sparsityScore = response.sparsityScore ? parseFloat((response.sparsityScore).toFixed(3)) : 0;
+                        streamedResults.push(response);
+                    } catch(err){
+                        console.log("Error while streaming "+ err);
                     }
                 }
             }
