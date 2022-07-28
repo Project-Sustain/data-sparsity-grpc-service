@@ -2,42 +2,39 @@ import { useState, useEffect, memo } from 'react';
 import { gisStateCounty } from '../../library/gisInfo';
 import { sendJsonRequest } from '../../helpers/api';
 import { sparsityMetadata } from '../../library/metadata';
-import { Modal } from '@mui/material';
+import { Paper, Typography } from '@mui/material';
 import SpatialDropdown from './SpatialDropdown';
 import SpatialRadios from './SpatialRadios';
 import TemporalSlider from './TemporalSlider';
-// import DataConstraints from './DataConstraints';
 import CollectionSelector from './CollectionSelecter';
 import SubmitButton from './SubmitButton';
+import { makeStyles } from "@material-ui/core";
+
+const useStyles = makeStyles({
+    paper: {
+        margin: "10px",
+        padding: "10px",
+        overflow: "auto"
+    },
+    select: {
+        margin: '10px 0px'
+    }
+  });
 
 export default memo(function RequestForm(props) {
+    const classes = useStyles();
 
     const [stateInfo, setStateInfo] = useState([]);
     const [firstTime, setFirstTime] = useState();
     const [lastTime, setLastTime] = useState();
     const [selectedState, setSelectedState] = useState({});
     const [selectedCounty, setSelectedCounty] = useState({});
-    // const [dataConstraints, setDataConstraints] = useState([]);
 
     const [collection, setCollection] = useState({});
     const [spatialScope, setSpatialScope] = useState("COUNTY");
     const [spatialIdentifier, setSpatialIdentifier] = useState("");
     const [temporalRange, setTemporalRange] = useState([]);
-    // const [selectedConstraints, setSelectedConstraints] = useState([]);
     const selectedConstraints = [];
-
-    const style = {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 400,
-        bgcolor: 'background.paper',
-        border: '2px solid #000',
-        boxShadow: 24,
-        p: 4,
-      };
-
 
     useEffect(() => {
         setStateInfo(gisStateCounty);
@@ -65,18 +62,6 @@ export default memo(function RequestForm(props) {
                 break;                
         }
     }, [selectedState, selectedCounty, spatialScope]);
-
-    // useEffect(() => {
-    //     (async () => {
-    //         const collectionName = collection.collection;
-    //         const params = {'collectionName': collectionName}
-    //         const response = await sendJsonRequest("measurementTypes", params);
-    //         if(response) {
-    //             setDataConstraints(response.measurementTypes);
-    //         }
-    //         else console.log("ERROR sending serverConnection request");
-    //     })();
-    // }, [collection]);
 
     useEffect(() => {
         (async () => {
@@ -106,8 +91,10 @@ export default memo(function RequestForm(props) {
 
     if(stateInfo.length > 0) {
         return (
-            <>
+            <Paper elevation={3} className={classes.paper}>
+                <Typography align='center' variant='h5'>Data Request Form</Typography>
                 <CollectionSelector
+                    className={classes.select}
                     setCollection={setCollection}
                     sparsityMetadata={sparsityMetadata}
                     collection={collection}
@@ -117,6 +104,7 @@ export default memo(function RequestForm(props) {
                     setSpatialScope={setSpatialScope}
                 />
                 <SpatialDropdown
+                    className={classes.select}
                     disabled={false}
                     options={stateInfo}
                     label='State'
@@ -124,8 +112,9 @@ export default memo(function RequestForm(props) {
                     value={selectedState}
                 />
                 <SpatialDropdown
+                    className={classes.select}
                     disabled={spatialScope !== 'COUNTY'}
-                    options={selectedState.counties}
+                    options={selectedState.counties.sort((a, b) => {return a.collection - b.collection})}
                     label='County'
                     update={updateSelectedCounty}
                     value={selectedCounty}
@@ -136,12 +125,6 @@ export default memo(function RequestForm(props) {
                     temporalRange={temporalRange}
                     setTemporalRange={setTemporalRange}
                 />
-                {/* <DataConstraints
-                    selectedConstraints={selectedConstraints}
-                    setSelectedConstraints={setSelectedConstraints}
-                    dataConstraints={dataConstraints}
-                    setDataConstraints={setDataConstraints}
-                /> */}
                 <SubmitButton 
                     collectionName={collection.collection}
                     spatialScope={spatialScope}
@@ -156,7 +139,7 @@ export default memo(function RequestForm(props) {
                     setSparsityData={props.setSparsityData}
                     setSelectedIndex={props.setSelectedIndex}
                 />
-            </>
+            </Paper>
         );
     }
 

@@ -1,4 +1,4 @@
-export const gisStateCounty = [
+export let gisStateCounty = [
     {
         "GISJOIN": "G560",
         "name": "Wyoming",

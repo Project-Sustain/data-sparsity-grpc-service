@@ -25,7 +25,7 @@ export default function SparsityTable(props) {
     const theme = useTheme();
     const classes = useStyles(theme);
 
-    if(props.streamComplete) {
+    if(props.streamComplete && !props.noData) {
       return (
         <Paper className={classes.paper} elevation={2}>
           <Stack
@@ -39,6 +39,14 @@ export default function SparsityTable(props) {
           </Stack>
         </Paper>
       );
+    }
+
+    else if(props.streamComplete && props.noData) {
+        return (
+            <Paper elevation={2} className={classes.paper}>
+                <Typography>No Data Matching Request</Typography>
+            </Paper>
+        );
     }
 
     else if(props.requestPending) {

@@ -91,7 +91,8 @@ def sendSparsityScoreRequest():
             )
 
             for stream_response in stub.CalculateSparsityScores(request):
-                yield MessageToJson(stream_response, preserving_proto_field_name=True)
+                dict_message = MessageToDict(stream_response, preserving_proto_field_name=True)
+                yield json.dumps(dict_message, indent=None) + '\n'
 
             response = json.dumps({"ok": True}, indent=None), HTTPStatus.OK
             return response

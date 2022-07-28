@@ -1,14 +1,16 @@
 
-import { React, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Container, Stack } from '@mui/material';
 import UseConnectionStatus from './hooks/UseConnectionStatus';
 import ApplicationStatus from './components/ApplicationStatus';
-import SparsityTable from './components/SparsityTable';
-import SelectedSite from './components/SelectedSite';
-import SparsityScoresChart from './components/SparsityScoresChart';
-import EpochTimeChart from './components/EpochTimeChart';
+import SparsityTable from './components/dataDashboard/SparsityTable';
+import SelectedSite from './components/dataDashboard/SelectedSite';
+import SparsityScoresChart from './components/dataDashboard/charts/SparsityScoresChart';
+import EpochTimeChart from './components/dataDashboard/charts/EpochTimeChart';
+import RequestForm from './components/request/RequestForm';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { colors } from './helpers/colors';
+
 
 const theme = createTheme({
   palette: {
@@ -30,8 +32,11 @@ export default function App() {
   const [sparsityData, setSparsityData] = useState([]);
   const [streamComplete, setStreamComplete] = useState(false);
   const [requestPending, setRequestPending] = useState(false);
+  const [noData, setNoData] = useState(false);
 
-  console.log({sparsityData})
+  useEffect(() => {
+    setNoData(sparsityData.length === 0);
+  }, [sparsityData]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -40,14 +45,15 @@ export default function App() {
         <Container maxWidth='auto'>
           <Stack>
             <ApplicationStatus setRequestPending={setRequestPending} setStreamComplete={setStreamComplete} setSelectedIndex={setSelectedIndex} setSparsityData={setSparsityData} serverConnection={serverConnection} DbConnection={DbConnection} />
-            <SelectedSite requestPending={requestPending} streamComplete={streamComplete} site={sparsityData[selectedIndex]} />
+            <RequestForm setRequestPending={setRequestPending} setStreamComplete={setStreamComplete} setSparsityData={setSparsityData} setSelectedIndex={setSelectedIndex} />
+            <SelectedSite noData={noData} requestPending={requestPending} streamComplete={streamComplete} site={sparsityData[selectedIndex]} />
           </Stack>
         </Container>
 
         <Container maxWidth='auto'>
           <Stack>
-            <SparsityScoresChart requestPending={requestPending} streamComplete={streamComplete} sparsityData={sparsityData} />
-            <SparsityTable requestPending={requestPending} streamComplete={streamComplete} selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} sparsityData={sparsityData} />
+            <SparsityScoresChart noData={noData} requestPending={requestPending} streamComplete={streamComplete} sparsityData={sparsityData} />
+            <SparsityTable noData={noData} requestPending={requestPending} streamComplete={streamComplete} selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} sparsityData={sparsityData} />
           </Stack>
         </Container>
       </Stack>
@@ -55,7 +61,7 @@ export default function App() {
       <Stack direction='row'>
         <Container maxWidth='auto'>
             <Stack>
-              <EpochTimeChart requestPending={requestPending} streamComplete={streamComplete} sparsityData={sparsityData} />
+              <EpochTimeChart noData={noData} requestPending={requestPending} streamComplete={streamComplete} sparsityData={sparsityData} />
             </Stack>
           </Container>
       </Stack>

@@ -68,20 +68,6 @@ sourceSets {
 
 startScripts.enabled = false
 
-task mongoConnectServer(type: CreateStartScripts) {
-    mainClass = 'io.grpc.datasparsity.mongoconnect.MongoConnectServer'
-    applicationName = 'mongo-connect-server'
-    outputDir = new File(project.buildDir, 'tmp/scripts/' + name)
-    classpath = startScripts.classpath
-}
-
-task mongoConnectClient(type: CreateStartScripts) {
-    mainClass = 'io.grpc.datasparsity.mongoconnect.MongoConnectClient'
-    applicationName = 'mongo-connect-client'
-    outputDir = new File(project.buildDir, 'tmp/scripts/' + name)
-    classpath = startScripts.classpath
-}
-
 task sparsityScoreGeneratorServer(type: CreateStartScripts) {
     mainClass = 'io.grpc.datasparsity.sparsityscoregenerator.SparsityScoreGeneratorServer'
     applicationName = 'sparsity-score-generator-server'
@@ -89,17 +75,7 @@ task sparsityScoreGeneratorServer(type: CreateStartScripts) {
     classpath = startScripts.classpath
 }
 
-task sparsityScoreGeneratorClient(type: CreateStartScripts) {
-    mainClass = 'io.grpc.datasparsity.sparsityscoregenerator.SparsityScoreGeneratorClient'
-    applicationName = 'sparsity-score-generator-client'
-    outputDir = new File(project.buildDir, 'tmp/scripts/' + name)
-    classpath = startScripts.classpath
-}
-
 applicationDistribution.into('bin') {
-    from(mongoConnectServer)
-    from(mongoConnectClient)
     from(sparsityScoreGeneratorServer)
-    from(sparsityScoreGeneratorClient)
     fileMode = 0755
 }

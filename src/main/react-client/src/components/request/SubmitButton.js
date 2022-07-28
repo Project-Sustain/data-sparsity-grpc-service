@@ -1,6 +1,14 @@
 import { Button } from '@mui/material';
+import { makeStyles } from '@material-ui/core';
+
+const useStyles = makeStyles({
+    root: {
+        width: '100%'
+    }
+});
 
 export default function SubmitButton(props) {
+    const classes = useStyles();
 
     const sendSparsityScoreRequest = async() => {
 
@@ -29,7 +37,8 @@ export default function SubmitButton(props) {
         let streamedResults = [];
 
         fetch(url, body).then(async stream => {
-            let reader = stream.body.getReader();     
+            let reader = stream.body.getReader();
+            let incompleteResponse  = "";
             while (true) {
                 const { done, value } = await reader.read();
                 if (done) {
@@ -42,11 +51,24 @@ export default function SubmitButton(props) {
                 }
                 else {
                     try {
-                        const response = JSON.parse(new TextDecoder().decode(value));
-                        response.sparsityScore = response.sparsityScore ? parseFloat((response.sparsityScore).toFixed(3)) : 0;
-                        streamedResults.push(response);
-                        props.setSparsityData([...props.sparsityData, response]);
-                    } catch(err){}
+                        let response = new TextDecoder().decode(value);
+                        response = incompleteResponse + response;
+                        while(response.indexOf('\n') !== -1) {
+                            const parsedResponse = response.substring(0, response.indexOf('\n'));
+                            const obj = JSON.parse(parsedResponse);
+                            response = response.substring(response.indexOf('\n') + 1, response.length);
+                            obj.sparsityScore = obj.sparsityScore ? parseFloat((obj.sparsityScore).toFixed(3)) : 0;
+                            streamedResults.push(obj);
+                        }
+                        if(response.indexOf('\n') === -1 && response.length !== 0){
+                            incompleteResponse = response;
+                        }
+                        else{
+                            incompleteResponse = "";
+                        }
+                    } catch(err){
+                        console.log("Error while streaming "+ err);
+                    }
                 }
             }
 
@@ -67,5 +89,5 @@ export default function SubmitButton(props) {
         });
     }
 
-    return <Button  variant='outlined' onClick={sendSparsityScoreRequest}>Submit Request</Button>
+    return <Button className={classes.root} variant='outlined' onClick={sendSparsityScoreRequest}>Submit Request</Button>
 }

@@ -1,13 +1,11 @@
 import { Select, FormControl, MenuItem, InputLabel } from '@mui/material';
 import { makeStyles } from "@material-ui/core";
 
-
 const useStyles = makeStyles({
     select: {
       margin: "10px",
     }
   });
-
 
 export default function SpatialDropdown(props) {
     const classes = useStyles();
