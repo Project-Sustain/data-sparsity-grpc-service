@@ -1,6 +1,6 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { makeStyles } from "@material-ui/core";
-import { Paper, Slider, Typography, LinearProgress, Radio, RadioGroup, FormControl, FormControlLabel, FormLabel, Stack, FormGroup } from "@mui/material";
+import { Paper, Slider, Typography, LinearProgress, Radio, RadioGroup, FormControl, FormControlLabel, FormLabel, Stack, FormGroup, breadcrumbsClasses } from "@mui/material";
 import { useEffect, useState } from 'react';
 import { mean, standardDeviation, median } from 'simple-statistics';
 import { colors } from '../../../helpers/colors';
@@ -23,12 +23,18 @@ const useStyles = makeStyles({
 export default function SparsityScoresChart(props) {
     const classes = useStyles();
 
+    /**
+     * Just hard-code cutoffs arrays of size 5, 10, 15, 20
+     */
     const scaleArray = [
-        {'name': 'Exponential 1', 'scale': [0.001, 0.01, 0.1, 1]},
-        {'name': 'Exponential 2', 'scale': [1, 10, 100, 1000]},
-        {'name': 'Log 1', 'scale': [0.1, 1, 1.1, 1.01]},
-        {'name': 'Linear 1', 'scale': [25, 50, 75, 100]},
-        {'name': 'Linear 2', 'scale': [50, 100, 150, 200]}
+        {
+            'name': 'Exponential 1',
+            'cutoffs': [0.001, 0.01, 0.1, 1]
+        },
+        {'name': 'Exponential 2', 'cutoffs': [1, 10, 100, 1000]},
+        {'name': 'Log 1', 'cutoffs': [0.1, 1, 1.1, 1.01]},
+        {'name': 'Linear 1', 'cutoffs': [25, 50, 75, 100]},
+        {'name': 'Linear 2', 'cutoffs': [50, 100, 150, 200]}
     ];
 
     const [data, setData] = useState({});
@@ -53,24 +59,21 @@ export default function SparsityScoresChart(props) {
         if(scores.length > 0) {
 
             /**
+             * NOTE: There are numBuckets-1 cutoffs!
+             * 
              * First, get the cutoffs array aka scale.scale array based off of numBuckets
              * and low/high for the selected scale (exp, log, lin)
              * 
              * Then, create the buckets dynamically and add them as objects with a name field and numberOfSites field
              */
-
-            const chartData = [0,1,2,3,4].map((entry, index) => {
-                if(index === 0) {
-                    const length = scores.filter(score => score < scale.scale[index]).length;
-                    return {name: `0-${scale.scale[index]}`, numberOfSites: length};
-                }
-                else if(index === numBuckets-1) {
-                    const length = scores.filter(score => score >= scale.scale[index-1]).length;
-                    return  {name: `>${scale.scale[index-1]}`, numberOfSites: length};
-                }
-                else {
-                    const length = scores.filter(score => score >= scale.scale[index-1] && score < scale.scale[index]).length;
-                    return {name: `${scale.scale[index-1]}-${scale.scale[index]}`, numberOfSites: length};
+            const chartData = [...Array(numBuckets).keys()].map(index => {
+                switch(index){
+                    case 0:
+                        return {name: `0-${scale.cutoffs[index]}`, numberOfSites: scores.filter(score => score < scale.cutoffs[index]).length};
+                    case numBuckets-1:
+                        return {name: `>${scale.cutoffs[index-1]}`, numberOfSites: scores.filter(score => score >= scale.cutoffs[index-1]).length};
+                    default:
+                        return {name: `${scale.cutoffs[index-1]}-${scale.cutoffs[index]}`, numberOfSites: scores.filter(score => score >= scale.cutoffs[index-1] && score < scale.cutoffs[index]).length};
                 }
             });
 
@@ -126,6 +129,7 @@ export default function SparsityScoresChart(props) {
                             aria-labelledby="slider"
                             min={5}
                             max={20}
+                            step={5}
                             value={numBuckets}
                             onChange={updateNumBuckets}
                             color='secondary'
