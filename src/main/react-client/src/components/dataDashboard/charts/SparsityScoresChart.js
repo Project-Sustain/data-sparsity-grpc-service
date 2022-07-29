@@ -2,7 +2,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } fro
 import { makeStyles } from "@material-ui/core";
 import { Paper, Slider, Typography, LinearProgress, Radio, RadioGroup, FormControl, FormControlLabel, FormLabel, Stack, FormGroup } from "@mui/material";
 import { useEffect, useState } from 'react';
-import { mean, standardDeviation } from 'simple-statistics';
+import { mean, standardDeviation, median } from 'simple-statistics';
 import { colors } from '../../../helpers/colors';
 
 const useStyles = makeStyles({
@@ -34,6 +34,7 @@ export default function SparsityScoresChart(props) {
     const [data, setData] = useState({});
     const [average, setAverage] = useState(0);
     const [stdDev, setStdDev] = useState(0);
+    const [med, setMed] = useState(0);
     const [scores, setScores] = useState([]);
     const [scale, setScale] = useState(scaleArray[0]);
     const [numBuckets, setNumBuckets] = useState(5);
@@ -44,6 +45,7 @@ export default function SparsityScoresChart(props) {
             setScores(tempScores)
             setStdDev(standardDeviation(tempScores).toFixed(2));
             setAverage(mean(tempScores).toFixed(2));
+            setMed(median(tempScores).toFixed(2));
         }
     }, [props.sparsityData]);
 
@@ -71,8 +73,6 @@ export default function SparsityScoresChart(props) {
                     return {name: `${scale.scale[index-1]}-${scale.scale[index]}`, numberOfSites: length};
                 }
             });
-
-            console.log({chartData})
 
             // const bucket1 = scores.filter(score => score < scale.scale[0]);
             // const bucket2 = scores.filter(score => score >= scale.scale[0] && score < scale.scale[1]);
@@ -110,7 +110,7 @@ export default function SparsityScoresChart(props) {
                     alignItems='center'
                     spacing={2}
                 >
-                    <Typography variant='h5' align='center'>Sparsity Score Spread, Mean: {average}, Std Dev: {stdDev}</Typography>
+                    <Typography variant='h5' align='center'>Mean: {average}, Median:{med}, Std Dev: {stdDev}</Typography>
                     <ResponsiveContainer width='100%' height={300}>
                         <BarChart data={data}>
                             <XAxis dataKey="name" />
