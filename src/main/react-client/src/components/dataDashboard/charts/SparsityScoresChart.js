@@ -36,7 +36,7 @@ export default function SparsityScoresChart(props) {
     const [stdDev, setStdDev] = useState(0);
     const [scores, setScores] = useState([]);
     const [scale, setScale] = useState(scaleArray[0]);
-    const [numBuckets, setNumBuckets] = useState(5)
+    const [numBuckets, setNumBuckets] = useState(5);
 
     useEffect(() => {
         if(props.sparsityData.length > 0){
@@ -48,24 +48,49 @@ export default function SparsityScoresChart(props) {
     }, [props.sparsityData]);
 
     useEffect(() => {
-        if(scores.length > 0){
-            const bucket1 = scores.filter(score => score < scale.scale[0]);
-            const bucket2 = scores.filter(score => score >= scale.scale[0] && score < scale.scale[1]);
-            const bucket3 = scores.filter(score => score >= scale.scale[1] && score < scale.scale[2]);
-            const bucket4 = scores.filter(score => score >= scale.scale[2] && score < scale.scale[3]);
-            const bucket5 = scores.filter(score => score >= scale.scale[3]);
+        if(scores.length > 0) {
 
-            const tempData = [
-                {name: `0-${scale.scale[0]}`, numberOfSites: bucket1.length},
-                {name: `${scale.scale[0]}-${scale.scale[1]}`, numberOfSites: bucket2.length},
-                {name: `${scale.scale[1]}-${scale.scale[2]}`, numberOfSites: bucket3.length},
-                {name: `${scale.scale[2]}-${scale.scale[3]}`, numberOfSites: bucket4.length},
-                {name: `>${scale.scale[3]}`, numberOfSites: bucket5.length}
-            ];
+            /**
+             * First, get the cutoffs array aka scale.scale array based off of numBuckets
+             * and low/high for the selected scale (exp, log, lin)
+             * 
+             * Then, create the buckets dynamically and add them as objects with a name field and numberOfSites field
+             */
 
-            setData(tempData);
+            const chartData = [0,1,2,3,4].map((entry, index) => {
+                if(index === 0) {
+                    const length = scores.filter(score => score < scale.scale[index]).length;
+                    return {name: `0-${scale.scale[index]}`, numberOfSites: length};
+                }
+                else if(index === numBuckets-1) {
+                    const length = scores.filter(score => score >= scale.scale[index-1]).length;
+                    return  {name: `>${scale.scale[index-1]}`, numberOfSites: length};
+                }
+                else {
+                    const length = scores.filter(score => score >= scale.scale[index-1] && score < scale.scale[index]).length;
+                    return {name: `${scale.scale[index-1]}-${scale.scale[index]}`, numberOfSites: length};
+                }
+            });
+
+            console.log({chartData})
+
+            // const bucket1 = scores.filter(score => score < scale.scale[0]);
+            // const bucket2 = scores.filter(score => score >= scale.scale[0] && score < scale.scale[1]);
+            // const bucket3 = scores.filter(score => score >= scale.scale[1] && score < scale.scale[2]);
+            // const bucket4 = scores.filter(score => score >= scale.scale[2] && score < scale.scale[3]);
+            // const bucket5 = scores.filter(score => score >= scale.scale[3]);
+
+            // const chartData = [
+            //     {name: `0-${scale.scale[0]}`, numberOfSites: bucket1.length},
+            //     {name: `${scale.scale[0]}-${scale.scale[1]}`, numberOfSites: bucket2.length},
+            //     {name: `${scale.scale[1]}-${scale.scale[2]}`, numberOfSites: bucket3.length},
+            //     {name: `${scale.scale[2]}-${scale.scale[3]}`, numberOfSites: bucket4.length},
+            //     {name: `>${scale.scale[3]}`, numberOfSites: bucket5.length}
+            // ];
+
+            setData(chartData);
         }
-    }, [scores, scale]);
+    }, [scores, scale, numBuckets]);
 
     const updateScale = (event) => {
         const value = parseInt(event.target.value);
