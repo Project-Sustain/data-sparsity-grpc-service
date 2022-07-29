@@ -1,6 +1,6 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { makeStyles } from "@material-ui/core";
-import { Paper, Typography, LinearProgress, Radio, RadioGroup, FormControl, FormControlLabel, FormLabel, Stack } from "@mui/material";
+import { Paper, Slider, Divider, Typography, LinearProgress, Radio, RadioGroup, FormControl, FormControlLabel, FormLabel, Stack } from "@mui/material";
 import { useEffect, useState } from 'react';
 import { mean, standardDeviation } from 'simple-statistics';
 import { colors } from '../../../helpers/colors';
@@ -33,6 +33,7 @@ export default function SparsityScoresChart(props) {
     const [stdDev, setStdDev] = useState(0);
     const [scores, setScores] = useState([]);
     const [scale, setScale] = useState(scaleArray[0]);
+    const [numBuckets, setNumBuckets] = useState(5)
 
     useEffect(() => {
         if(props.sparsityData.length > 0){
@@ -68,6 +69,10 @@ export default function SparsityScoresChart(props) {
         setScale(scaleArray[value]);
     }
 
+    const updateNumBuckets = (event) => {
+        setNumBuckets(parseInt(event.target.value));
+    }
+
     if(props.streamComplete && !props.noData) {
         return (
             <Paper elevation={2} className={classes.paper}>
@@ -87,6 +92,17 @@ export default function SparsityScoresChart(props) {
                             <Bar dataKey="numberOfSites" fill={colors.secondary} barSize={30} />
                         </BarChart>
                     </ResponsiveContainer>
+                    <FormLabel align='center' color='secondary' id="slider">Number of Bars</FormLabel>
+                    <Slider
+                        aria-labelledby="slider"
+                        min={5}
+                        max={20}
+                        value={numBuckets}
+                        onChange={updateNumBuckets}
+                        color='secondary'
+                        valueLabelDisplay="auto"
+                        marks
+                    />
                     <FormControl>
                         <FormLabel align='center' color='secondary' id="scale">X-Axis Scale</FormLabel>
                         <RadioGroup
