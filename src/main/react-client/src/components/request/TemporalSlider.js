@@ -1,6 +1,6 @@
 import Slider from '@mui/material/Slider';
 import moment from 'moment';
-import { Typography } from '@mui/material';
+import { FormLabel } from '@mui/material';
 
 
 export default function TemporalSlider(props) {
@@ -15,8 +15,9 @@ export default function TemporalSlider(props) {
   if(props.temporalRange.length > 0 && props.min && props.max) {
     return (
         <>
-            <Typography align='center'>Select Date Range {valueText(props.temporalRange[0])} - {valueText(props.temporalRange[1])}</Typography>
+            <FormLabel id='temporalSlider' align='center'>{valueText(props.temporalRange[0])} - {valueText(props.temporalRange[1])}</FormLabel>
             <Slider
+                aria-labelledby='temporalSlider'
                 min={props.min}
                 max={props.max}
                 value={props.temporalRange}
